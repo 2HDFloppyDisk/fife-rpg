@@ -29,15 +29,13 @@ from bGrease.grease_fife.mode import Mode
 class ControllerBase(Mode):
     """Base of Controllers"""
 
-    def __init__(self, engine, view, application):
+    def __init__(self, view, application):
         """Constructor
 
         Args:
-            engine: Instance of the active fife engine
             application: The application that created this controller
         """
-        Mode.__init__(self)
-        self.engine = engine
+        Mode.__init__(self, application.engine)
         self.view = view
         self.application = application
 
