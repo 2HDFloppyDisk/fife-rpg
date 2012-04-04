@@ -190,11 +190,23 @@ class RPGApplication(ApplicationBase,  FifeManager):
         self._listener = None
 
     @property
-    def settings(self): # pylint: disable-msg=C0111
+    def settings(self):
+        """Returns the settings of the application.
+        
+        Returns:
+            A fife_settings.Setting instance that contains the settings of the
+            application.
+        """
         return self._setting
     
     @property
-    def log_manager(self): # pylint: disable-msg=C0111
+    def log_manager(self):
+        """Returns the log manager of the application.
+        
+        Returns:
+            a fifelog.LogManager instance that contains the log manager of
+            the application.
+        """
         return self._log
 
     def createListener(self): # pylint: disable-msg=C0103
