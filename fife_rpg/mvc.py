@@ -12,17 +12,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# The source of this file is based on the ViewBase class from PARPG.
+# The source of this file is based on the mvc classes from PARPG.
 
-"""This module contains the class that is the base for all views.
+"""Contains classes for a Model-View-Controller system
 
-.. module:: view_base
-    :synopsis: Contains the class that is the base for all views.
+.. module:: mvc
+    :synopsis: Contains classes for a Model-View-Controller system
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
-
 """
 
+from bGrease.grease_fife.mode import Mode
 
 class ViewBase(object):  # pylint: disable-msg=R0903
     """Base class for views"""
@@ -38,3 +38,25 @@ class ViewBase(object):  # pylint: disable-msg=R0903
         """
         self.engine = engine
         self.controller = controller
+
+class ControllerBase(Mode):
+    """Base of Controllers"""
+
+    def __init__(self, view, application):
+        """Constructor
+
+        Args:
+            application: The application that created this controller
+        """
+        Mode.__init__(self, application.engine)
+        self.view = view
+        self.application = application
+
+    def pump(self, time_delta):
+        """Performs actions every frame
+
+        Args:
+            time_delta: Time that passed since the last call
+        """
+        #TODO: List exceptions that maybe raised here if any
+        Mode.pump(self, time_delta)
