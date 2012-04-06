@@ -23,10 +23,10 @@
 class NoSuchRegionError(Exception):
     """Gets thrown when the code tried to access a region that does not exits 
     on the map."""
-    
+
     def __init__(self, map_name, region_name):
         """Constructor
-        
+
         Args:
             map_name: The name of the map_name
             region_name: The name of the region_name
@@ -34,7 +34,7 @@ class NoSuchRegionError(Exception):
         Exception.__init__(self)
         self.map = map_name
         self.region = region_name
-    
+
     def __str__(self):
         """Returns a string representing the exception"""
         return ("The map '%s' has no region called '%s'." % 
@@ -55,6 +55,7 @@ class Map(object):
         self.__map = fife_map
         self.__name = name
         self.__regions = regions
+        self.__entities = {}
 
     @property
     def map(self):
@@ -70,14 +71,19 @@ class Map(object):
     def regions(self):
         """Returns the regions of the map"""
         return self.__regions
-        
+
+    @property
+    def entities(self):
+        """Returns the entities that are on this map"""
+        return self.__entities
+
     def is_in_region(self, location, region):
         """Checks if a given point is inside the given region
-        
+
         Args:
             location: A fife.DoublePoint instance
             region: The name of the region
-            
+
         Raises:
             NoSuchRegionError: The specified region does not exist.
         """
