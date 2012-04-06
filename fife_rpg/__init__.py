@@ -8,3 +8,4 @@ from fife_rpg.map import NoSuchRegionError
 from fife_rpg.mvc import ViewBase
 from fife_rpg.mvc import ControllerBase
 from fife_rpg.rpg_application import RPGApplication
+from fife_rpg.world import RPGWorld
