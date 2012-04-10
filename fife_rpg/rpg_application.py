@@ -181,11 +181,16 @@ class ApplicationListener(
         print "No tools set up yet"
 
 
-class RPGApplication(ApplicationBase,  FifeManager):
+class RPGApplication(ApplicationBase, FifeManager):
     """The main application.  It inherits fife.extensions.ApplicationBase."""
 
     def __init__(self, TDS):
-        ApplicationBase.__init__(self,  TDS)
+        """Constructor
+        
+        Args:
+            TDS: A fife_settings.Setting instance
+        """
+        ApplicationBase.__init__(self, TDS)
         FifeManager.__init__(self)
         self._listener = None
 
