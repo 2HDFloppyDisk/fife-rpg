@@ -11,6 +11,7 @@
 
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """This module contains the exceptions from fife-rpg.
 
 .. module:: exceptions
@@ -23,19 +24,21 @@
 class AlreadyRegisteredError(Exception):
     """Exception that gets raised when an object with the name is already
     registered"""
-    def __init__(self, name, type):
+    def __init__(self, name, obj_type):
         """Constructor
         
         Args:
             name: The name of the action that was already registered
-            type: The type of the object
+            obj_type: The obj_type of the object
         """
+        Exception.__init__(self)
         self.name = name
-        self.type = type
+        self.type = obj_type
     
     def __str__(self):
         """Returns the message of the Exception"""
-        return "An %s with the name '%s' already exists" % (self.type,  self.name)
+        return ("An %s with the name '%s' already exists" %
+                    (self.type,  self.name))
 
 class NoSuchCommandError(Exception):
     """Exception that gets raised when the command is not found"""
@@ -45,6 +48,7 @@ class NoSuchCommandError(Exception):
         Args:
             name: The name of the command that was being tried to execute
         """
+        Exception.__init__(self)
         self.name = name
     
     def __str__(self):

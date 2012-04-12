@@ -12,11 +12,16 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import deepcopy
+"""The Dialogue component and functions
 
-from base import Base
+.. module:: dialogue
+    :synopsis: The Dialogue component and functions
 
-class Dialogue(Base):
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+from fife_rpg.components.base import Base
+
+class Dialogue(Base): # pylint: disable-msg=R0904
     """Component that stores the dialogue"""
     
     def __init__(self):

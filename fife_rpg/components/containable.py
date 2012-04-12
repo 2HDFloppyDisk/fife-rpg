@@ -12,16 +12,23 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import deepcopy
+"""The Containable component and functions
 
-from base import Base
+.. module:: containable
+    :synopsis: The Containable component and functions
 
-class Containable(Base):
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
+from fife_rpg.components.base import Base
+
+class Containable(Base): # pylint: disable-msg=R0904
     """Component that allows an entity to be contained by Container entity."""
     
     def __init__(self):
         """Constructor"""
-        Base.__init__(self, bulk=int, weight=int, item_type=str, image=str, container=object, slot=int)
+        Base.__init__(self, bulk=int, weight=int, item_type=str, image=str,
+                            container=object, slot=int)
 
     @property
     def saveable_fields(self):

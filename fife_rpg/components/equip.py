@@ -12,9 +12,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from base import Base
+"""The Equip component and functions
 
-class Equip(Base):
+.. module:: equip
+    :synopsis: The Equip component and functions
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
+from fife_rpg.components.base import Base
+
+class Equip(Base): # pylint: disable-msg=R0904,R0902
     """
     Component that stores the equipment (what is being worn/wielded).
     """
@@ -45,6 +53,7 @@ class SlotInvalidError(Exception):
         Args
             The slot that was found to be invalid
         """
+        Exception.__init__(self)
         self.slot = slot
     
     def __str__(self):
@@ -69,6 +78,7 @@ class CannotBeEquippedInSlot(Exception):
             slot: The slot that was being tried to equip to
             equipable: The item that was being tried to equipped
         """
+        Exception.__init__(self)
         self.slot = slot
         self.equipable = equipable
         

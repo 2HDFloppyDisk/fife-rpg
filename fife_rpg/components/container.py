@@ -12,11 +12,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import deepcopy
+"""The Container component and functions
 
-from base import Base
+.. module:: container
+    :synopsis: The Container component and functions
 
-class Container(Base):
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
+from fife_rpg.components.base import Base
+
+class Container(Base): # pylint: disable-msg=R0904
     """
     Component that allows an entity to contain one or more child entities.
     """
@@ -42,6 +48,7 @@ class BulkLimitError(Exception):
             bulk: What the bulk would be
             max_bulk: What the max bulk is
         """
+        Exception.__init__(self)
         self.bulk = bulk
         self.max_bulk = max_bulk
     

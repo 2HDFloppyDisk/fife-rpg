@@ -12,10 +12,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from base import Base
+"""The Graphics component and functions
 
+.. module:: graphics
+    :synopsis: The Graphics component and functions
 
-class Graphics(Base):
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
+from fife_rpg.components.base import Base
+
+class Graphics(Base): # pylint: disable-msg=R0904
     """Component that stores the values for the graphical representation"""
     
     def __init__(self):

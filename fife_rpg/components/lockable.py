@@ -12,9 +12,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from base import Base
+"""The Lockable component and functions
 
-class Lockable(Base):
+.. module:: lockable
+    :synopsis: The Lockable component and functions
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
+from fife_rpg.components.base import Base
+
+class Lockable(Base): # pylint: disable-msg=R0904
     """Component that stores the data of a lock"""
 
     def __init__(self):
@@ -56,7 +64,7 @@ def unlock(lockable):
     """
     lockable.locked = False
 
-def open(lockable):
+def open(lockable): # pylint: disable-msg=W0622
     """Open the lockable, if its unlocked.
 
     Args:

@@ -12,9 +12,16 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""The base component and functions
+
+.. module:: base
+    :synopsis: The base component and functions
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
 from bGrease.component import Component
 
-class Base(Component):
+class Base(Component): # pylint: disable-msg=R0904
     """Base component for fife-rpg."""
     
     @property

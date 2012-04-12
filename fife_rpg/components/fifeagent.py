@@ -12,12 +12,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import deepcopy
+"""The FifeAgent component and functions
 
-from base import Base
+.. module:: fifeagent
+    :synopsis: The FifeAgent component and functions
 
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
 
-class FifeAgent(Base):
+from fife_rpg.components.base import Base
+
+class FifeAgent(Base): # pylint: disable-msg=R0904
     """Component that stores the values for a fife agent"""
     
     def __init__(self):
@@ -54,4 +59,4 @@ def approach(agent, target_or_location, action):
     if agent.behaviour: 
         agent.behaviour.approach(target_or_location, action)
         
-commands = {"approach":approach}
+COMMANDS = {"approach":approach}

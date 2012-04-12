@@ -12,9 +12,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from base import Base
+"""CharacterStatistics component and functions
 
-class CharacterStatistics(Base):
+.. module:: character_statistics
+    :synopsis: CharacterStatistics component and functions
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
+from fife_rpg.components.base import Base
+
+class CharacterStatistics(Base): # pylint: disable-msg=R0904
     """Component that defines character statistics."""
 
     def __init__(self):
@@ -22,6 +30,7 @@ class CharacterStatistics(Base):
         Base.__init__(self, gender=str, picture=str, age=int, origin=str, 
                       primary_stats=dict, secondary_stats=dict, traits=list, 
                       )
+
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""

@@ -12,10 +12,16 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from base import Base
-from bGrease.geometry import Vec2d
+"""The ChangeMap component and functions
 
-class ChangeMap(Base):
+.. module:: change_map
+    :synopsis: The ChangeMap component and functions
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+from fife_rpg.components.base import Base
+
+class ChangeMap(Base): # pylint: disable-msg=R0904
     """Component that allows an entity to be contained by Container entity."""
     
     def __init__(self):

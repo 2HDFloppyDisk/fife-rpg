@@ -12,11 +12,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import deepcopy
+"""The Equipable component and functions
 
-from base import Base
+.. module:: equipable
+    :synopsis: The Equipable component and functions
 
-class Equipable(Base):
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
+from fife_rpg.components.base import Base
+
+class Equipable(Base): # pylint: disable-msg=R0904
     """
     Component that stores the data for an entity that can be equipped.
     """

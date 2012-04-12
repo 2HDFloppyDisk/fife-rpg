@@ -30,7 +30,10 @@ class General(Entity):
         Args:
             world: The world the entity belongs to
             identifier: A unique identifier"""
+        Entity.__init__(self, world)
         self.general.identifier = identifier
-        
-    def getID(self):
+    
+    @property
+    def identifier(self):
+        """Returns the identifier of the entity"""
         return self.general.identifier

@@ -27,10 +27,10 @@ from copy import deepcopy
 
 from fife_rpg.exceptions import AlreadyRegisteredError, NoSuchCommandError
 
-_actions = {}
-_commands = {}
+_ACTIONS = {}
+_COMMANDS = {}
 
-class Action(object):
+class Action(object): # pylint: disable-msg=R0903
     """Base Action class, to define the structure"""
 
     def __init__(self, controller, commands = None):
@@ -52,15 +52,15 @@ class Action(object):
         #Check if there are special commands and execute them
         for command_data in self.commands:
             command = command_data["Command"]
-            if command in _commands:
-                _commands[command](command_data)
+            if command in _COMMANDS:
+                _COMMANDS[command](command_data)
             else:
                 raise NoSuchCommandError(command)
         self.executed = True
 
 def get_actions():
     """Returns the registered actions"""
-    return deepcopy(_actions)
+    return deepcopy(_ACTIONS)
 
 def register_action(action_name, action_class):
     """Registers an action
@@ -69,14 +69,14 @@ def register_action(action_name, action_class):
         action_name: The name of the action_class
         action_class: The class of the action
         """
-    if not action_name in _actions:
-        _actions[action_name] = action_class
+    if not action_name in _ACTIONS:
+        _ACTIONS[action_name] = action_class
     else:
         raise AlreadyRegisteredError(action_name,  "action")
 
 def get_commands():
     """Returns the registered commands"""
-    return deepcopy(_commands)
+    return deepcopy(_COMMANDS)
 
 def register_command(command_name, function):
     """Registers an command
@@ -85,7 +85,7 @@ def register_command(command_name, function):
         command_name: The name of the command_class
         function: The function to execute
         """
-    if not command_name in _commands:
-        _commands[command_name] = function
+    if not command_name in _COMMANDS:
+        _COMMANDS[command_name] = function
     else:
         raise AlreadyRegisteredError(command_name, "command")

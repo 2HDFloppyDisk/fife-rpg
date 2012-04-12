@@ -12,9 +12,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from base import Base
+"""The Usable component and functions
 
-class Usable(Base):
+.. module:: usable
+    :synopsis: The Usable component and functions
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
+from fife_rpg.components.base import Base
+
+class Usable(Base): # pylint: disable-msg=R0904
     """
     Component that stores data about the actions that an object can do.
     """

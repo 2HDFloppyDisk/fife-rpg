@@ -12,9 +12,16 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from base import Base
+"""The General component and functions
 
-class General(Base):
+.. module:: general
+    :synopsis: The General component and functions
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+from fife_rpg.components.base import Base
+
+class General(Base): # pylint: disable-msg=R0904
     """Component that stores the general values of an parpg entity"""
     
     def __init__(self):

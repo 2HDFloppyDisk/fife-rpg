@@ -26,7 +26,7 @@ import sys
 from fife_rpg.entities.general import General
 from fife_rpg.entities import action as ActionManager
 
-def createEntity(info, identifier, world, extra = None):
+def create_entity(info, identifier, world, extra = None):
     """Called when we need to get an actual object.
 
         Args:
