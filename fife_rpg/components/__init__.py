@@ -16,35 +16,24 @@
 
 """This contains the general components used by fife-rpg"""
 
+from copy import deepcopy
 
-from character_statistics import CharacterStatistics
-from containable import Containable
-from container import Container
-from description import Description
-from dialogue import Dialogue
-from fifeagent import FifeAgent
-from lockable import Lockable
-from usable import Usable
-from change_map import ChangeMap
-from equipable import Equipable
-from equip import Equip
-from general import General
-from behaviour import Behaviour
-from graphics import Graphics
+from fife_rpg.exceptions import AlreadyRegisteredError
 
-components = {
-        "general": General(),
-        "characterstats": CharacterStatistics(),
-        "containable": Containable(),
-        "container": Container(),
-        "description": Description(),
-        "dialogue": Dialogue(),
-        "fifeagent": FifeAgent(),
-        "lockable": Lockable(),
-        "usable": Usable(),
-        "change_map": ChangeMap(),
-        "equipable": Equipable(),
-        "equip": Equip(),
-        "behaviour": Behaviour(),
-        "graphics": Graphics(),
-    }
+_components = {} # pylint: disable-msg=C0103
+
+def get_components():
+    """Returns the registered components"""
+    return deepcopy(_components)
+
+def register_component(component_name, component_class):
+    """Registers an component
+    
+    Args:
+        component_name: The name of the component_class
+        component_class: The class of the component
+        """
+    if not component_name in _components:
+        _components[component_name] = component_class
+    else:
+        raise AlreadyRegisteredError(component_name,  "component")
