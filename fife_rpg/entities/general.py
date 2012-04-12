@@ -21,6 +21,11 @@
 
 from bGrease import Entity
 
+from fife_rpg import components
+from fife_rpg.components.general import General
+
+components.register_component("general", General())
+
 class General(Entity):
     """The Base for all fife-rpg entities"""
 
