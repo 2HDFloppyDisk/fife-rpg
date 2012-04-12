@@ -24,7 +24,7 @@
 
 from bGrease.grease_fife.world import World
 
-from fife_rpg.components import components
+from fife_rpg.components import get_components
 
 class RPGWorld(World):
     """The Base world for all rpgs.
@@ -42,6 +42,7 @@ class RPGWorld(World):
     def configure(self):
         """Configure the worlds components and systems"""
         World.configure(self)
+        components = get_components()
         for name, component in components.iteritems():
             setattr(self.components, name, component)
         #TODO: Add the generic systems once they are finished
