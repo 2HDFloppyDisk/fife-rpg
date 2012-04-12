@@ -8,5 +8,5 @@ setup(name='fife-rpg',
       author='Karsten Bock',
       author_email='KarstenBock@gmx.net',
       url='https://bitbucket.org/Beliar/fife-rpg',
-      packages=['fife_rpg', 'fife_rpg.components'],
+      packages=['fife_rpg', 'fife_rpg.components', 'fife_rpg.entities'],
      )
