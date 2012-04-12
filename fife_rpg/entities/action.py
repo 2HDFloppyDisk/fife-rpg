@@ -25,36 +25,7 @@ for example, in menus,
 """
 from copy import deepcopy
 
-class AlreadyRegisteredError(Exception):
-    """Exception that gets raised when an object with the name is already
-    registered"""
-    def __init__(self, name, type):
-        """Constructor
-        
-        Args:
-            name: The name of the action that was already registered
-            type: The type of the object
-        """
-        self.name = name
-        self.type = type
-    
-    def __str__(self):
-        """Returns the message of the Exception"""
-        return "An %s with the name '%s' already exists" % (self.type,  self.name)
-
-class NoSuchCommandError(Exception):
-    """Exception that gets raised when the command is not found"""
-    def __init__(self, name):
-        """Constructor
-        
-        Args:
-            name: The name of the command that was being tried to execute
-        """
-        self.name = name
-    
-    def __str__(self):
-        """Returns the message of the Exception"""
-        return "There is no '%s' command" % (self.name)
+from fife_rpg.exceptions import AlreadyRegisteredError, NoSuchCommandError
 
 _actions = {}
 _commands = {}
