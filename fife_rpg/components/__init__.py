@@ -14,8 +14,13 @@
 
 # This is based on the PARPG components package
 
-"""This contains the general components used by fife-rpg"""
+"""This contains the general components used by fife-rpg
 
+.. module:: components
+    :synopsis: The general components used by fife-rpg
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
 from copy import deepcopy
 
 from fife_rpg.exceptions import AlreadyRegisteredError

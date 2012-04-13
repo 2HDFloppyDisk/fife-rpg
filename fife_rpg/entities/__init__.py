@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -13,10 +14,10 @@
 
 #  This package is based on the entities package from PARPG
 
-"""This package contains the classes for the component system.
+"""This package contains the entities for the component system.
 
 .. module:: entities
-    :synopsis: Contains the classes for the component system.
+    :synopsis: Contains the entities for the component system.
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
