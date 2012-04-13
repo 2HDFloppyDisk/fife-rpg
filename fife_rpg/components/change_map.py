@@ -21,7 +21,7 @@
 """
 from fife_rpg.components.base import Base
 
-class ChangeMap(Base): # pylint: disable-msg=R0904
+class ChangeMap(Base):
     """Component that allows an entity to be contained by Container entity."""
     
     def __init__(self):

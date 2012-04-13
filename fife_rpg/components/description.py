@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class Description(Base): # pylint: disable-msg=R0904
+class Description(Base):
     """Component that stores the description of an object"""
     
     def __init__(self):

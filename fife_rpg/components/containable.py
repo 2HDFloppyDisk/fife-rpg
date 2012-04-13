@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class Containable(Base): # pylint: disable-msg=R0904
+class Containable(Base):
     """Component that allows an entity to be contained by Container entity."""
     
     def __init__(self):

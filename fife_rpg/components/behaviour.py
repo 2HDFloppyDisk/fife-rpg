@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class Behaviour(Base): # pylint: disable-msg=R0904
+class Behaviour(Base):
     """Component that stores the values of the behaviour"""
     
     def __init__(self):

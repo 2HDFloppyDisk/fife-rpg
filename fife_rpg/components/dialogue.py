@@ -21,7 +21,7 @@
 """
 from fife_rpg.components.base import Base
 
-class Dialogue(Base): # pylint: disable-msg=R0904
+class Dialogue(Base):
     """Component that stores the dialogue"""
     
     def __init__(self):

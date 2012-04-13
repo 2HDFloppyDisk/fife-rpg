@@ -94,7 +94,7 @@ class ApplicationListener(
 
         self.quit = False
 
-    def keyPressed(self, event): # pylint: disable-msg=C0103,W0221
+    def keyPressed(self, event):# pylint: disable-msg=C0103,W0221
         """Processes any non game related keyboard input.
 
         Args:
@@ -117,7 +117,7 @@ class ApplicationListener(
                 time.strftime("%Y%m%d_%H%M%S", time.localtime()) + ".png")
             event.consume()
 
-    def keyReleased(self, event): # pylint: disable-msg=C0103,W0221
+    def keyReleased(self, event):# pylint: disable-msg=C0103,W0221
         """Gets called when a key is released
 
         Args:
@@ -125,7 +125,7 @@ class ApplicationListener(
         """
         pass
 
-    def onCommand(self, command): # pylint: disable-msg=C0103,W0221
+    def onCommand(self, command):# pylint: disable-msg=C0103,W0221
         """Process commands
 
         Args:
@@ -136,7 +136,7 @@ class ApplicationListener(
         if self.quit:
             command.consume()
 
-    def onConsoleCommand(self, command): # pylint: disable-msg=C0103,W0221
+    def onConsoleCommand(self, command):# pylint: disable-msg=C0103,W0221
         """Process console commands
 
         Args:
@@ -176,7 +176,7 @@ class ApplicationListener(
 
         return result
 
-    def onToolsClick(self): # pylint: disable-msg=C0103,W0221
+    def onToolsClick(self):# pylint: disable-msg=C0103,W0221
         """Gets called when the the 'tool' button on the console is clicked"""
         print "No tools set up yet"
 
@@ -214,7 +214,7 @@ class RPGApplication(ApplicationBase, FifeManager):
         """
         return self._log
 
-    def createListener(self): # pylint: disable-msg=C0103
+    def createListener(self):# pylint: disable-msg=C0103
         """Creates the listener for the application."""
         self._listener = ApplicationListener(self.engine,  self)
         return self._listener

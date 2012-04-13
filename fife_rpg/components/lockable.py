@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class Lockable(Base): # pylint: disable-msg=R0904
+class Lockable(Base):
     """Component that stores the data of a lock"""
 
     def __init__(self):
@@ -64,7 +64,7 @@ def unlock(lockable):
     """
     lockable.locked = False
 
-def open(lockable): # pylint: disable-msg=W0622
+def open(lockable):# pylint: disable-msg=W0622
     """Open the lockable, if its unlocked.
 
     Args:

@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class FifeAgent(Base): # pylint: disable-msg=R0904
+class FifeAgent(Base):
     """Component that stores the values for a fife agent"""
     
     def __init__(self):

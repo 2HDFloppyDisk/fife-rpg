@@ -21,7 +21,7 @@
 """
 from bGrease.component import Component
 
-class Base(Component): # pylint: disable-msg=R0904
+class Base(Component):
     """Base component for fife-rpg."""
     
     @property

@@ -21,7 +21,7 @@
 """
 from fife_rpg.components.base import Base
 
-class General(Base): # pylint: disable-msg=R0904
+class General(Base):
     """Component that stores the general values of an parpg entity"""
     
     def __init__(self):

@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class Graphics(Base): # pylint: disable-msg=R0904
+class Graphics(Base):
     """Component that stores the values for the graphical representation"""
     
     def __init__(self):

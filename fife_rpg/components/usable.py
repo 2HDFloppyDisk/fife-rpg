@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class Usable(Base): # pylint: disable-msg=R0904
+class Usable(Base):
     """
     Component that stores data about the actions that an object can do.
     """

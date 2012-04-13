@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class Equipable(Base): # pylint: disable-msg=R0904
+class Equipable(Base):
     """
     Component that stores the data for an entity that can be equipped.
     """

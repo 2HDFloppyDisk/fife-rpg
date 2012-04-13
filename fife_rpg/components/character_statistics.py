@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class CharacterStatistics(Base): # pylint: disable-msg=R0904
+class CharacterStatistics(Base):
     """Component that defines character statistics."""
 
     def __init__(self):

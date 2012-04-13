@@ -31,7 +31,7 @@ from fife_rpg.exceptions import AlreadyRegisteredError, NoSuchCommandError
 _ACTIONS = {}
 _COMMANDS = {}
 
-class Action(object): # pylint: disable-msg=R0903
+class Action(object):
     """Base Action class, to define the structure"""
 
     def __init__(self, controller, commands = None):

@@ -24,7 +24,7 @@
 
 from bGrease.grease_fife.mode import Mode
 
-class ViewBase(object):  # pylint: disable-msg=R0903
+class ViewBase(object):
     """Base class for views"""
 
     def __init__(self, engine, controller=None):

@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class Equip(Base): # pylint: disable-msg=R0904,R0902
+class Equip(Base):
     """
     Component that stores the equipment (what is being worn/wielded).
     """

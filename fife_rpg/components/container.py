@@ -22,7 +22,7 @@
 
 from fife_rpg.components.base import Base
 
-class Container(Base): # pylint: disable-msg=R0904
+class Container(Base):
     """
     Component that allows an entity to contain one or more child entities.
     """
