@@ -26,7 +26,9 @@ class Equip(Base):
     """
     Component that stores the equipment (what is being worn/wielded).
     """
-    
+
+    __registered_as = ""
+
     def __init__(self):
         Base.__init__(self, head=object, neck=object, body=object, belt=object, 
                       leg=object, feet=object, l_arm=object, r_arm=object)
@@ -43,6 +45,21 @@ class Equip(Base):
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
         return []
+
+    @classmethod
+    def register(cls, name="equip"):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+        if (super(Equip, cls).register(name)):
+            cls.__registered_as = name
+            return True
+        return False
 
 class SlotInvalidError(Exception):
     """Error that gets raised when the slot is invalid."""

@@ -20,6 +20,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 from bGrease.component import Component
+from fife_rpg import components
 
 class Base(Component):
     """Base component for fife-rpg."""
@@ -28,3 +29,20 @@ class Base(Component):
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
         return self.fields.keys()
+
+    @classmethod
+    def register(cls, name):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+        try:
+            components.register_component(name, cls())
+            return True
+        except components.AlreadyRegisteredError as error:
+            print error
+            return False

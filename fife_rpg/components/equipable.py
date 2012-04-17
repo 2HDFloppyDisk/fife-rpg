@@ -36,3 +36,18 @@ class Equipable(Base):
         fields = self.fields.keys()
         fields.remove("wearer")
         return fields
+
+    @classmethod
+    def register(cls, name="equipable"):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+        if (super(Equipable, cls).register(name)):
+            cls.__registered_as = name
+            return True
+        return False

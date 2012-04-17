@@ -24,7 +24,24 @@ from fife_rpg.components.base import Base
 
 class Graphics(Base):
     """Component that stores the values for the graphical representation"""
-    
+
+    __registered_as = ""
+
     def __init__(self):
         """Constructor"""
         Base.__init__(self, gfx=str)
+
+    @classmethod
+    def register(cls, name="graphics"):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+        if (super(Graphics, cls).register(name)):
+            cls.__registered_as = name
+            return True
+        return False

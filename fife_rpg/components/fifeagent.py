@@ -24,7 +24,9 @@ from fife_rpg.components.base import Base
 
 class FifeAgent(Base):
     """Component that stores the values for a fife agent"""
-    
+
+    __registered_as = ""
+
     def __init__(self):
         """Constructor"""
         Base.__init__(self, layer=object, behaviour=object)
@@ -37,7 +39,21 @@ class FifeAgent(Base):
         fields.remove("behaviour")
         return fields
 
-        
+    @classmethod
+    def register(cls, name="fifeagent"):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+        if (super(FifeAgent, cls).register(name)):
+            cls.__registered_as = name
+            return True
+        return False
+
 def setup_behaviour(agent):
     """Attach the behaviour to the layer
     

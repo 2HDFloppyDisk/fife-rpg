@@ -26,6 +26,23 @@ class Usable(Base):
     """
     Component that stores data about the actions that an object can do.
     """
-    
+
+    __registered_as = ""
+
     def __init__(self):
         Base.__init__(self, actions=dict)
+
+    @classmethod
+    def register(cls, name="usable"):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+        if (super(Usable, cls).register(name)):
+            cls.__registered_as = name
+            return True
+        return False

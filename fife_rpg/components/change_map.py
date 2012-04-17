@@ -23,7 +23,25 @@ from fife_rpg.components.base import Base
 
 class ChangeMap(Base):
     """Component that allows an entity to be contained by Container entity."""
-    
+
+    __registered_as = ""
+
     def __init__(self):
         """Constructor"""
         Base.__init__(self, target_map=str, target_position=list)
+
+    @classmethod
+    def register(cls, name="change_map"):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+
+        if (super(ChangeMap, cls).register(name)):
+            cls.__registered_as = name
+            return True
+        return False

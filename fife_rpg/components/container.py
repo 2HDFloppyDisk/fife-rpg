@@ -26,7 +26,9 @@ class Container(Base):
     """
     Component that allows an entity to contain one or more child entities.
     """
-    
+
+    __registered_as = ""
+
     def __init__(self):
         Base.__init__(self, children=list, max_bulk=int)
 
@@ -36,6 +38,22 @@ class Container(Base):
         fields = self.fields.keys()
         fields.remove("children")
         return fields
+
+    @classmethod
+    def register(cls, name="container"):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+
+        if (super(Container, cls).register(name)):
+            cls.__registered_as = name
+            return True
+        return False
 
 class BulkLimitError(Exception):
     """Error that gets raised when the item would exceed the 

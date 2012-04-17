@@ -24,7 +24,24 @@ from fife_rpg.components.base import Base
 
 class Description(Base):
     """Component that stores the description of an object"""
-    
+
+    __registered_as = ""
+
     def __init__(self):
         """Constructor"""
         Base.__init__(self, view_name=str, real_name=str, desc=str)
+
+    @classmethod
+    def register(cls, name="description"):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+        if (super(Description, cls).register(name)):
+            cls.__registered_as = name
+            return True
+        return False
