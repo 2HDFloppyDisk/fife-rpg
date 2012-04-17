@@ -59,7 +59,8 @@ class Action(object):
                 raise NoSuchCommandError(command)
         self.executed = True
 
-    def check_entity(self, entity):
+    @classmethod
+    def check_entity(cls, entity): #pylint: disable-msg=W0613
         """Checks whether the action can be performed on the given entity
         
         Args:
