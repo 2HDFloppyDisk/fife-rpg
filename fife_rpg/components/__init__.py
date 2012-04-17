@@ -24,6 +24,7 @@
 from copy import deepcopy
 
 from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.components import action as ActionManager
 
 _components = {} # pylint: disable-msg=C0103
 
