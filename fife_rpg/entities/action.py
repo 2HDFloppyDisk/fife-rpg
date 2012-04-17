@@ -59,6 +59,17 @@ class Action(object):
                 raise NoSuchCommandError(command)
         self.executed = True
 
+    def check_entity(self, entity):
+        """Checks whether the action can be performed on the given entity
+        
+        Args:
+            entity: The entity to ceck. A bGrease.Entity instance.
+
+        Returns: True if the action can be performed on that entity. False 
+        otherwise
+        """
+        return False
+
 def get_actions():
     """Returns the registered actions"""
     return deepcopy(_ACTIONS)
