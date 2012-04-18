@@ -12,8 +12,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#  This package is based on the entities package from PARPG
-
 """This module contains functions for managing components
 
 .. module:: component_manager
@@ -32,14 +30,14 @@ def get_components():
     """Returns the registered components"""
     return deepcopy(_COMPONENTS)
 
-def register_component(component_name, component_class):
+def register_component(component_name, component_object):
     """Registers an component
     
     Args:
-        component_name: The name of the component_class
-        component_class: The class of the component
-        """
+        component_name: The name of the component_object
+        component_object: A bGrease component object
+    """
     if not component_name in _COMPONENTS:
-        _COMPONENTS[component_name] = component_class
+        _COMPONENTS[component_name] = component_object
     else:
         raise AlreadyRegisteredError(component_name,  "component")
