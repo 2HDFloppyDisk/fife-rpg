@@ -91,6 +91,11 @@ class Map(object):
         """Returns the agent layer of the map"""
         return self.__agent_layer
 
+    @property
+    def is_active(self):
+        """Returns wheter the map is active or not"""
+        return self.camera.isEnabled()
+
     def is_in_region(self, location, region):
         """Checks if a given point is inside the given region
 
@@ -105,3 +110,11 @@ class Map(object):
             raise NoSuchRegionError(self.name,  region)
         else:
             return self.regions[region].contains(location)
+
+    def activate(self):
+        """Activates the map"""
+        self.camera.setEnabled(True)
+
+    def deactivate(self):
+        """Deactivates the map"""
+        self.camera.setEnabled(False)
