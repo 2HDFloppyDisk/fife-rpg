@@ -20,7 +20,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 from bGrease.component import Component
-from fife_rpg import components
+from fife_rpg.components import ComponentManager
 
 class Base(Component):
     """Base component for fife-rpg."""
@@ -41,8 +41,8 @@ class Base(Component):
             True if the component was registered, False if not.
         """
         try:
-            components.register_component(name, cls())
+            ComponentManager.register_component(name, cls())
             return True
-        except components.AlreadyRegisteredError as error:
+        except ComponentManager.AlreadyRegisteredError as error:
             print error
             return False

@@ -21,25 +21,5 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
-from copy import deepcopy
-
-from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.components import action as ActionManager
-
-_COMPONENTS = {}
-
-def get_components():
-    """Returns the registered components"""
-    return deepcopy(_COMPONENTS)
-
-def register_component(component_name, component_class):
-    """Registers an component
-    
-    Args:
-        component_name: The name of the component_class
-        component_class: The class of the component
-        """
-    if not component_name in _COMPONENTS:
-        _COMPONENTS[component_name] = component_class
-    else:
-        raise AlreadyRegisteredError(component_name,  "component")
+from fife_rpg.components import component_manager as ComponentManager
