@@ -25,7 +25,7 @@ fife_rpg map.
 """
 
 import os
-from copy import deepcopy
+from copy import copy
 
 from fife import fife
 from fife.extensions.loaders import loadMapFile
@@ -125,7 +125,7 @@ class GameSceneController(ControllerBase, RPGWorld):
     @property
     def maps(self):
         """Returns a copy of the maps dictionary"""
-        return deepcopy(self.__maps)
+        return copy(self.__maps)
 
     def add_map(self, name, filename_or_map):
         """Adds a map to the maps dictionary.
