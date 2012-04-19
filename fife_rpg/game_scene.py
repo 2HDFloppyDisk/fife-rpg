@@ -29,6 +29,7 @@ from copy import deepcopy
 
 from fife import fife
 from fife.extensions.loaders import loadMapFile
+import yaml
 
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg import Map
@@ -131,7 +132,8 @@ class GameSceneController(ControllerBase, RPGWorld):
         
         Args:
             name: The name of the map
-            filename_or_map: The path to the map or a Map instance.
+            filename_or_map: The file name map, without the extension,
+            or a Map instance.
         """
         if not name in self.__maps:
             self.__maps[name] = filename_or_map
@@ -171,13 +173,13 @@ class GameSceneController(ControllerBase, RPGWorld):
                 self.__maps[name] = Map(fife_map, name, camera, agent_layer,
                                         regions)
         else:
-            LookupError("The map with the name '%s' cannot be found" %(name))
+            raise LookupError("The map with the name '%s' cannot be found" %(name))
                 
     def switch_map(self, name):
         '''Switches to the given map.
 
         Args:
-            filename: The name of the map
+            name: The name of the map
         '''
         if name in self.__maps:
             self.load_map(name)
@@ -186,6 +188,15 @@ class GameSceneController(ControllerBase, RPGWorld):
             self.__current_map = self.maps[name]
             self.__current_map.activate()
         else:
-            LookupError("The map with the name '%s' cannot be found" 
+            raise LookupError("The map with the name '%s' cannot be found" 
                         %(name))
 
+    def load_maps(self):
+        """Load the names of the available maps from a map file."""
+        self.__maps = {}
+        maps_path = self.application.settings.get(
+            "fife-rpg", "MapsPath", "maps")
+        maps_file = file(os.path.join(maps_path, "maps.yaml"), "r")
+        maps_doc = yaml.load(maps_file)
+        for name, filename in maps_doc["Maps"].iteritems():
+            self.add_map(name, filename)
