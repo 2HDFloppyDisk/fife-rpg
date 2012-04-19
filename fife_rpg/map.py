@@ -63,16 +63,6 @@ class Map(object):
         self.__camera = fife_map.getCamera(camera)
         self.__agent_layer = fife_map.getLayer(agent_layer)
 
-    def __deepcopy__(self, memo):
-        """Handles deepcopying of the Map"""        
-        new_map = Map(self.__map, self.__name, self.__camera.getId(),
-                      self.__agent_layer.getId(), self.regions)
-        new_map.__dict__.update(self.__dict__)
-        self.__name = deepcopy(self.__name, memo)
-        self.__regions = deepcopy(self.__regions, memo)
-        self.__entities = deepcopy(self.__entities, memo)
-        return new_map
-
     @property
     def map(self):
         """Returns the fife.Map"""
