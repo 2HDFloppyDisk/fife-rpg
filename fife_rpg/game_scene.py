@@ -29,6 +29,8 @@ from copy import copy
 
 from fife import fife
 from fife.extensions.loaders import loadMapFile
+from fife.extensions.serializers.xmlobject import XMLObjectLoader
+from fife.extensions.serializers.xml_loader_tools import loadImportDirRec
 import yaml
 
 from fife_rpg.exceptions import AlreadyRegisteredError
@@ -168,12 +170,13 @@ class GameSceneController(ControllerBase, RPGWorld):
                                             'lights': use_lighting})
                 fife_map.createLayer(agent_layer, grid_type)
                 #TODO: (Beliar) Add loading of additional objects, like regions
-                #and entities
+                #TODO: and entities
                 regions = {}
                 self.__maps[name] = Map(fife_map, name, camera, agent_layer,
                                         regions)
         else:
-            raise LookupError("The map with the name '%s' cannot be found" %(name))
+            raise LookupError("The map with the name '%s' cannot be found"
+                              %(name))
                 
     def switch_map(self, name):
         '''Switches to the given map.
@@ -201,3 +204,17 @@ class GameSceneController(ControllerBase, RPGWorld):
         maps_doc = yaml.load(maps_file)
         for name, filename in maps_doc["Maps"].iteritems():
             self.add_map(name, filename)
+
+    def import_agent_objects(self, object_path=None):
+        """Import the objects used by agents from the given path
+
+        Args:
+            object_path: The root path in which the objects are.
+            If set to None it the path will be read from the settings
+        """
+        if not object_path:
+            object_path = self.application.settings.get(
+                "fife-rpg", "AgentObjectsPath", "objects/agents")
+        engine = self.application.engine
+        obj_loader = XMLObjectLoader(engine)
+        loadImportDirRec(obj_loader, object_path, engine, True)
