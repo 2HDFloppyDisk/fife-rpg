@@ -196,7 +196,8 @@ class GameSceneController(ControllerBase, RPGWorld):
         self.__maps = {}
         maps_path = self.application.settings.get(
             "fife-rpg", "MapsPath", "maps")
-        maps_file = file(os.path.join(maps_path, "maps.yaml"), "r")
+        vfs = self.application.engine.getVFS()
+        maps_file = vfs.open(os.path.join(maps_path, "maps.yaml"))
         maps_doc = yaml.load(maps_file)
         for name, filename in maps_doc["Maps"].iteritems():
             self.add_map(name, filename)
