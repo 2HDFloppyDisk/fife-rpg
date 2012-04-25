@@ -20,8 +20,6 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from copy import deepcopy
-
 class NoSuchRegionError(Exception):
     """Gets thrown when the code tried to access a region that does not exits 
     on the map."""

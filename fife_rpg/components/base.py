@@ -25,7 +25,7 @@ from fife_rpg.components import ComponentManager
 class ClassProperty(property):
     """Class to make class properties"""
     def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)()
+        return self.fget.__get__(None, owner)() # pylint: disable=E1101
 
 class Base(Component):
     """Base component for fife-rpg."""
