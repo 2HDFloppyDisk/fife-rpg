@@ -12,3 +12,4 @@ from fife_rpg.world import RPGWorld
 from fife_rpg.game_scene import GameSceneView
 from fife_rpg.game_scene import GameSceneController
 from fife_rpg.game_scene import GameSceneListener
+from fife_rpg import behaviours as BehaviourManager
