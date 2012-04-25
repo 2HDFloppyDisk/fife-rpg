@@ -25,8 +25,6 @@ from fife_rpg.components.base import Base
 class CharacterStatistics(Base):
     """Component that defines character statistics."""
 
-    __registered_as = ""
-
     def __init__(self):
         """Constructor"""
         Base.__init__(self, gender=str, picture=str, age=int, origin=str, 
@@ -52,10 +50,7 @@ class CharacterStatistics(Base):
             True if the component was registered, False if not.
         """
 
-        if (super(CharacterStatistics, cls).register(name)):
-            cls.__registered_as = name
-            return True
-        return False
+        return (super(CharacterStatistics, cls).register(name))
 
 def get_statistic(stats, name):
     """Gets the statistic by its name

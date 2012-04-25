@@ -27,8 +27,6 @@ class Usable(Base):
     Component that stores data about the actions that an object can do.
     """
 
-    __registered_as = ""
-
     def __init__(self):
         Base.__init__(self, actions=dict)
 
@@ -42,7 +40,4 @@ class Usable(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        if (super(Usable, cls).register(name)):
-            cls.__registered_as = name
-            return True
-        return False
+        return (super(Usable, cls).register(name))

@@ -24,8 +24,6 @@ from fife_rpg.components.base import Base
 class General(Base):
     """Component that stores the general values of an parpg entity"""
 
-    __registered_as = ""
-
     def __init__(self):
         """Constructor"""
         Base.__init__(self, identifier=str)
@@ -40,7 +38,4 @@ class General(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        if (super(General, cls).register(name)):
-            cls.__registered_as = name
-            return True
-        return False
+        return (super(General, cls).register(name))

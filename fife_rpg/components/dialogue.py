@@ -24,8 +24,6 @@ from fife_rpg.components.base import Base
 class Dialogue(Base):
     """Component that stores the dialogue"""
 
-    __registered_as = ""
-
     def __init__(self):
         """Constructor"""
         Base.__init__(self, dialogue=object)
@@ -47,7 +45,4 @@ class Dialogue(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        if (super(Dialogue, cls).register(name)):
-            cls.__registered_as = name
-            return True
-        return False
+        return (super(Dialogue, cls).register(name))

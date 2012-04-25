@@ -25,8 +25,6 @@ from fife_rpg.components.base import Base
 class Behaviour(Base):
     """Component that stores the values of the behaviour"""
 
-    __registered_as = ""
-
     def __init__(self):
         """Constructor"""
         Base.__init__(self, behaviour_type=str)
@@ -43,7 +41,5 @@ class Behaviour(Base):
             True if the component was registered, False if not.
         """
 
-        if (super(Behaviour, cls).register(name)):
-            cls.__registered_as = name
-            return True
-        return False
+        return (super(Behaviour, cls).register(name))
+

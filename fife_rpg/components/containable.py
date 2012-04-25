@@ -25,8 +25,6 @@ from fife_rpg.components.base import Base
 class Containable(Base):
     """Component that allows an entity to be contained by Container entity."""
 
-    __registered_as = ""
-
     def __init__(self):
         """Constructor"""
         Base.__init__(self, bulk=int, weight=int, item_type=str, image=str,
@@ -50,7 +48,4 @@ class Containable(Base):
             True if the component was registered, False if not.
         """
 
-        if (super(Containable, cls).register(name)):
-            cls.__registered_as = name
-            return True
-        return False
+        return (super(Containable, cls).register(name))

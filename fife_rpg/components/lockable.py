@@ -25,8 +25,6 @@ from fife_rpg.components.base import Base
 class Lockable(Base):
     """Component that stores the data of a lock"""
 
-    __registered_as = ""
-
     def __init__(self):
         """Constructor"""
         Base.__init__(self, closed=bool, locked=bool)
@@ -41,10 +39,7 @@ class Lockable(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        if (super(Lockable, cls).register(name)):
-            cls.__registered_as = name
-            return True
-        return False
+        return (super(Lockable, cls).register(name))
 
 class LockedError(Exception):
     """Error that is raised when the lock is locked"""

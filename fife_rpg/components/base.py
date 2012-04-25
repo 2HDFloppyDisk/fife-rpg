@@ -22,9 +22,22 @@
 from bGrease.component import Component
 from fife_rpg.components import ComponentManager
 
+class ClassProperty(property):
+    """Class to make class properties"""
+    def __get__(self, cls, owner):
+        return self.fget.__get__(None, owner)()
+
 class Base(Component):
     """Base component for fife-rpg."""
-    
+
+    __registered_as = None
+
+    @ClassProperty
+    @classmethod
+    def registered_as(cls):
+        """Returns the value of registered_as"""
+        return cls.__registered_as
+
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
@@ -42,6 +55,7 @@ class Base(Component):
         """
         try:
             ComponentManager.register_component(name, cls())
+            cls.__registered_as = name
             return True
         except ComponentManager.AlreadyRegisteredError as error:
             print error

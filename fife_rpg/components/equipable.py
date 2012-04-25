@@ -26,7 +26,7 @@ class Equipable(Base):
     """
     Component that stores the data for an entity that can be equipped.
     """
-    
+
     def __init__(self):
         Base.__init__(self, possible_slots=list, wearer=object, in_slot=str)
         
@@ -47,7 +47,4 @@ class Equipable(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        if (super(Equipable, cls).register(name)):
-            cls.__registered_as = name
-            return True
-        return False
+        return (super(Equipable, cls).register(name))
