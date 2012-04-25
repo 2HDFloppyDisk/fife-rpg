@@ -21,9 +21,12 @@
 """
 
 from fife_rpg.components.base import Base
+from fife_rpg.components.fifeagent import FifeAgent
 
 class Behaviour(Base):
     """Component that stores the values of the behaviour"""
+
+    __dependencies = [FifeAgent]
 
     def __init__(self):
         """Constructor"""

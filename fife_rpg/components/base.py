@@ -31,6 +31,7 @@ class Base(Component):
     """Base component for fife-rpg."""
 
     __registered_as = None
+    __dependencies = []
 
     @ClassProperty
     @classmethod
@@ -56,6 +57,9 @@ class Base(Component):
         try:
             ComponentManager.register_component(name, cls())
             cls.__registered_as = name
+            for dependency in cls.__dependencies:
+                if not dependency.registered_as:
+                    dependency.register()
             return True
         except ComponentManager.AlreadyRegisteredError as error:
             print error

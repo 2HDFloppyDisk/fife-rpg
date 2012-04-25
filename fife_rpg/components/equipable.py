@@ -21,11 +21,14 @@
 """
 
 from fife_rpg.components.base import Base
+from fife_rpg.components.containable import Containable
 
 class Equipable(Base):
     """
     Component that stores the data for an entity that can be equipped.
     """
+
+    __dependencies = [Containable]
 
     def __init__(self):
         Base.__init__(self, possible_slots=list, wearer=object, in_slot=str)
