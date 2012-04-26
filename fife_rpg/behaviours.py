@@ -141,8 +141,8 @@ class Behaviour (fife.InstanceActionListener):
 
 _BEHAVIOURS = {}
 
-def add_behaviour(name, behaviour):
-    """Adds a behaviour to the behaviour manager
+def register_behaviour(name, behaviour):
+    """Registers a behaviour
 
     Args:
         name: The name of the behaviour
