@@ -35,6 +35,8 @@ _AGENT_STATE_WANDER, _AGENT_STATE_TALK)= xrange(6)
 class Behaviour (fife.InstanceActionListener):
     """Fife agent listener"""
 
+    __registered_as = None
+
     def __init__(self):
         fife.InstanceActionListener.__init__(self)
         self.agent = None
@@ -138,6 +140,24 @@ class Behaviour (fife.InstanceActionListener):
     def clear_animations(self):
         """Remove all actions from the queue"""
         self.animation_queue.clear()
+
+    @classmethod
+    def register(cls, name):
+        """Registers the class as a behaviour
+
+        Args:
+            name: The name under which the class should be registered
+
+        Returns:
+            True if the behaviour was registered, False if not.
+        """
+        try:
+            register_behaviour(name, cls())
+            cls.__registered_as = name
+            return True
+        except AlreadyRegisteredError as error:
+            print error
+            return False
 
 _BEHAVIOURS = {}
 
