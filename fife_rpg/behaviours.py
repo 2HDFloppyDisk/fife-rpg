@@ -142,7 +142,7 @@ class Behaviour (fife.InstanceActionListener):
         self.animation_queue.clear()
 
     @classmethod
-    def register(cls, name):
+    def register(cls, name="Base"):
         """Registers the class as a behaviour
 
         Args:
@@ -179,3 +179,9 @@ def register_behaviour(name, behaviour):
 def get_behaviours():
     """Returns a copy of the behaviour dictionary"""
     return copy(_BEHAVIOURS)
+
+def get_behaviour(name):
+    """Returns the behaviour with the given name"""
+    if name in _BEHAVIOURS:
+        return _BEHAVIOURS[name]
+    return None
