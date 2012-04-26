@@ -20,7 +20,10 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 from bGrease.component import Component
+
 from fife_rpg.components import ComponentManager
+from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.exceptions import NotRegisteredError
 
 class ClassProperty(property):
     """Class to make class properties"""
@@ -61,6 +64,25 @@ class Base(Component):
                 if not dependency.registered_as:
                     dependency.register()
             return True
-        except ComponentManager.AlreadyRegisteredError as error:
+        except AlreadyRegisteredError as error:
             print error
             return False
+
+    @classmethod
+    def setup(cls, data, entity):
+        """Sets up the entity dictionary by reading a data dictionary
+
+        Args:
+            data: A dictionary containg the component data
+            entity: A dictionary that will be used to create the Entity
+
+        Returns: The modified entity dictionary
+
+        Raises:
+            NotRegisteredError if the class is not registered
+        """
+        if not cls.registered_as:
+            raise NotRegisteredError("Component")
+        if not cls.registered_as in entity:
+            entity[cls.registered_as] = {}
+        return entity
