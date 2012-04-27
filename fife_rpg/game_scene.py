@@ -118,6 +118,7 @@ class GameSceneController(ControllerBase, RPGWorld):
         RPGWorld.__init__(self, self.engine)
         self.__maps = {}
         self.__current_map = None
+        self.object_db = {}
 
     @property
     def current_map(self):
@@ -218,3 +219,19 @@ class GameSceneController(ControllerBase, RPGWorld):
         engine = self.application.engine
         obj_loader = XMLObjectLoader(engine)
         loadImportDirRec(obj_loader, object_path, engine, True)
+
+    def read_object_db(self, db_filename=None):
+        """Reads the Object Information Database from a file
+
+        Args:
+            db_filename: The yaml file to read from. Overwrites the
+            ObjectDBFile setting if not set to None.
+        """
+        if not db_filename:
+            db_filename = self.application.settings.get(
+                "fife-rpg", "ObjectDBFile", "objects/object_database.yaml")
+        vfs = self.application.engine.getVFS()
+        database_file = vfs.VFS.open(db_filename)
+        database = yaml.load_all(database_file)
+        for object_info in database:
+            self.object_db.update(object_info)
