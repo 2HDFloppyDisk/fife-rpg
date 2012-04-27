@@ -235,3 +235,24 @@ class GameSceneController(ControllerBase, RPGWorld):
         database = yaml.load_all(database_file)
         for object_info in database:
             self.object_db.update(object_info)
+
+    def update_from_template(self, entity_data, template_name):
+        """Copies missing data from a template into an entity dictionary.
+
+        Args:
+            entity_data: The dictionary in which the data should be put.
+            template_name: The name of the template to use
+
+        Returns:
+            The modified entity dictionary
+        """
+        if self.object_db.has_key(template_name):
+            template_data = copy(self.object_db[template_name])
+            for key in template_data.keys():
+                if entity_data.has_key(key):                    
+                    tmp_attributes = template_data[key]
+                    tmp_attributes.update(entity_data[key])
+                    entity_data[key] = tmp_attributes
+                else:
+                    entity_data[key] = template_data[key]
+        return entity_data
