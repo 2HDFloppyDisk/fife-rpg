@@ -29,16 +29,19 @@ class ManagerTest(unittest.TestCase):
     """Test the action manager"""
 
     def setUp(self):
-        self.reg_func = ActionManager.register_action
-        self.reg_params = ("Test", TestAction)
+        self.reg_action_func = ActionManager.register_action
+        self.reg_action_params = ("Test", TestAction)
+        self.reg_command_func = ActionManager.register_command
+        self.reg_command_params = ("Test", None)
 
     def tearDown(self):
         ActionManager.clear_actions()
+        ActionManager.clear_commands()
 
     def test_actions_dictionary(self):
         test_actions = {}
         self.assertEqual(ActionManager.get_actions(), test_actions)
-        self.reg_func(*self.reg_params)
+        self.reg_action_func(*self.reg_action_params)
         self.assertNotEqual(ActionManager.get_actions(), test_actions)
         test_actions["Test"] = TestAction
         self.assertEqual(ActionManager.get_actions(), test_actions)
@@ -46,11 +49,25 @@ class ManagerTest(unittest.TestCase):
         test_actions = {}
         self.assertEqual(ActionManager.get_actions(), test_actions)
 
-    def test_register_action_not_present(self):
-        self.reg_func(*self.reg_params)
-
-    def test_register_action_already_present(self):
-        self.reg_func(*self.reg_params)
+    def test_register_action(self):
+        self.reg_action_func(*self.reg_action_params)
         self.assertRaises(ActionManager.AlreadyRegisteredError,
-                          self.reg_func,
-                          *self.reg_params)
+                          self.reg_action_func,
+                          *self.reg_action_params)
+
+    def test_commands_dictionary(self):
+        test_commands = {}
+        self.assertEqual(ActionManager.get_commands(), test_commands)
+        self.reg_command_func(*self.reg_command_params)
+        self.assertNotEqual(ActionManager.get_commands(), test_commands)
+        test_commands["Test"] = None
+        self.assertEqual(ActionManager.get_commands(), test_commands)
+        ActionManager.clear_commands()
+        test_commands = {}
+        self.assertEqual(ActionManager.get_commands(), test_commands)
+
+    def test_register_command(self):
+        self.reg_command_func(*self.reg_command_params)
+        self.assertRaises(ActionManager.AlreadyRegisteredError,
+                              self.reg_command_func,
+                              *self.reg_command_params)
