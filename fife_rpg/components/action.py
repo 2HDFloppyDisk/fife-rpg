@@ -87,6 +87,10 @@ def register_action(action_name, action_class):
     else:
         raise AlreadyRegisteredError(action_name,  "action")
 
+def clear_actions():
+    """Removes all actions"""
+    _ACTIONS.clear()
+
 def get_commands():
     """Returns the registered commands"""
     return deepcopy(_COMMANDS)
@@ -102,3 +106,7 @@ def register_command(command_name, function):
         _COMMANDS[command_name] = function
     else:
         raise AlreadyRegisteredError(command_name, "command")
+
+def clear_commands():
+    """Removes all commands"""
+    _COMMANDS.clear()
