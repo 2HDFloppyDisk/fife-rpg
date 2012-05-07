@@ -81,7 +81,10 @@ def register_action(action_name, action_class):
     Args:
         action_name: The name of the action_class
         action_class: The class of the action
-        """
+
+    Raises:
+        AlreadyRegisteredError if the action already exists.
+    """
     if not action_name in _ACTIONS:
         _ACTIONS[action_name] = action_class
     else:
@@ -101,7 +104,10 @@ def register_command(command_name, function):
     Args:
         command_name: The name of the command_class
         function: The function to execute
-        """
+
+    Raises:
+        AlreadyRegisteredError if the command already exists.
+    """
     if not command_name in _COMMANDS:
         _COMMANDS[command_name] = function
     else:
