@@ -93,7 +93,7 @@ class GameSceneListener(fife.IMouseListener):
         pass
 
 class GameSceneView(ViewBase):
-    """The view responsible showing the in-game gui"""
+    """The view responsible for showing the in-game gui"""
 
     def __init__(self, engine, controller=None):
         """Constructor
@@ -180,11 +180,11 @@ class GameSceneController(ControllerBase, RPGWorld):
                               %(name))
                 
     def switch_map(self, name):
-        '''Switches to the given map.
+        """Switches to the given map.
 
         Args:
             name: The name of the map
-        '''
+        """
         if name in self.__maps:
             self.load_map(name)
             if self.__current_map:
@@ -231,7 +231,7 @@ class GameSceneController(ControllerBase, RPGWorld):
             db_filename = self.application.settings.get(
                 "fife-rpg", "ObjectDBFile", "objects/object_database.yaml")
         vfs = self.application.engine.getVFS()
-        database_file = vfs.VFS.open(db_filename)
+        database_file = vfs.open(db_filename)
         database = yaml.load_all(database_file)
         for object_info in database:
             self.object_db.update(object_info)
