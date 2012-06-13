@@ -80,3 +80,26 @@ class RPGWorld(World):
         for name, component in components.iteritems():
             setattr(self.components, name, component)
         #TODO: Add the generic systems once they are finished
+    
+    def create_entity(self, info, identifier, extra = None):
+        """Create an entity and return it.
+        
+            Args:
+                info: Stores information about the object we want to create
+                identifier: The identifier of the new object
+                extra: Stores additionally required attributes
+        
+            Returns:
+                The created entity.
+           """
+        extra = extra or {}
+        
+        for key, val in extra.items():
+            info[key].update(val)      
+       
+        new_ent = General(self, identifier)
+        for component, data in info.items():
+            comp_obj = getattr(new_ent, component)
+            for key, value in data.items():
+                setattr(comp_obj, key, value)
+        return new_ent

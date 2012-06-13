@@ -25,27 +25,3 @@
 import sys
 
 from fife_rpg.entities.general import General
-
-def create_entity(info, identifier, world, extra = None):
-    """Called when we need to get an actual object.
-
-        Args:
-            info: Stores information about the object we want to create
-            identifier: The unique identifier of the new object
-            world: The world the new entity will belong to.
-            extra: Stores additionally required attributes
-
-        Returns:
-            The created entity.
-       """
-    extra = extra or {}
-
-    for key, val in extra.items():
-        info[key].update(val)
-
-    new_ent = General(world, identifier)
-    for component, data in info.items():
-        comp_obj = getattr(new_ent, component)
-        for key, value in data.items():
-            setattr(comp_obj, key, value)
-    return new_ent
