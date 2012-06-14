@@ -25,7 +25,7 @@ fife_rpg map.
 """
 
 import os
-from copy import copy
+from copy import copy 
 
 from fife import fife
 from fife.extensions.loaders import loadMapFile
@@ -107,7 +107,7 @@ class GameSceneView(ViewBase):
 class GameSceneController(ControllerBase, RPGWorld):
     """Handles the input for a game scene"""
 
-    def __init__(self,  view, application):
+    def __init__(self, view, application):
         """Constructor
 
         Args:
@@ -256,3 +256,24 @@ class GameSceneController(ControllerBase, RPGWorld):
                 else:
                     entity_data[key] = template_data[key]
         return entity_data
+    
+    def load_and_create_entities(self, entities_file_name=None):
+        """Reads the entities from a file and creates them
+        
+        Args:
+            entities_file_name: The path to the entities file. Overwrites
+            the EntitiesFile setting if not set to None
+        """
+        if not entities_file_name:
+            entities_file_name = self.application.settings.get(
+                "fife-rpg", "EntitiesFile", "objects/entities.yaml")
+        vfs = self.application.engine.getVFS()
+        entities_file = vfs.open(entities_file_name)
+        entities = yaml.load_all(entities_file)
+        for entity in entities:
+            identifier = entity.keys()[0]
+            entity_values = entity[identifier]
+            if not (entity_values.has_key("Unique") and 
+                    entity_values["Unique"]):
+                identifier = self.create_unique_identifier(identifier)
+            self.get_or_create_entity(identifier, entity_values["Entity"])
