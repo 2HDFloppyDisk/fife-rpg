@@ -81,25 +81,33 @@ class RPGWorld(World):
             setattr(self.components, name, component)
         #TODO: Add the generic systems once they are finished
     
-    def create_entity(self, info, identifier, extra = None):
-        """Create an entity and return it.
+    def get_or_create_entity(self, identifier, info=None, extra=None):
+        """Create an entity if not already present and return it.
         
             Args:
-                info: Stores information about the object we want to create
                 identifier: The identifier of the new object
+                info: Stores information about the object we want to create
                 extra: Stores additionally required attributes
         
             Returns:
-                The created entity.
+                The entity with the identifier.
+                None: If there is no info dictionary and no entity with the
+                identifier
            """
-        extra = extra or {}
-        
-        for key, val in extra.items():
-            info[key].update(val)      
-       
-        new_ent = General(self, identifier)
-        for component, data in info.items():
-            comp_obj = getattr(new_ent, component)
-            for key, value in data.items():
-                setattr(comp_obj, key, value)
-        return new_ent
+        if self.is_identifier_used(identifier):
+            entities = (self[General].general.identifier == identifier)
+            return entities.pop()
+        elif info is not None:
+            extra = extra or {}
+            
+            for key, val in extra.items():
+                info[key].update(val)      
+           
+            new_ent = General(self, identifier)
+            for component, data in info.items():
+                comp_obj = getattr(new_ent, component)
+                for key, value in data.items():
+                    setattr(comp_obj, key, value)
+            return new_ent
+        else:
+            return None
