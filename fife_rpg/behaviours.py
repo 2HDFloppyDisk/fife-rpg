@@ -162,7 +162,7 @@ class Behaviour (fife.InstanceActionListener):
             True if the behaviour was registered, False if not.
         """
         try:
-            register_behaviour(name, cls())
+            register_behaviour(name, cls)
             cls.__registered_as = name
             return True
         except AlreadyRegisteredError as error:
