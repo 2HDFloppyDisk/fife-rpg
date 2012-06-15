@@ -48,7 +48,17 @@ class Behaviour (fife.InstanceActionListener):
     def location(self):
         """Returns the location of the agent"""
         return self.agent.getLocation().getLayerCoordinates()
-
+    
+    @property
+    def rotation(self):
+        """Returns the rotation of the agent"""
+        return self.agent.getRotation()
+    
+    @rotation.setter
+    def rotation(self, rotation):
+        """Sets the rotation of the agent"""
+        self.agent.setRotation(rotation)
+    
     def attach_to_layer(self, agent_id, layer):
         """Attaches to a certain layer
 
