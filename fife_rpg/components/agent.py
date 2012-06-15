@@ -30,7 +30,8 @@ class Agent(Base):
 
     def __init__(self):
         """Constructor"""
-        Base.__init__(self, gfx=str, map=str, position=Vec2d, rotation=int)
+        Base.__init__(self, gfx=str, map=str, pos_x=float, pos_y=float, 
+                      pos_z=float, rotation=int)
 
     @classmethod
     def register(cls, name="agent"):
