@@ -276,4 +276,11 @@ class GameSceneController(ControllerBase, RPGWorld):
             if not (entity_values.has_key("Unique") and 
                     entity_values["Unique"]):
                 identifier = self.create_unique_identifier(identifier)
-            self.get_or_create_entity(identifier, entity_values["Entity"])
+            entity_data = (entity_values["Entity"] 
+                           if entity_values.has_key("Entity")
+                           else {}
+                           )
+            if entity_values.has_key("Template"):
+                self.update_from_template(entity_data,
+                                          entity_values["Template"])
+            self.get_or_create_entity(identifier, entity_data)
