@@ -284,3 +284,15 @@ class GameSceneController(ControllerBase, RPGWorld):
                 self.update_from_template(entity_data,
                                           entity_values["Template"])
             self.get_or_create_entity(identifier, entity_data)
+
+    def pump(self, time_delta):
+        """Performs actions every frame
+
+        Args:
+            time_delta: Time that passed since the last call
+        """
+        ControllerBase.pump(self, time_delta)
+        RPGWorld.pump(self, time_delta)
+        self.current_map.update_entities(self)
+        self.current_map.update_entitities_agent()
+        

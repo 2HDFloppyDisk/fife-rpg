@@ -118,3 +118,21 @@ class Map(object):
     def deactivate(self):
         """Deactivates the map"""
         self.camera.setEnabled(False)
+        
+    def update_entities(self, world):
+        """Update the maps entites from the entities of the world
+        
+        Args:
+            world: The world on which the map looks for its entities
+        """
+        self.__entities = world[...].agent.map == self.name
+        
+    def update_entitities_agent(self):
+        """Update the values of the agent component of the maps entities"""
+        for entity in self.entities:
+            if entity.fifeagent:
+                location = entity.fifeagent.behaviour.location
+                entity.agent.pos_x = location.x
+                entity.agent.pos_y = location.y
+                entity.agent.pos_z = location.z
+                entity.agent.rotation = entity.fifeagent.behaviour.rotation
