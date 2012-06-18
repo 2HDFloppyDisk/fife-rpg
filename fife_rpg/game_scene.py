@@ -11,7 +11,7 @@
 #   
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+#
 # This package is based on the gamescene classes of PARPG
 
 """This module contains the generic controller and view to display a
@@ -38,6 +38,8 @@ from fife_rpg import Map
 from fife_rpg import ViewBase
 from fife_rpg import ControllerBase
 from fife_rpg import RPGWorld
+from fife_rpg.components import fifeagent
+from fife_rpg import behaviours as BehaviourManager
 
 class GameSceneListener(fife.IMouseListener):
     """The game listener.
@@ -184,7 +186,36 @@ class GameSceneController(ControllerBase, RPGWorld):
                                         regions)
                 renderer = fife.InstanceRenderer.getInstance(game_map.camera)
                 renderer.addActiveLayer(game_map.agent_layer)
-                self.__maps[name] = game_map
+                game_map.update_entities(self)
+                object_namespace = self.application.settings.get("fife-rpg", 
+                        "ObjectNamespace", "fife-rpg")
+                fife_model = self.application.engine.getModel()
+                for entity in game_map.entities:
+                    agent = entity.agent
+                    map_object = fife_model.getObject(agent.gfx,
+                                                     object_namespace)
+                    fife_instance = game_map.agent_layer.createInstance(
+                                        map_object,
+                                        fife.ExactModelCoordinate(agent.pos_x,
+                                                                  agent.pos_y,
+                                                                  agent.pos_z),
+                                        entity.general.identifier)
+                    fife_instance.setRotation(agent.rotation)
+                    visual = fife.InstanceVisual.create(fife_instance)
+                    visual.setStackPosition(agent.stack_position)
+
+                    if (map_object.getAction('default')):
+                        target = fife.Location(game_map.agent_layer)
+                        fife_instance.act('default', target, True)
+                    
+                    behaviour = BehaviourManager.get_behaviour(
+                                            entity.behaviour.behaviour_type)()
+                    behaviour.agent = fife_instance
+                    entity.fifeagent.behaviour = behaviour
+                    entity.fifeagent.layer = game_map.agent_layer
+                    fifeagent.setup_behaviour(entity.fifeagent)
+                    entity.fifeagent.behaviour.idle()
+                    self.__maps[name] = game_map
         else:
             raise LookupError("The map with the name '%s' cannot be found"
                               %(name))
