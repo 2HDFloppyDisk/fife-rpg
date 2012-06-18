@@ -56,7 +56,7 @@ def setup_behaviour(agent):
         agent: A FifeAgent instance
     """
     if agent.behaviour:   
-        agent.behaviour.attachToLayer(agent.entity.getID(), agent.layer)
+        agent.behaviour.attach_to_layer(agent.entity.identifier, agent.layer)
         
 def approach(agent, target_or_location, action):
     """Move the agent to the given location, or follow the given target while
