@@ -169,12 +169,22 @@ class GameSceneController(ControllerBase, RPGWorld):
                                             maps_path, game_map + '.xml'),
                                        self.engine, extensions = {
                                             'lights': use_lighting})
-                fife_map.createLayer(agent_layer, grid_type)
+                found_layer = False
+                for layer in fife_map.getLayers():
+                    if layer.getId() == agent_layer:
+                        found_layer = True
+                        break                
+                    
+                if not found_layer:
+                    fife_map.createLayer(agent_layer, grid_type)
                 #TODO: (Beliar) Add loading of additional objects, like regions
                 #TODO: and entities
                 regions = {}
-                self.__maps[name] = Map(fife_map, name, camera, agent_layer,
+                game_map = Map(fife_map, name, camera, agent_layer,
                                         regions)
+                renderer = fife.InstanceRenderer.getInstance(game_map.camera)
+                renderer.addActiveLayer(game_map.agent_layer)
+                self.__maps[name] = game_map
         else:
             raise LookupError("The map with the name '%s' cannot be found"
                               %(name))
