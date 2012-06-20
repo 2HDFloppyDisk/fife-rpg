@@ -3,15 +3,15 @@
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-
+#
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
-
+#
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+#
 # This module is based on the PARPGWorld class.
 
 """This module contains the world class used used by the entity system.
@@ -25,7 +25,9 @@
 from bGrease.grease_fife.world import World
 
 from fife_rpg.components import ComponentManager
+from fife_rpg.systems import SystemManager
 from fife_rpg.entities.general import General
+
 class RPGWorld(World):
     """The Base world for all rpgs.
     
@@ -79,7 +81,9 @@ class RPGWorld(World):
         components = ComponentManager.get_components()
         for name, component in components.iteritems():
             setattr(self.components, name, component)
-        #TODO: Add the generic systems once they are finished
+        systems = SystemManager.get_systems()
+        for name, system in systems.iteritems():
+            setattr(self.systems, name, system)
     
     def get_or_create_entity(self, identifier, info=None, extra=None):
         """Create an entity if not already present and return it.
