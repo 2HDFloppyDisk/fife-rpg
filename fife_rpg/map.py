@@ -20,6 +20,8 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from UserDict import DictMixin
+
 class NoSuchRegionError(Exception):
     """Gets thrown when the code tried to access a region that does not exits 
     on the map."""
@@ -96,6 +98,23 @@ class Map(object):
         """Returns wheter the map is active or not"""
         return self.camera.isEnabled()
 
+    def __getitem__(self, name):
+        """Returns the entity with the given name
+        
+        Args:
+            name: The name of the entity
+            
+        Raises:
+            KeyError: If the map has no entity with that name
+            TypeError: If the key is not a string
+        """
+        if not type(name) == str:
+            raise TypeError("Expected key to be a string")
+        for entity in self.entities:
+            if entity.general.identifier == name:
+                return entity
+        raise KeyError("The map %s has no entity with the name %s" % (self.name, name))
+    
     def is_in_region(self, location, region):
         """Checks if a given point is inside the given region
 
