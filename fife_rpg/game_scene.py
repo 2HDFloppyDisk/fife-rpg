@@ -40,6 +40,7 @@ from fife_rpg import ControllerBase
 from fife_rpg import RPGWorld
 from fife_rpg.components import fifeagent
 from fife_rpg import behaviours as BehaviourManager
+from fife_rpg.systems import GameEnvironment
 
 class GameSceneListener(fife.IMouseListener):
     """The game listener.
@@ -121,6 +122,10 @@ class GameSceneController(ControllerBase, RPGWorld):
         self.__maps = {}
         self.__current_map = None
         self.object_db = {}
+        registered_as = GameEnvironment.registered_as
+        if registered_as and hasattr(self.systems, registered_as):
+            environment = getattr(self.systems, registered_as) 
+            environment.add_callback(self.update_environment)            
 
     @property
     def current_map(self):
@@ -131,6 +136,16 @@ class GameSceneController(ControllerBase, RPGWorld):
     def maps(self):
         """Returns a copy of the maps dictionary"""
         return copy(self.__maps)
+
+    def update_environment(self, environment_globals):
+        """Called by the game environment when it wants to update its globals
+        
+        Args:
+            globals: The globals dictionary of the GameEnvironment that is 
+            filled by the GameScene
+        """
+        environment_globals.update(self.maps)
+        environment_globals["current_map"] = self.current_map 
 
     def add_map(self, name, filename_or_map):
         """Adds a map to the maps dictionary.
