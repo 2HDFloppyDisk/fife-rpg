@@ -107,7 +107,7 @@ class ScriptingSystem(Base):
     """
 
     @classmethod
-    def register(cls, name="Scripting", *args, **kwargs):
+    def register(cls, name="scripting", *args, **kwargs):
         """Registers the class as a system
 
         Args:
