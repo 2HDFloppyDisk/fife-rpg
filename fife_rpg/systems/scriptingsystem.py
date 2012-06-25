@@ -25,7 +25,7 @@ from collections import deque
 from copy import deepcopy
 
 from fife_rpg.systems import Base
-
+from fife_rpg.systems import GameEnvironment
 
 class Script(object):
     """Script object"""
@@ -106,6 +106,8 @@ class ScriptingSystem(Base):
     """System responsible for managing scripts.
     """
 
+    __dependencies = [GameEnvironment]
+
     @classmethod
     def register(cls, name="scripting", *args, **kwargs):
         """Registers the class as a system
@@ -144,11 +146,9 @@ class ScriptingSystem(Base):
 
     def getScriptEnvironment(self):
         """Returns the environment that the scripts are running on"""
-        script_globals = {}
-        script_globals.update(self.world.maps)
-        script_globals.update(self.functions)
-        script_globals["current_map"] = self.world.current_map
-        return script_globals, self.script_locals
+        environment = getattr(self.world.systems, 
+                              GameEnvironment.registered_as)
+        return environment.get_environement()
 
     def step(self, time_delta):
         """Execute a time step for the system. Must be defined

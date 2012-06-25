@@ -22,4 +22,5 @@
 
 from fife_rpg.systems import system_manager as SystemManager
 from fife_rpg.systems.base import Base
+from fife_rpg.systems.game_environment import GameEnvironment
 from fife_rpg.systems import scriptingsystem
