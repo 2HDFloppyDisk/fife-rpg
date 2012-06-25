@@ -133,8 +133,6 @@ class ScriptingSystem(Base):
         Base.__init__(self)
         self.commands = commands
         self.actions = actions
-        self.functions = {}
-        self.script_locals = {}
         self.scripts = {}
         self.conditions = []
         self.reset()
