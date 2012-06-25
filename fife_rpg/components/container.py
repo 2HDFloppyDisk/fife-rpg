@@ -28,7 +28,7 @@ class Container(Base):
     Component that allows an entity to contain one or more child entities.
     """
 
-    __dependencies = [Containable]
+    dependencies = [Containable]
 
     def __init__(self):
         Base.__init__(self, children=list, max_bulk=int)

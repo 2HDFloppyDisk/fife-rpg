@@ -27,7 +27,7 @@ from fife_rpg import BehaviourManager
 class Behaviour(Base):
     """Component that stores the values of the behaviour"""
 
-    __dependencies = [FifeAgent]
+    dependencies = [FifeAgent]
 
     def __init__(self):
         """Constructor"""

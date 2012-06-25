@@ -28,7 +28,7 @@ class Equip(Base):
     Component that stores the equipment (what is being worn/wielded).
     """
 
-    __dependencies = [Equipable]
+    dependencies = [Equipable]
 
     def __init__(self):
         Base.__init__(self, head=object, neck=object, body=object, belt=object, 

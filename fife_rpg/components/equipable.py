@@ -28,7 +28,7 @@ class Equipable(Base):
     Component that stores the data for an entity that can be equipped.
     """
 
-    __dependencies = [Containable]
+    dependencies = [Containable]
 
     def __init__(self):
         Base.__init__(self, possible_slots=list, wearer=object, in_slot=str)
