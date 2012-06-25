@@ -147,6 +147,7 @@ class ScriptingSystem(Base):
         script_globals = {}
         script_globals.update(self.world.maps)
         script_globals.update(self.functions)
+        script_globals["current_map"] = self.world.current_map
         return script_globals, self.script_locals
 
     def step(self, time_delta):
