@@ -106,7 +106,7 @@ class ScriptingSystem(Base):
     """System responsible for managing scripts.
     """
 
-    __dependencies = [GameEnvironment]
+    dependencies = [GameEnvironment]
 
     @classmethod
     def register(cls, name="scripting", *args, **kwargs):

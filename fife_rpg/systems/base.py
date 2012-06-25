@@ -33,7 +33,7 @@ class Base(System):
     """Base system for fife-rpg."""
 
     __registered_as = None
-    __dependencies = []
+    dependencies = []
 
     @ClassProperty
     @classmethod
@@ -57,7 +57,7 @@ class Base(System):
         try:
             SystemManager.register_system(name, cls(*args, **kwargs))
             cls.__registered_as = name
-            for dependency in cls.__dependencies:
+            for dependency in cls.dependencies:
                 if not dependency.registered_as:
                     dependency.register()
             return True
