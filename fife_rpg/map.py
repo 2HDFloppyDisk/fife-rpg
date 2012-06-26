@@ -20,6 +20,10 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from fife_rpg.components.fifeagent import FifeAgent
+from fife_rpg.components.agent import Agent
+from fife_rpg.components.general import General
+
 class NoSuchRegionError(Exception):
     """Gets thrown when the code tried to access a region that does not exits 
     on the map."""
@@ -60,6 +64,12 @@ class Map(object):
         self.__entities = {}
         self.__camera = fife_map.getCamera(camera)
         self.__agent_layer = fife_map.getLayer(agent_layer)
+        if not FifeAgent.registered_as:
+            FifeAgent.register()
+        if not Agent.registered_as:
+            Agent.register()
+        if not General.registered_as:
+            General.register()
 
     @property
     def map(self):
@@ -109,9 +119,11 @@ class Map(object):
         if not type(name) == str:
             raise TypeError("Expected key to be a string")
         for entity in self.entities:
-            if entity.general.identifier == name:
+            general = getattr(entity, General.registered_as)
+            if general.identifier == name:
                 return entity
-        raise KeyError("The map %s has no entity with the name %s" % (self.name, name))
+        raise KeyError("The map %s has no entity with the name %s" % 
+                       (self.name, name))
     
     def is_in_region(self, location, region):
         """Checks if a given point is inside the given region
@@ -142,17 +154,21 @@ class Map(object):
         Args:
             world: The world on which the map looks for its entities
         """
-        self.__entities = world[...].agent.map == self.name
+        extent = world[...]
+        self.__entities = getattr(extent, 
+                                  Agent.registered_as).map == self.name
         
     def update_entitities_agent(self):
         """Update the values of the agent component of the maps entities"""
         for entity in self.entities:
-            if entity.fifeagent:
-                location = entity.fifeagent.behaviour.location
-                entity.agent.pos_x = location.x
-                entity.agent.pos_y = location.y
-                entity.agent.pos_z = location.z
-                entity.agent.rotation = entity.fifeagent.behaviour.rotation
+            if hasattr(entity, FifeAgent.registered_as):
+                fifeagent = getattr(entity, FifeAgent.registered_as)
+                agent = getattr(entity, Agent.registered_as)
+                location = fifeagent.behaviour.location
+                agent.pos_x = location.x
+                agent.pos_y = location.y
+                agent.pos_z = location.z
+                agent.rotation = fifeagent.behaviour.rotation
                 
     def remove_entity(self, identifier):
         """Removes an entity from the map
@@ -166,8 +182,9 @@ class Map(object):
         """
         try:
             entity = self[identifier]
-            instance = entity.fifeagent.layer.getInstance(identifier)
-            entity.fifeagent.layer.deleteInstance(instance)
+            fifeagent = getattr(entity, FifeAgent.registered_as)
+            instance = fifeagent.layer.getInstance(identifier)
+            fifeagent.layer.deleteInstance(instance)
             del entity.fifeagent
             entity.agent.map = None
         except KeyError as error:
