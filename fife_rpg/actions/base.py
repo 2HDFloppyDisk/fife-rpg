@@ -20,11 +20,14 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.exceptions import NoSuchCommandError
+from fife_rpg.exceptions import NoSuchCommandError, AlreadyRegisteredError
 from fife_rpg.actions import ActionManager
 
 class Base(object):
     """Base Action class, to define the structure"""
+
+    __registered_as = None
+    dependencies = []
 
     def __init__(self, controller, commands = None):
         """Basic action constructor
@@ -63,3 +66,28 @@ class Base(object):
         otherwise
         """
         return False
+    
+
+    @classmethod
+    def register(cls, name):
+        """Registers the class as an action
+
+        Args:
+            name: The name under which the class should be registered
+            *args: Additional arguments to pass to the class constructor
+            **kwargs: Additional keyword arguments to pass to the class 
+            constructor
+
+        Returns:
+            True if the action was registered, False if not.
+        """
+        try:
+            ActionManager.register_action(name, cls)
+            cls.__registered_as = name
+            for dependency in cls.dependencies:
+                if not dependency.registered_as:
+                    dependency.register()
+            return True
+        except AlreadyRegisteredError as error:
+            print error
+            return False
