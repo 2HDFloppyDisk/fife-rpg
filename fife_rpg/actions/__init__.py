@@ -3,22 +3,26 @@
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-
+#
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
-
+#
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# This is based on the PARPG components package
+#  This package is based on the entities package from PARPG
 
-"""This contains the general components used by fife-rpg
+"""This package contains the actions
 
-.. module:: components
-    :synopsis: The general components used by fife-rpg
+.. module:: actions
+    :synopsis: Contains the actions
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
-from fife_rpg.components import component_manager as ComponentManager
+
+import sys
+
+from fife_rpg.actions import action_manager as ActionManager
+from fife_rpg.actions.base import Base
