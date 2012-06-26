@@ -20,8 +20,6 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from UserDict import DictMixin
-
 class NoSuchRegionError(Exception):
     """Gets thrown when the code tried to access a region that does not exits 
     on the map."""
@@ -155,3 +153,24 @@ class Map(object):
                 entity.agent.pos_y = location.y
                 entity.agent.pos_z = location.z
                 entity.agent.rotation = entity.fifeagent.behaviour.rotation
+                
+    def remove_entity(self, identifier):
+        """Removes an entity from the map
+        
+        Args:
+            identifier: The name of the entity
+        
+        Raises:
+            KeyError: If the map has no entity with that name
+            TypeError: If the identifier is not a string
+        """
+        try:
+            entity = self[identifier]
+            instance = entity.fifeagent.layer.getInstance(identifier)
+            entity.fifeagent.layer.deleteInstance(instance)
+            del entity.fifeagent
+            entity.agent.map = None
+        except KeyError as error:
+            raise error
+        except TypeError as error:
+            raise TypeError("Expected identifier to be a string")
