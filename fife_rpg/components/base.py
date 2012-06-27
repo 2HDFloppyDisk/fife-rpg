@@ -19,6 +19,8 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+import inspect
+
 from bGrease.component import Component
 
 from fife_rpg.components import ComponentManager
@@ -48,11 +50,14 @@ class Base(Component):
         return self.fields.keys()
 
     @classmethod
-    def register(cls, name):
+    def register(cls, name, auto_register=True):
         """Registers the class as a component
 
         Args:
             name: The name under which the class should be registered
+            auto_register: This sets whether components this component
+            derives from will have their registered_as property set to the same
+            name as this class.
 
         Returns:
             True if the component was registered, False if not.
@@ -60,6 +65,11 @@ class Base(Component):
         try:
             ComponentManager.register_component(name, cls())
             cls.__registered_as = name
+            if auto_register:
+                for sub_cls in inspect.getmro(cls):
+                    if ((not (sub_cls is cls or sub_cls is Base))
+                         and issubclass(sub_cls, Base)):
+                        sub_cls.__registered_as = name
             for dependency in cls.dependencies:
                 if not dependency.registered_as:
                     dependency.register()
