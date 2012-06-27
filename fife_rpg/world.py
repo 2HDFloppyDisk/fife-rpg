@@ -27,6 +27,7 @@ from bGrease.grease_fife.world import World
 from fife_rpg.components import ComponentManager
 from fife_rpg.systems import SystemManager
 from fife_rpg.entities.general import General
+from fife_rpg.components.general import General as GeneralComponent
 
 class RPGWorld(World):
     """The Base world for all rpgs.
@@ -52,7 +53,8 @@ class RPGWorld(World):
         Returns:
             The entity with the identifier or None
         """
-        entities = self[General].general.identifier == identifier
+        extent = getattr(self[General], GeneralComponent.registered_as)
+        entities = extent.identifier == identifier
         if len(entities) > 0:
             return entities.pop
         return None
@@ -98,6 +100,8 @@ class RPGWorld(World):
         systems = SystemManager.get_systems()
         for name, system in systems.iteritems():
             setattr(self.systems, name, system)
+        if not GeneralComponent.registered_as:
+            GeneralComponent.register()
     
     def get_or_create_entity(self, identifier, info=None, extra=None):
         """Create an entity if not already present and return it.

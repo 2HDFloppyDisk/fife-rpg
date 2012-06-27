@@ -38,7 +38,9 @@ from fife_rpg import Map
 from fife_rpg import ViewBase
 from fife_rpg import ControllerBase
 from fife_rpg import RPGWorld
-from fife_rpg.components import fifeagent
+from fife_rpg.components.agent import Agent
+from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
+from fife_rpg.components.general import General
 from fife_rpg import behaviours as BehaviourManager
 from fife_rpg.systems import GameEnvironment
 
@@ -125,7 +127,13 @@ class GameSceneController(ControllerBase, RPGWorld):
         registered_as = GameEnvironment.registered_as
         if registered_as and hasattr(self.systems, registered_as):
             environment = getattr(self.systems, registered_as) 
-            environment.add_callback(self.update_environment)            
+            environment.add_callback(self.update_environment)
+        if not Agent.registered_as:
+            Agent.register()
+        if not FifeAgent.registered_as:
+            FifeAgent.register()
+        if not General.registered_as:
+            General.register()
 
     @property
     def current_map(self):
@@ -206,15 +214,16 @@ class GameSceneController(ControllerBase, RPGWorld):
                         "ObjectNamespace", "fife-rpg")
                 fife_model = self.application.engine.getModel()
                 for entity in game_map.entities:
-                    agent = entity.agent
+                    agent = getattr(entity, Agent.registered_as)
                     map_object = fife_model.getObject(agent.gfx,
                                                      object_namespace)
+                    general = getattr(entity, General.registered_as)
                     fife_instance = game_map.agent_layer.createInstance(
                                         map_object,
                                         fife.ExactModelCoordinate(agent.pos_x,
                                                                   agent.pos_y,
                                                                   agent.pos_z),
-                                        entity.general.identifier)
+                                        general.identifier)
                     fife_instance.setRotation(agent.rotation)
                     visual = fife.InstanceVisual.create(fife_instance)
                     visual.setStackPosition(agent.stack_position)
@@ -226,10 +235,11 @@ class GameSceneController(ControllerBase, RPGWorld):
                     behaviour = BehaviourManager.get_behaviour(
                                             entity.behaviour.behaviour_type)()
                     behaviour.agent = fife_instance
-                    entity.fifeagent.behaviour = behaviour
-                    entity.fifeagent.layer = game_map.agent_layer
-                    fifeagent.setup_behaviour(entity.fifeagent)
-                    entity.fifeagent.behaviour.idle()
+                    fifeagent = getattr(entity, FifeAgent.registered_as)
+                    fifeagent.behaviour = behaviour
+                    fifeagent.layer = game_map.agent_layer
+                    setup_behaviour(fifeagent)
+                    fifeagent.behaviour.idle()
                     self.__maps[name] = game_map
         else:
             raise LookupError("The map with the name '%s' cannot be found"

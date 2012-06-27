@@ -185,8 +185,9 @@ class Map(object):
             fifeagent = getattr(entity, FifeAgent.registered_as)
             instance = fifeagent.layer.getInstance(identifier)
             fifeagent.layer.deleteInstance(instance)
-            del entity.fifeagent
-            entity.agent.map = None
+            delattr(entity, FifeAgent.registered_as)
+            agent = getattr(entity, Agent.registered_as)
+            agent.map = None
         except KeyError as error:
             raise error
         except TypeError as error:

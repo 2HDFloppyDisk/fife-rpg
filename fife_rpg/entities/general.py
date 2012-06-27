@@ -21,6 +21,7 @@
 """
 
 from bGrease import Entity
+from fife_rpg.components.general import General as GeneralComponent
 
 class General(Entity):
     """The Base for all fife-rpg entities"""
@@ -32,9 +33,11 @@ class General(Entity):
             world: The world the entity belongs to
             identifier: A unique identifier"""
         Entity.__init__(self, world)
-        self.general.identifier = identifier
+        if not GeneralComponent.registered_as:
+            GeneralComponent.register()
+        getattr(self, GeneralComponent.registered_as).identifier = identifier
     
     @property
     def identifier(self):
         """Returns the identifier of the entity"""
-        return self.general.identifier
+        return getattr(self, GeneralComponent.registered_as).identifier

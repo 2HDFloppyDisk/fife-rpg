@@ -28,6 +28,7 @@ from collections import deque
 from fife import fife
 
 from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.components.general import General
 
 (_AGENT_STATE_NONE, _AGENT_STATE_IDLE, _AGENT_STATE_APPROACH, _AGENT_STATE_RUN,
 _AGENT_STATE_WANDER, _AGENT_STATE_TALK)= xrange(6)
@@ -78,8 +79,8 @@ class Behaviour (fife.InstanceActionListener):
         """
         if self.agent is not None:
             self.agent.removeActionListener(self)
-
-        self.agent = layer.getInstance(self.parent.general.identifier)
+        general = getattr(self.parent, General.registered_as)
+        self.agent = layer.getInstance(general.identifier)
         self.agent.addActionListener(self)
         self.state = _AGENT_STATE_NONE
 
