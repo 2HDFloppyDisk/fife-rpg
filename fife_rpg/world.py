@@ -43,6 +43,20 @@ class RPGWorld(World):
         """
         World.__init__(self, engine)
     
+    def get_entity(self, identifier):
+        """Returns the entity with the identifier
+        
+        Args:
+            identifier: The identifier of the entity
+        
+        Returns:
+            The entity with the identifier or None
+        """
+        entities = self[General].general.identifier == identifier
+        if len(entities) > 0:
+            return entities.pop
+        return None
+
     def is_identifier_used(self, identifier):
         """Checks whether the idenfier is used
         
@@ -52,8 +66,8 @@ class RPGWorld(World):
         Returns:
             True if the identifier is used, false if not
         """
-        entities = self[General].general.identifier == identifier
-        return len(entities) > 0
+        entity = self.get_entity(identifier) 
+        return not entity is None    
     
     def create_unique_identifier(self, identifier):
         """Returns an unused identifier based on the given identifier
@@ -99,8 +113,7 @@ class RPGWorld(World):
                 identifier
            """
         if self.is_identifier_used(identifier):
-            entities = (self[General].general.identifier == identifier)
-            return entities.pop()
+            return self.get_entity(identifier)
         elif info is not None:
             extra = extra or {}
             
