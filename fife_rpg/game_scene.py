@@ -153,7 +153,8 @@ class GameSceneController(ControllerBase, RPGWorld):
             filled by the GameScene
         """
         environment_globals.update(self.maps)
-        environment_globals["current_map"] = self.current_map 
+        environment_globals["current_map"] = self.current_map
+        environment_globals["get_entity"] = self.get_entity
 
     def add_map(self, name, filename_or_map):
         """Adds a map to the maps dictionary.
