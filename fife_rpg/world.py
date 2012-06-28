@@ -56,7 +56,7 @@ class RPGWorld(World):
         extent = getattr(self[General], GeneralComponent.registered_as)
         entities = extent.identifier == identifier
         if len(entities) > 0:
-            return entities.pop
+            return entities.pop()
         return None
 
     def is_identifier_used(self, identifier):
