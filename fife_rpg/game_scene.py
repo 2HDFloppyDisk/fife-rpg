@@ -324,6 +324,23 @@ class GameSceneController(ControllerBase, RPGWorld):
                     entity_data[key] = template_data[key]
         return entity_data
     
+
+    def create_entities(self, entities):
+        """Create the entities from a dictionary
+        
+        Args:
+            entities: Dictionary with the data of the entities
+        """
+        for entity in entities:
+            identifier = entity.keys()[0]
+            entity_values = entity[identifier]
+            if not (entity_values.has_key("Unique") and entity_values["Unique"]):
+                identifier = self.create_unique_identifier(identifier)
+            entity_data = entity_values["Entity"] if entity_values.has_key("Entity") else {}
+            if entity_values.has_key("Template"):
+                self.update_from_template(entity_data, entity_values["Template"])
+            self.get_or_create_entity(identifier, entity_data)
+
     def load_and_create_entities(self, entities_file_name=None):
         """Reads the entities from a file and creates them
         
@@ -337,20 +354,7 @@ class GameSceneController(ControllerBase, RPGWorld):
         vfs = self.application.engine.getVFS()
         entities_file = vfs.open(entities_file_name)
         entities = yaml.load_all(entities_file)
-        for entity in entities:
-            identifier = entity.keys()[0]
-            entity_values = entity[identifier]
-            if not (entity_values.has_key("Unique") and 
-                    entity_values["Unique"]):
-                identifier = self.create_unique_identifier(identifier)
-            entity_data = (entity_values["Entity"] 
-                           if entity_values.has_key("Entity")
-                           else {}
-                           )
-            if entity_values.has_key("Template"):
-                self.update_from_template(entity_data,
-                                          entity_values["Template"])
-            self.get_or_create_entity(identifier, entity_data)
+        self.create_entities(entities)
 
     def pump(self, time_delta):
         """Performs actions every frame
