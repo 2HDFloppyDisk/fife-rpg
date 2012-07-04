@@ -30,13 +30,16 @@ class Description(Base):
         Base.__init__(self, view_name=str, real_name=str, desc=str)
 
     @classmethod
-    def register(cls, name="description"):
+    def register(cls, name="description", auto_register=True):
         """Registers the class as a component
 
         Args:
             name: The name under which the class should be registered
+            auto_register: This sets whether components this component
+            derives from will have their registered_as property set to the same
+            name as this class.
 
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Description, cls).register(name))
+        return (super(Description, cls).register(name, auto_register))

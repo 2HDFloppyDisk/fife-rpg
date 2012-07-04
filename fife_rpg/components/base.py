@@ -79,7 +79,7 @@ class Base(Component):
             return False
 
     @classmethod
-    def setup(cls, data, entity):
+    def setup(cls, data, entity):#pylint: disable=W0613
         """Sets up the entity dictionary by reading a data dictionary
 
         Args:

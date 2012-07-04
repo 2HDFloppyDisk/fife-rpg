@@ -14,11 +14,12 @@
 
 import unittest
 
-from fife_rpg.components import action as ActionManager
+from fife_rpg.actions import ActionManager
+from fife_rpg.actions.base import Base
 
-class TestAction(ActionManager.Action):
+class TestAction(Base):
 
-    def __init(self, test_list, test_variable):
+    def __init__(self, test_list, test_variable):#pylint: disable=W0231
         self.test_list = test_list
         self.test_variable = test_variable
 

@@ -29,14 +29,16 @@ class ChangeMap(Base):
         Base.__init__(self, target_map=str, target_position=list)
 
     @classmethod
-    def register(cls, name="change_map"):
+    def register(cls, name="change_map", auto_register=True):
         """Registers the class as a component
 
         Args:
             name: The name under which the class should be registered
+            auto_register: This sets whether components this component
+            derives from will have their registered_as property set to the same
+            name as this class.
 
         Returns:
             True if the component was registered, False if not.
         """
-
-        return (super(ChangeMap, cls).register(name))
+        return (super(ChangeMap, cls).register(name, auto_register))

@@ -45,11 +45,11 @@ class FifeMap(object):
         self.camera = FifeCamera()
         self.layer = FifeLayer()
 
-    def getCamera(self, name=None):
+    def getCamera(self, name=None):#pylint: disable=W0613
         #Being lazy here as this is not part of the actual test
         return self.camera
     
-    def getLayer(self, name=None):
+    def getLayer(self, name=None):#pylint: disable=W0613
         #Being lazy here as this is not part of the actual test
         return self.layer
 

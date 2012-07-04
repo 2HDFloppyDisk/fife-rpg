@@ -20,8 +20,6 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from bGrease.geometry import Vec2d
-
 from fife_rpg.components.base import Base
 
 
@@ -34,13 +32,16 @@ class Agent(Base):
                       pos_z=float, rotation=int, stack_position=int)
 
     @classmethod
-    def register(cls, name="agent"):
+    def register(cls, name="agent", auto_register=True):
         """Registers the class as a component
 
         Args:
             name: The name under which the class should be registered
+            auto_register: This sets whether components this component
+            derives from will have their registered_as property set to the same
+            name as this class.
 
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Agent, cls).register(name))
+        return (super(Agent, cls).register(name, auto_register))

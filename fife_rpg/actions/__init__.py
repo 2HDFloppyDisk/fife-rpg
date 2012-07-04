@@ -25,4 +25,3 @@
 import sys
 
 from fife_rpg.actions import action_manager as ActionManager
-from fife_rpg.actions.base import Base

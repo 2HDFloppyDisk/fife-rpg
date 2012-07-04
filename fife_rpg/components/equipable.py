@@ -41,13 +41,16 @@ class Equipable(Base):
         return fields
 
     @classmethod
-    def register(cls, name="equipable"):
+    def register(cls, name="equipable", auto_register=True):
         """Registers the class as a component
 
         Args:
             name: The name under which the class should be registered
+            auto_register: This sets whether components this component
+            derives from will have their registered_as property set to the same
+            name as this class.
 
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Equipable, cls).register(name))
+        return (super(Equipable, cls).register(name, auto_register))
