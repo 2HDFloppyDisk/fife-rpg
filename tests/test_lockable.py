@@ -23,7 +23,7 @@ class TestLockable(unittest.TestCase):
     class Lock(Entity):
         """Enity representing an Lock"""
         
-        def __init__(self, world, locked, closed):
+        def __init__(self, world, locked, closed):#pylint: disable=W0613,W0231
             """Constructor"""
             self.lockable.locked = locked
             self.lockable.closed = closed
@@ -45,17 +45,17 @@ class TestLockable(unittest.TestCase):
         self.world = None
         
     def testOpenClose(self):
-        lockable.open(self.lock.lockable)
+        lockable.open_lock(self.lock.lockable)
         self.assertFalse(self.lock.lockable.closed)
-        lockable.close(self.lock.lockable)
+        lockable.close_lock(self.lock.lockable)
         self.assertTrue(self.lock.lockable.closed)
          
     def testLockUnlock(self):
-        lockable.lock(self.lock.lockable)
+        lockable.lock_lock(self.lock.lockable)
         self.assertTrue(self.lock.lockable.locked)
-        self.assertRaises(lockable.LockedError, lockable.open, self.lock.lockable)
-        lockable.unlock(self.lock.lockable)
+        self.assertRaises(lockable.LockedError, lockable.open_lock, self.lock.lockable)
+        lockable.unlock_lock(self.lock.lockable)
         self.assertFalse(self.lock.lockable.locked)
-        lockable.open(self.lock.lockable)
-        self.assertRaises(lockable.OpenError, lockable.lock, self.lock.lockable)
+        lockable.open_lock(self.lock.lockable)
+        self.assertRaises(lockable.OpenError, lockable.lock_lock, self.lock.lockable)
 
