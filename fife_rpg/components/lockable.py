@@ -58,7 +58,7 @@ class OpenError(Exception):
         """Returns the string representing the exception"""
         return "Is open"
 
-def lock(lockable):
+def lock_lock(lockable):
     """Lock the given lockable.
 
     Args:
@@ -71,7 +71,7 @@ def lock(lockable):
         raise OpenError
     lockable.locked = True    
 
-def unlock(lockable):
+def unlock_lock(lockable):
     """Unlock the given lockable
 
     Args:
@@ -79,7 +79,7 @@ def unlock(lockable):
     """
     lockable.locked = False
 
-def open(lockable):# pylint: disable-msg=W0622
+def open_lock(lockable):# pylint: disable-msg=W0622
     """Open the lockable, if its unlocked.
 
     Args:
@@ -92,7 +92,7 @@ def open(lockable):# pylint: disable-msg=W0622
         raise LockedError
     lockable.closed = False
 
-def close(lockable):
+def close_lock(lockable):
     """Close the lockable.
 
     Args:
