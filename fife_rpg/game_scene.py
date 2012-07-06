@@ -42,6 +42,7 @@ from fife_rpg.components.agent import Agent
 from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
 from fife_rpg.components.general import General
 from fife_rpg import behaviours as BehaviourManager
+from fife_rpg.components import ComponentManager
 from fife_rpg.systems import GameEnvironment
 
 class GameSceneListener(fife.IMouseListener):
@@ -121,6 +122,8 @@ class GameSceneController(ControllerBase, RPGWorld):
         """
         ControllerBase.__init__(self, view, application)
         RPGWorld.__init__(self, self.engine)
+        yaml.add_representer(General, self.entity_representer)
+        yaml.add_constructor('!Entity', self.entity_constructor, yaml.SafeLoader)
         self.__maps = {}
         self.__current_map = None
         self.object_db = {}
@@ -241,7 +244,7 @@ class GameSceneController(ControllerBase, RPGWorld):
                     fifeagent.layer = game_map.agent_layer
                     setup_behaviour(fifeagent)
                     fifeagent.behaviour.idle()
-                    self.__maps[name] = game_map
+                self.__maps[name] = game_map
         else:
             raise LookupError("The map with the name '%s' cannot be found"
                               %(name))
@@ -324,23 +327,6 @@ class GameSceneController(ControllerBase, RPGWorld):
                     entity_data[key] = template_data[key]
         return entity_data
     
-
-    def create_entities(self, entities):
-        """Create the entities from a dictionary
-        
-        Args:
-            entities: Dictionary with the data of the entities
-        """
-        for entity in entities:
-            identifier = entity.keys()[0]
-            entity_values = entity[identifier]
-            if not (entity_values.has_key("Unique") and entity_values["Unique"]):
-                identifier = self.create_unique_identifier(identifier)
-            entity_data = entity_values["Entity"] if entity_values.has_key("Entity") else {}
-            if entity_values.has_key("Template"):
-                self.update_from_template(entity_data, entity_values["Template"])
-            self.get_or_create_entity(identifier, entity_data)
-
     def load_and_create_entities(self, entities_file_name=None):
         """Reads the entities from a file and creates them
         
@@ -353,8 +339,80 @@ class GameSceneController(ControllerBase, RPGWorld):
                 "fife-rpg", "EntitiesFile", "objects/entities.yaml")
         vfs = self.application.engine.getVFS()
         entities_file = vfs.open(entities_file_name)
-        entities = yaml.load_all(entities_file)
-        self.create_entities(entities)
+        for entity in yaml.safe_load_all(entities_file):
+            print entity
+        
+    def create_entity_dictionary(self, entity):
+        """Creates a dictionary containing the values of the Entity
+        
+        Args:
+            entity: The Entity instance
+        
+        Returns:
+            The created dictionary
+        """
+        entity_dict = {}
+        components_data = entity_dict["components"] = {}
+        components = ComponentManager.get_components()
+        for name, component in components.iteritems():
+            component_values = getattr(entity, name)
+            if component_values:
+                component_data = None
+                for field in component.saveable_fields:                
+                    if not component_data:
+                        component_data = components_data[name] = {}                
+                    component_data[field] = getattr(component_values, field)    
+        return entity_dict
+
+    def entity_representer(self, dumper, data):
+        """Creates a yaml node representing an entity
+        
+        Args:
+            dumper: A yaml BaseRepresenter
+            data: The Entity
+        
+        Returns:
+            The created node
+        """
+        entity_dict = self.create_entity_dictionary(data)
+        entity_node = dumper.represent_mapping(u"!Entity", entity_dict)
+        return entity_node
+    
+    def entity_constructor(self, loader, node):
+        """Constructs an Entity from a yaml node
+        
+        Args:
+            loader: A yaml BaseConstructor
+            node: The yaml node
+            
+        Returns:
+            The created Entity
+        """
+        entity_dict = loader.construct_mapping(node, deep=True)
+        template = None
+        if entity_dict.has_key("Template"):
+            template = entity_dict["Template"]
+        if entity_dict.has_key("Components"):
+            components_data = entity_dict["Components"]
+            if template:
+                self.update_from_template(components_data, template)
+            general_name = General.registered_as
+            identifier = None
+            if not components_data.has_key(general_name):
+                identifier = self.create_unique_identifier(template)
+            else:
+                general_data = components_data[General.registered_as]
+                identifier = general_data["identifier"]
+            return self.get_or_create_entity(identifier, components_data)  
+        elif template:
+            components_data = {}
+            self.update_from_template(components_data, template)
+            identifier = self.create_unique_identifier(template)
+            return self.get_or_create_entity(identifier, components_data)
+        else:
+            raise ValueError("There is no identifier and no Template set." 
+                             "Can't create an Entity without an identifier.")
+            
 
     def pump(self, time_delta):
         """Performs actions every frame

@@ -131,4 +131,4 @@ class RPGWorld(World):
                     setattr(comp_obj, key, value)
             return new_ent
         else:
-            return None
+            return None 
