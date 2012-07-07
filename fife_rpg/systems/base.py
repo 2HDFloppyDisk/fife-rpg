@@ -55,11 +55,11 @@ class Base(System):
             True if the system was registered, False if not.
         """
         try:
-            SystemManager.register_system(name, cls(*args, **kwargs))
-            cls.__registered_as = name
             for dependency in cls.dependencies:
                 if not dependency.registered_as:
                     dependency.register()
+            SystemManager.register_system(name, cls(*args, **kwargs))
+            cls.__registered_as = name
             return True
         except AlreadyRegisteredError as error:
             print error
