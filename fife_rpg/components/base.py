@@ -77,22 +77,3 @@ class Base(Component):
         except AlreadyRegisteredError as error:
             print error
             return False
-
-    @classmethod
-    def setup(cls, data, entity):#pylint: disable=W0613
-        """Sets up the entity dictionary by reading a data dictionary
-
-        Args:
-            data: A dictionary containg the component data
-            entity: A dictionary that will be used to create the Entity
-
-        Returns: The modified entity dictionary
-
-        Raises:
-            NotRegisteredError if the class is not registered
-        """
-        if not cls.registered_as:
-            raise NotRegisteredError("Component")
-        if not cls.registered_as in entity:
-            entity[cls.registered_as] = {}
-        return entity
