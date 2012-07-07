@@ -22,12 +22,9 @@
 
 from fife_rpg.components.base import Base
 from fife_rpg.components.fifeagent import FifeAgent
-from fife_rpg import BehaviourManager
 
 class Behaviour(Base):
     """Component that stores the values of the behaviour"""
-
-    dependencies = [FifeAgent]
 
     def __init__(self):
         """Constructor"""
@@ -48,22 +45,3 @@ class Behaviour(Base):
             True if the component was registered, False if not.
         """
         return (super(Behaviour, cls).register(name, auto_register))
-
-    @classmethod
-    def setup(cls, data, entity):
-        """Sets up the entity dictionary by reading a data dictionary
-
-        Args:
-            data: A dictionary containg the base data
-            entity: A dictionary that will be used to create the Entity
-
-        Returns: The modified entity dictionary
-
-        Raises:
-            NotRegisteredError if the class is not registered
-        """
-        entity = super(Behaviour, cls).setup(data, entity)
-        if not FifeAgent.registered_as in entity:
-            entity[FifeAgent.registered_as] = {}
-        behaviour = BehaviourManager.get_behaviour(data["behaviour_type"])()
-        entity[FifeAgent.registered_as]["behaviour"] = behaviour
