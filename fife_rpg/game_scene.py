@@ -41,6 +41,7 @@ from fife_rpg import RPGWorld
 from fife_rpg.components.agent import Agent
 from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
 from fife_rpg.components.general import General
+from fife_rpg.entities import RPGEntity
 from fife_rpg import behaviours as BehaviourManager
 from fife_rpg.components import ComponentManager
 from fife_rpg.systems import GameEnvironment
@@ -122,7 +123,7 @@ class GameSceneController(ControllerBase, RPGWorld):
         """
         ControllerBase.__init__(self, view, application)
         RPGWorld.__init__(self, self.engine)
-        yaml.add_representer(General, self.entity_representer)
+        yaml.add_representer(RPGEntity, self.entity_representer)
         yaml.add_constructor('!Entity', self.entity_constructor, yaml.SafeLoader)
         self.__maps = {}
         self.__current_map = None

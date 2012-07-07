@@ -24,4 +24,4 @@
 
 import sys
 
-from fife_rpg.entities.general import General
+from fife_rpg.entities.rpg_entity import RPGEntity
