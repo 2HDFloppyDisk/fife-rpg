@@ -113,7 +113,8 @@ class  TestContainer(unittest.TestCase):
         self.assertIsNone(container.get_item(self.inv_15, 0))
         
         container.put_item(self.inv_15, self.sword_1, 0)        
-        self.assertIsNotNone(container.get_item(self.inv_15, 0))        
+        self.assertIsNotNone(container.get_item(self.inv_15, 0))
+        self.assertIsNotNone(self.sword_1.containable.container)        
         sword_1_container = self.world.get_entity(
                                 self.sword_1.containable.container)
         self.assertListEqual(self.inv_15.container.children,
@@ -125,6 +126,7 @@ class  TestContainer(unittest.TestCase):
         
         container.take_item(self.inv_15, 0)
         self.assertIsNone(self.inv_15.container.children[0])
+        self.assertIsNone(self.sword_1.containable.container)        
         
     def test_Swap(self):
         self.assertIsNone(self.inv_15.container.children[0])

@@ -28,7 +28,7 @@ class Containable(Base):
     def __init__(self):
         """Constructor"""
         Base.__init__(self, bulk=int, weight=int, item_type=str, image=str,
-                            container=str, slot=int)
+                            container=object, slot=int)
 
     @property
     def saveable_fields(self):
