@@ -37,7 +37,6 @@ class Equipable(Base):
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
         fields = self.fields.keys()
-        fields.remove("wearer")
         return fields
 
     @classmethod

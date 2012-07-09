@@ -133,7 +133,7 @@ def equip(wearer, equipable, slot):
                         else None)
             setattr(wearer_data, slot, equipable.identifier)
             equipable_data.in_slot = slot
-            equipable_data.wearer = wearer
+            equipable_data.wearer = wearer.identifier
             if old_item:
                 old_item_entity = wearer.world.get_entity(old_item)
                 old_item_data = getattr(old_item_entity, 
