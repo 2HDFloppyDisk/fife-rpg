@@ -24,9 +24,8 @@ from fife_rpg.components.base import Base
 from fife_rpg.components.equipable import Equipable
 
 class Equip(Base):
-    """
-    Component that stores the equipment (what is being worn/wielded).
-    """
+    """Example fomponent for storing equipped items 
+    (what is being worn/wielded)."""
 
     dependencies = [Equipable]
 
@@ -111,44 +110,53 @@ def equip(wearer, equipable, slot):
     """Equip the wearer with the given equipable.
 
     Args:
-        wearer: An Equip instance
-        equipable: An Equipable instance
+        wearer: An Entity with a equip component
+        equipable: An Entity with a equipable component
         slot: The slot to which the equipable shoud be equipped
 
     Returns:
-        The equipable that was at the given slot, or None
+        The Entity of the equipable that was at the given slot, or None
 
     Raises:
         AlreadyEquippedError if the equipable is already equipped elsewhere.
         SlotInvalidError if the slot does not exists
         CannotBeEquippedInSlot if the equipable cannot be equipped in that slot
     """
-    if equipable.wearer:
+    wearer_data = getattr(wearer, Equip.registered_as)
+    equipable_data = getattr(equipable, Equipable.registered_as)
+    if equipable_data.wearer:
         raise AlreadyEquippedError
-    if slot in equipable.possible_slots:
+    if slot in equipable_data.possible_slots:
         try:
-            old_item = getattr(wearer, slot) if hasattr(wearer, slot) else None
-            setattr(wearer, slot, equipable)
-            equipable.in_slot = slot
-            equipable.wearer = wearer
+            old_item = (getattr(wearer_data, slot)
+                        if hasattr(wearer_data, slot) 
+                        else None)
+            setattr(wearer_data, slot, equipable)
+            equipable_data.in_slot = slot
+            equipable_data.wearer = wearer_data
             if old_item:
-                old_item.in_slot = None
-                old_item.wearer = None
+                old_item_data = getattr(old_item, Equipable.registered_as)
+                old_item_data.in_slot = None
+                old_item_data.wearer = None
             return old_item
         except AttributeError:
             raise SlotInvalidError(slot)
-    raise CannotBeEquippedInSlot(slot, equipable)
+    raise CannotBeEquippedInSlot(slot, equipable_data)
 
 def get_equipable(wearer, slot):
     """Return the equipable in the given slot.
+
+    Args:
+        wearer: An Entity with a equip component
 
     Raises:
         SlotInvalidError if there is no such slot
     """
     if not wearer:
         return None
+    wearer_data = getattr(wearer, Equip.registered_as)
     try:
-        item = getattr(wearer, slot)
+        item = getattr(wearer_data, slot)
         return item
     except AttributeError:
         raise SlotInvalidError(slot)
@@ -161,10 +169,12 @@ def take_equipable(wearer, slot):
         slot: The slot from which should be unequipped.
     """
     item = get_equipable(wearer, slot)
-    setattr(wearer, slot, None)
-    if item:
-        item.in_slot = None
-        item.wearer = None
+    wearer_data = getattr(wearer, Equip.registered_as)
+    item_data = getattr(item, Equipable.registered_as)
+    setattr(wearer_data, slot, None)
+    if item_data:
+        item_data.in_slot = None
+        item_data.wearer = None
     return item
     
     

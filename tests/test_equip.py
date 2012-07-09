@@ -12,7 +12,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from fife_rpg.components import equip
+from fife_rpg.components import equip, equipable
 
 from bGrease.world import BaseWorld
 from bGrease.entity import Entity
@@ -26,8 +26,10 @@ class TestEquip(unittest.TestCase):
 
         def configure(self):
             """Set up the world"""
-            self.components.equipable = equip.Equipable()
+            self.components.equipable = equipable.Equipable()
+            equipable.Equipable.registered_as = "equipable"
             self.components.equip = equip.Equip()
+            equip.Equip.registered_as = "equip"
 
     def setUp(self):
         unittest.TestCase.setUp(self)
@@ -43,16 +45,16 @@ class TestEquip(unittest.TestCase):
         self.t_arm_item.equipable.possible_slots = ["t_arm"]
         
     def test_equip_and_take(self):
-        self.assertRaises(equip.SlotInvalidError, equip.equip, self.wearer.equip, self.t_arm_item.equipable, "t_arm")
-        self.assertRaises(equip.CannotBeEquippedInSlot, equip.equip, self.wearer.equip, self.l_arm_item.equipable, "r_arm")
-        equip.equip(self.wearer.equip, self.l_arm_item.equipable, "l_arm")
-        equip.equip(self.wearer.equip, self.r_arm_item.equipable, "r_arm")
+        self.assertRaises(equip.SlotInvalidError, equip.equip, self.wearer, self.t_arm_item, "t_arm")
+        self.assertRaises(equip.CannotBeEquippedInSlot, equip.equip, self.wearer, self.l_arm_item, "r_arm")
+        equip.equip(self.wearer, self.l_arm_item, "l_arm")
+        equip.equip(self.wearer, self.r_arm_item, "r_arm")
         self.assertIsNotNone(self.l_arm_item.equipable.wearer)
-        self.assertRaises(equip.AlreadyEquippedError, equip.equip, self.wearer.equip, self.l_arm_item.equipable, "r_arm")
-        equip.equip(self.wearer.equip, self.arms_item.equipable, "r_arm")
+        self.assertRaises(equip.AlreadyEquippedError, equip.equip, self.wearer, self.l_arm_item, "r_arm")
+        equip.equip(self.wearer, self.arms_item, "r_arm")
         self.assertIsNone(self.r_arm_item.equipable.wearer)
         self.assertIsNotNone(self.arms_item.equipable.wearer)
-        equip.take_equipable( self.wearer.equip, self.l_arm_item.equipable.in_slot)
+        equip.take_equipable( self.wearer, self.l_arm_item.equipable.in_slot)
         self.assertIsNone(self.l_arm_item.equipable.wearer)
         
     def tearDown(self):
