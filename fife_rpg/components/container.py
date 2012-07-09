@@ -32,12 +32,12 @@ class Container(Base):
 
     def __init__(self):
         Base.__init__(self, children=list, max_bulk=int)
+        self.fields["children"].default = list
 
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
         fields = self.fields.keys()
-        fields.remove("children")
         return fields
 
     @classmethod
@@ -85,7 +85,7 @@ def get_free_slot(container):
     """Returns the first slot of the container that is not occupied.
 
     Args:
-        container: A Container instance
+        container: An RPGEntity with a container component
 
     Returns:
         The index of a free slot if there is any.
@@ -93,6 +93,7 @@ def get_free_slot(container):
     Raises:
         NoFreeSlotError if there is no free slot.
     """
+    container = getattr(container, Container.registered_as)
     index = 0
     for child in container.children:
         if not child:
@@ -104,22 +105,27 @@ def get_total_bulk(container):
     """Returns the bulk of all items in the container.
 
     Args:
-        container: A Container instance
+        container: An RPGEntity with a container component
     """
+    container = getattr(container, Container.registered_as)
     total_bulk = 0
     for child in container.children:
         if child:
+            child = getattr(child, Containable.registered_as)
             total_bulk += child.bulk
     return total_bulk
 
 def get_total_weight(container):
     """Returns the weight of all items in the container.
+    
     Args:
-        container: A Container instance
+        container: An RPGEntity with a container component
     """
+    container = getattr(container, Container.registered_as)
     total_weight = 0
     for child in container.children:
         if child:
+            child = getattr(child, Containable.registered_as)
             total_weight += child.weight
     return total_weight
 
@@ -127,76 +133,82 @@ def get_item(container, slot_or_type):
     """Returns the item that is in the slot, or has the given type.
 
     Args:
-        container: A Container instance
+        container: An RPGEntity with a container component
         slot_or_type: The index of the slot, or an item type
     """
+    container_data = getattr(container, Container.registered_as)
     if type(slot_or_type) == int:
-        if len(container.children) >= (slot_or_type + 1):
-            return container.children[slot_or_type]
+        if len(container_data.children) >= (slot_or_type + 1):
+            return container_data.children[slot_or_type]
     else:
-        for child in container.children:
-            if child and child.item_type == slot_or_type:
-                return child
+        for child in container_data.children:
+            if (child): 
+                child_component = getattr(child, Containable.registered_as)
+                if (child_component.item_type == slot_or_type):
+                    return child
     return None
 
 def remove_item(container, slot_or_type):
     """Removes the item at the given slot, or with the given type.
 
     Args:
-        container: A Container instance
+        container: An RPGEntity with a container component
         slot_or_type: The index of the slot, or an item type
     """
+    container_data = getattr(container, Container.registered_as)
     if type(slot_or_type) == int:
         item = get_item(container, slot_or_type)
         if item:
-            container.children[slot_or_type] = None
+            item = getattr(item, Containable.registered_as)
+            container_data.children[item.slot] = None
             item.container = None
             item.slot = -1
-    else:
-        for child in container.children:
-            if child and child.item_type == slot_or_type:
-                container.children[child.slot] = None
-                child.container = None
-                child.slot = -1
 
 def take_item(container, slot_or_type):
     """Moves the item at the given slot, or with the given type,
     out of the container and returns it.
 
     Args:
-        container: A Container instance
+        container: An RPGEntity with a container component
         slot_or_type: The index of the slot, or an item type
+
+    Returns:
+        The item as an RPGEntity
     """
     item = get_item(container, slot_or_type)
     if item:
-        remove_item(container, slot_or_type)
+        item_data = getattr(item, Containable.registered_as)
+        remove_item(container, item_data.slot)
     return item
 
 def put_item(container, item, slot=-1):
-    """Puts the item at the given slot in the container.
-    Returns the item previously at the slot.
+    """Puts the item at the given slot in the container and returns the 
+    item previously at the slot.
 
     Args:
-        container: A Container instance
-        item: A containable instance
+        container: An RPGEntity with a container component
+        item: An RPGEntity with a containable component
         slot: The slot where to pu the item. Defaults to first free slot.
 
     Raises:
         BulkLimitError if the item would exceed the containers bulk.
     """
+    container_data = getattr(container, Container.registered_as)
+    item_data = getattr(item, Containable.registered_as)
     if slot == -1:
         slot = get_free_slot(container)
     total_bulk = get_total_bulk(container)
-    total_bulk += item.bulk
+    total_bulk += item_data.bulk
     old_item = get_item(container, slot)
     if old_item:
-        total_bulk -= old_item.bulk
-    if total_bulk > container.max_bulk:
-        raise BulkLimitError(total_bulk, container.max_bulk)
+        old_item_data = getattr(old_item, Containable.registered_as)
+        total_bulk -= old_item_data.bulk
+    if total_bulk > container_data.max_bulk:
+        raise BulkLimitError(total_bulk, container_data.max_bulk)
     remove_item(container, slot)
-    container.children[slot] = item
-    if item.container:
-        remove_item(item.container, item.slot)
-    item.container = container
-    item.slot = slot
+    container_data.children[slot] = item
+    if item_data.container:
+        remove_item(item_data.container, item_data.slot)
+    item_data.container = container
+    item_data.slot = slot
     return old_item
