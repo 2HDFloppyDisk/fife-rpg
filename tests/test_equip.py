@@ -12,10 +12,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from fife_rpg.components import equip, equipable
+from fife_rpg.components import equip, equipable, general
 
 from bGrease.world import BaseWorld
-from bGrease.entity import Entity
+from fife_rpg.entities import RPGEntity
 
 import unittest
 
@@ -26,22 +26,39 @@ class TestEquip(unittest.TestCase):
 
         def configure(self):
             """Set up the world"""
+            self.components.general = general.General()
+            general.General.registered_as = "general"
             self.components.equipable = equipable.Equipable()
             equipable.Equipable.registered_as = "equipable"
             self.components.equip = equip.Equip()
             equip.Equip.registered_as = "equip"
 
+        def get_entity(self, identifier):
+            """Returns the entity with the identifier
+            
+            Args:
+                identifier: The identifier of the entity
+            
+            Returns:
+                The entity with the identifier or None
+            """
+            extent = getattr(self[RPGEntity], "general")
+            entities = extent.identifier == identifier
+            if len(entities) > 0:
+                return entities.pop()
+            return None
+
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.world = self.GameWorld()
-        self.wearer = Entity(self.world)
-        self.arms_item = Entity(self.world)
+        self.wearer = RPGEntity(self.world, "wearer")
+        self.arms_item = RPGEntity(self.world, "arms_item")
         self.arms_item.equipable.possible_slots = ["l_arm", "r_arm"]
-        self.l_arm_item = Entity(self.world)
+        self.l_arm_item = RPGEntity(self.world, "l_arm_item")
         self.l_arm_item.equipable.possible_slots = ["l_arm"]
-        self.r_arm_item = Entity(self.world)
+        self.r_arm_item = RPGEntity(self.world, "r_arm_item")
         self.r_arm_item.equipable.possible_slots = ["r_arm"]
-        self.t_arm_item = Entity(self.world)
+        self.t_arm_item = RPGEntity(self.world, "t_arm_item")
         self.t_arm_item.equipable.possible_slots = ["t_arm"]
         
     def test_equip_and_take(self):

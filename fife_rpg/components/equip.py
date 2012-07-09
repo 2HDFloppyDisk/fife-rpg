@@ -30,8 +30,8 @@ class Equip(Base):
     dependencies = [Equipable]
 
     def __init__(self):
-        Base.__init__(self, head=object, neck=object, body=object, belt=object, 
-                      leg=object, feet=object, l_arm=object, r_arm=object)
+        Base.__init__(self, head=str, neck=str, body=str, belt=str, 
+                      leg=str, feet=str, l_arm=str, r_arm=str)
         self.head = None
         self.neck = None
         self.body = None
@@ -131,13 +131,16 @@ def equip(wearer, equipable, slot):
             old_item = (getattr(wearer_data, slot)
                         if hasattr(wearer_data, slot) 
                         else None)
-            setattr(wearer_data, slot, equipable)
+            setattr(wearer_data, slot, equipable.identifier)
             equipable_data.in_slot = slot
-            equipable_data.wearer = wearer_data
+            equipable_data.wearer = wearer
             if old_item:
-                old_item_data = getattr(old_item, Equipable.registered_as)
+                old_item_entity = wearer.world.get_entity(old_item)
+                old_item_data = getattr(old_item_entity, 
+                                        Equipable.registered_as)
                 old_item_data.in_slot = None
                 old_item_data.wearer = None
+                return old_item_entity
             return old_item
         except AttributeError:
             raise SlotInvalidError(slot)
@@ -168,7 +171,7 @@ def take_equipable(wearer, slot):
         wearer: An Equip instance
         slot: The slot from which should be unequipped.
     """
-    item = get_equipable(wearer, slot)
+    item = wearer.world.get_entity(get_equipable(wearer, slot))
     wearer_data = getattr(wearer, Equip.registered_as)
     item_data = getattr(item, Equipable.registered_as)
     setattr(wearer_data, slot, None)
