@@ -107,12 +107,15 @@ def get_total_bulk(container):
     Args:
         container: An RPGEntity with a container component
     """
+    world = container.world
     container = getattr(container, Container.registered_as)
     total_bulk = 0
     for child in container.children:
         if child:
-            child = getattr(child, Containable.registered_as)
-            total_bulk += child.bulk
+            child_entity = world.get_entity(child)
+            child_component = getattr(child_entity, 
+                                      Containable.registered_as)
+            total_bulk += child_component.bulk
     return total_bulk
 
 def get_total_weight(container):
@@ -121,12 +124,15 @@ def get_total_weight(container):
     Args:
         container: An RPGEntity with a container component
     """
+    world = container.world
     container = getattr(container, Container.registered_as)
     total_weight = 0
     for child in container.children:
         if child:
-            child = getattr(child, Containable.registered_as)
-            total_weight += child.weight
+            child_entity = world.get_entity(child)
+            child_component = getattr(child_entity, 
+                                      Containable.registered_as)
+            total_weight += child_component.weight
     return total_weight
 
 def get_item(container, slot_or_type):
@@ -136,16 +142,17 @@ def get_item(container, slot_or_type):
         container: An RPGEntity with a container component
         slot_or_type: The index of the slot, or an item type
     """
+    world = container.world
     container_data = getattr(container, Container.registered_as)
     if type(slot_or_type) == int:
         if len(container_data.children) >= (slot_or_type + 1):
-            return container_data.children[slot_or_type]
+            return world.get_entity(container_data.children[slot_or_type])
     else:
         for child in container_data.children:
             if (child): 
                 child_component = getattr(child, Containable.registered_as)
                 if (child_component.item_type == slot_or_type):
-                    return child
+                    return world.get_entity(child)
     return None
 
 def remove_item(container, slot_or_type):
@@ -206,7 +213,7 @@ def put_item(container, item, slot=-1):
     if total_bulk > container_data.max_bulk:
         raise BulkLimitError(total_bulk, container_data.max_bulk)
     remove_item(container, slot)
-    container_data.children[slot] = item
+    container_data.children[slot] = item.identifier
     if item_data.container:
         remove_item(item_data.container, item_data.slot)
     item_data.container = container
