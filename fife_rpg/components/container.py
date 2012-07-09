@@ -216,6 +216,6 @@ def put_item(container, item, slot=-1):
     container_data.children[slot] = item.identifier
     if item_data.container:
         remove_item(item_data.container, item_data.slot)
-    item_data.container = container
+    item_data.container = container.identifier
     item_data.slot = slot
     return old_item

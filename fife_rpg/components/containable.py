@@ -28,13 +28,12 @@ class Containable(Base):
     def __init__(self):
         """Constructor"""
         Base.__init__(self, bulk=int, weight=int, item_type=str, image=str,
-                            container=object, slot=int)
+                            container=str, slot=int)
 
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
         fields = self.fields.keys()
-        fields.remove("container")
         return fields
 
     @classmethod

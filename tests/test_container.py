@@ -114,8 +114,10 @@ class  TestContainer(unittest.TestCase):
         
         container.put_item(self.inv_15, self.sword_1, 0)        
         self.assertIsNotNone(container.get_item(self.inv_15, 0))        
+        sword_1_container = self.world.get_entity(
+                                self.sword_1.containable.container)
         self.assertListEqual(self.inv_15.container.children,
-                    self.sword_1.containable.container.container.children)
+                    sword_1_container.container.children)
         self.assertEqual(container.get_item(self.inv_15, 0), 
                          self.sword_1)
         self.assertEqual(container.get_item(self.inv_15, 0).containable.slot, 
@@ -140,8 +142,10 @@ class  TestContainer(unittest.TestCase):
         self.assertEqual(sword2_data.slot, sword2_data.slot)
 
         self.assertIsNotNone(container.get_item(self.inv_15, 0))
+        dagger_1_container = self.world.get_entity(
+                                self.dagger_1.containable.container)
         self.assertListEqual(self.inv_15.container.children,
-                    self.dagger_1.containable.container.container.children)
+                    dagger_1_container.container.children)
         self.assertEqual(container.get_item(self.inv_15, 0).containable.container,
                          self.dagger_1.containable.container)
         self.assertEqual(container.get_item(self.inv_15, 0).containable.slot,
