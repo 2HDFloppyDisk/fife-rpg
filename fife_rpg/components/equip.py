@@ -61,11 +61,6 @@ class RPGEquip(Equip):
         self.l_arm = None
         self.r_arm = None
 
-    @property
-    def saveable_fields(self):
-        """Returns the fields of the component that can be saved."""
-        return []
-
     @classmethod
     def register(cls, name="equip", auto_register=True):
         """Registers the class as a component
