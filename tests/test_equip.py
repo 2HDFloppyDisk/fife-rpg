@@ -30,7 +30,8 @@ class TestEquip(unittest.TestCase):
             general.General.registered_as = "general"
             self.components.equipable = equipable.Equipable()
             equipable.Equipable.registered_as = "equipable"
-            self.components.equip = equip.Equip()
+            self.components.equip = equip.RPGEquip()
+            equip.RPGEquip.registered_as = "equip"
             equip.Equip.registered_as = "equip"
 
         def get_entity(self, identifier):

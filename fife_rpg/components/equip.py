@@ -24,13 +24,33 @@ from fife_rpg.components.base import Base
 from fife_rpg.components.equipable import Equipable
 
 class Equip(Base):
-    """Example fomponent for storing equipped items 
-    (what is being worn/wielded)."""
-
+    """Basic equipment container component"""
     dependencies = [Equipable]
 
+    def __init__(self, **fields):
+        Base.__init__(self, **fields)
+    
+    @classmethod
+    def register(cls, name="equip", auto_register=True):
+        """Registers the class as a component
+
+        Args:
+            name: The name under which the class should be registered
+            auto_register: This sets whether components this component
+            derives from will have their registered_as property set to the same
+            name as this class.
+
+        Returns:
+            True if the component was registered, False if not.
+        """
+        return (super(Equip, cls).register(name, auto_register))
+
+class RPGEquip(Equip):
+    """Example component for storing equipped items 
+    (what is being worn/wielded)."""
+
     def __init__(self):
-        Base.__init__(self, head=str, neck=str, body=str, belt=str, 
+        Equip.__init__(self, head=str, neck=str, body=str, belt=str, 
                       leg=str, feet=str, l_arm=str, r_arm=str)
         self.head = None
         self.neck = None
@@ -59,7 +79,7 @@ class Equip(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Equip, cls).register(name, auto_register))
+        return (super(RPGEquip, cls).register(name, auto_register))
 
 class SlotInvalidError(Exception):
     """Error that gets raised when the slot is invalid."""
