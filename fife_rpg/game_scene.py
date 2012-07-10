@@ -248,7 +248,8 @@ class GameSceneController(ControllerBase, RPGWorld):
                     map_object = fife_model.getObject(agent.gfx,
                                                      object_namespace)
                     general = getattr(entity, General.registered_as)
-                    fife_instance = game_map.actor_layer.createInstance(
+                    layer = getattr(game_map, "%s_layer" % agent.type)
+                    fife_instance = layer.createInstance(
                                         map_object,
                                         fife.ExactModelCoordinate(agent.pos_x,
                                                                   agent.pos_y,
@@ -267,7 +268,7 @@ class GameSceneController(ControllerBase, RPGWorld):
                     behaviour.agent = fife_instance
                     fifeagent = getattr(entity, FifeAgent.registered_as)
                     fifeagent.behaviour = behaviour
-                    fifeagent.layer = game_map.actor_layer
+                    fifeagent.layer = layer
                     setup_behaviour(fifeagent)
                     fifeagent.behaviour.idle()
                 self.__maps[name] = game_map
