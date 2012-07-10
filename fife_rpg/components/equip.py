@@ -50,16 +50,16 @@ class RPGEquip(Equip):
     (what is being worn/wielded)."""
 
     def __init__(self):
-        Equip.__init__(self, head=str, neck=str, body=str, belt=str, 
-                      leg=str, feet=str, l_arm=str, r_arm=str)
-        self.head = None
-        self.neck = None
-        self.body = None
-        self.belt = None
-        self.leg = None
-        self.feet = None
-        self.l_arm = None
-        self.r_arm = None
+        Equip.__init__(self, head=object, neck=object, body=object, belt=object, 
+                      leg=object, feet=object, l_arm=object, r_arm=object)
+        self.fields["head"].default = lambda: None
+        self.fields["neck"].default = lambda: None
+        self.fields["body"].default = lambda: None
+        self.fields["belt"].default = lambda: None
+        self.fields["leg"].default = lambda: None
+        self.fields["feet"].default = lambda: None
+        self.fields["l_arm"].default = lambda: None
+        self.fields["r_arm"].default = lambda: None
 
     @classmethod
     def register(cls, name="equip", auto_register=True):
