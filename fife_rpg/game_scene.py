@@ -193,27 +193,52 @@ class GameSceneController(ControllerBase, RPGWorld):
                              )
                 camera = self.application.settings.get(
                     "fife-rpg", "Camera", "main")
-                agent_layer = self.application.settings.get(
-                "fife-rpg", "AgentLayer", "agents")
+                actor_layer = self.application.settings.get(
+                "fife-rpg", "ActorLayer", "actors")
+                ground_object_layer = self.application.settings.get(
+                "fife-rpg", "GroundObjectLayer", "objects")
+                item_layer = self.application.settings.get(
+                "fife-rpg", "ItemLayer", "items")
                 fife_map = loadMapFile(os.path.join(
                                             maps_path, game_map + '.xml'),
                                        self.engine, extensions = {
                                             'lights': use_lighting})
                 found_layer = False
                 for layer in fife_map.getLayers():
-                    if layer.getId() == agent_layer:
+                    if layer.getId() == item_layer:
                         found_layer = True
                         break                
                     
                 if not found_layer:
-                    fife_map.createLayer(agent_layer, grid_type)
+                    fife_map.createLayer(item_layer, grid_type)
+                    
+                found_layer = False
+                for layer in fife_map.getLayers():
+                    if layer.getId() == ground_object_layer:
+                        found_layer = True
+                        break                
+                    
+                if not found_layer:
+                    fife_map.createLayer(ground_object_layer, grid_type)
+
+                found_layer = False
+                for layer in fife_map.getLayers():
+                    if layer.getId() == actor_layer:
+                        found_layer = True
+                        break                
+                    
+                if not found_layer:
+                    fife_map.createLayer(actor_layer, grid_type)                    
+                    
                 #TODO: (Beliar) Add loading of additional objects, like regions
                 #TODO: and entities
                 regions = {}
-                game_map = Map(fife_map, name, camera, agent_layer,
-                                        regions)
+                game_map = Map(fife_map, name, camera, actor_layer,            
+                               ground_object_layer, item_layer, regions)
                 renderer = fife.InstanceRenderer.getInstance(game_map.camera)
-                renderer.addActiveLayer(game_map.agent_layer)
+                renderer.addActiveLayer(game_map.item_layer)
+                renderer.addActiveLayer(game_map.ground_object_layer)
+                renderer.addActiveLayer(game_map.actor_layer)
                 game_map.update_entities(self)
                 object_namespace = self.application.settings.get("fife-rpg", 
                         "ObjectNamespace", "fife-rpg")
@@ -223,7 +248,7 @@ class GameSceneController(ControllerBase, RPGWorld):
                     map_object = fife_model.getObject(agent.gfx,
                                                      object_namespace)
                     general = getattr(entity, General.registered_as)
-                    fife_instance = game_map.agent_layer.createInstance(
+                    fife_instance = game_map.actor_layer.createInstance(
                                         map_object,
                                         fife.ExactModelCoordinate(agent.pos_x,
                                                                   agent.pos_y,
@@ -234,7 +259,7 @@ class GameSceneController(ControllerBase, RPGWorld):
                     visual.setStackPosition(agent.stack_position)
 
                     if (map_object.getAction('default')):
-                        target = fife.Location(game_map.agent_layer)
+                        target = fife.Location(game_map.actor_layer)
                         fife_instance.act('default', target, True)
                     
                     behaviour = BehaviourManager.get_behaviour(
@@ -242,7 +267,7 @@ class GameSceneController(ControllerBase, RPGWorld):
                     behaviour.agent = fife_instance
                     fifeagent = getattr(entity, FifeAgent.registered_as)
                     fifeagent.behaviour = behaviour
-                    fifeagent.layer = game_map.agent_layer
+                    fifeagent.layer = game_map.actor_layer
                     setup_behaviour(fifeagent)
                     fifeagent.behaviour.idle()
                 self.__maps[name] = game_map
