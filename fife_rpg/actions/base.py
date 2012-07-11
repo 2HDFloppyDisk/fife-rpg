@@ -29,14 +29,19 @@ class Base(object):
     __registered_as = None
     dependencies = []
 
-    def __init__(self, controller, commands = None):
+    def __init__(self, controller, agent, target, commands = None):
         """Basic action constructor
 
         Args:
             controller: A fife_rpg.ControllerBase instance
+            agent: The agent initiating the action
+            target: The target of the action
+            commands: List of additional commands to execute
         """
         self.commands = commands or ()
         self.controller = controller
+        self.agent = agent
+        self.target = target
         self.executed = False
     
     def execute(self):
@@ -56,17 +61,26 @@ class Base(object):
         self.executed = True
 
     @classmethod
-    def check_entity(cls, entity): #pylint: disable-msg=W0613
-        """Checks whether the action can be performed on the given entity
+    def check_agent(cls, entity): #pylint: disable-msg=W0613
+        """Checks whether the entity qualifies as an agent for this action
         
         Args:
             entity: The entity to ceck. A bGrease.Entity instance.
 
-        Returns: True if the action can be performed on that entity. False 
-        otherwise
+        Returns: True if the entity qualifes. False otherwise
         """
         return False
     
+    @classmethod
+    def check_target(cls, entity): #pylint: disable-msg=W0613
+        """Checks whether the entity qualifies as a target for this action
+        
+        Args:
+            entity: The entity to ceck. A bGrease.Entity instance.
+
+        Returns: True if the entity qualifes. False otherwise
+        """
+        return False
 
     @classmethod
     def register(cls, name):
