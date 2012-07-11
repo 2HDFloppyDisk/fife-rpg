@@ -366,8 +366,12 @@ class GameSceneController(ControllerBase, RPGWorld):
                 "fife-rpg", "EntitiesFile", "objects/entities.yaml")
         vfs = self.application.engine.getVFS()
         entities_file = vfs.open(entities_file_name)
-        for entity in yaml.safe_load_all(entities_file):
-            print entity
+        entities = yaml.safe_load_all(entities_file)
+        try:
+            while entities.next():
+                entities.next()
+        except StopIteration:
+            pass
         
     def create_entity_dictionary(self, entity):
         """Creates a dictionary containing the values of the Entity
