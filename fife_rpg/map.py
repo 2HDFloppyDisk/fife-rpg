@@ -138,6 +138,15 @@ class Map(object):
         raise KeyError("The map %s has no entity with the name %s" % 
                        (self.name, name))
     
+    def get_instances_at(self, point, layer):
+        """Query the main camera for instances on the specified layer.
+        
+        Args:
+            point: The point that should be checked
+            layer: The layer from which we want the instances 
+        """
+        return self.camera.getMatchingInstances(point, layer)
+    
     def is_in_region(self, location, region):
         """Checks if a given point is inside the given region
 
