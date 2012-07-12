@@ -264,7 +264,7 @@ class GameSceneController(ControllerBase, RPGWorld):
                         fife_instance.act('default', target, True)
                     
                     behaviour = BehaviourManager.get_behaviour(
-                                            entity.behaviour.behaviour_type)()
+                                            agent.behaviour_type)()
                     behaviour.agent = fife_instance
                     fifeagent = getattr(entity, FifeAgent.registered_as)
                     fifeagent.behaviour = behaviour

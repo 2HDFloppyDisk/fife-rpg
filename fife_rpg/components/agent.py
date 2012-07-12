@@ -30,7 +30,7 @@ class Agent(Base):
         """Constructor"""
         Base.__init__(self, gfx=str, map=str, type=str, pos_x=float, 
                       pos_y=float, pos_z=float, rotation=int, 
-                      stack_position=int)
+                      stack_position=int, behaviour_type=str)
         self.fields["type"].default = lambda: "actor"
 
     @classmethod
