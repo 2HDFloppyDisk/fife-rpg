@@ -27,7 +27,13 @@ class Lockable(Base):
 
     def __init__(self):
         """Constructor"""
-        Base.__init__(self, closed=bool, locked=bool)
+        Base.__init__(self, closed=bool, locked=bool, 
+                      open_animation=str, opened_animation=str,
+                      close_animation=str, closed_animation=str)
+        self.fields["open_animation"].default = lambda: "open"
+        self.fields["opened_animation"].default = lambda: "opened"
+        self.fields["close_animation"].default = lambda: "close"
+        self.fields["closed_animation"].default = lambda: "closed"
 
     @classmethod
     def register(cls, name="lockable", auto_register=True):
