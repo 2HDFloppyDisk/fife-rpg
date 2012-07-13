@@ -20,7 +20,10 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from fife_rpg.components import ComponentManager
 from fife_rpg.components.base import Base
+from fife_rpg.components.fifeagent import FifeAgent
+from fife_rpg.exceptions import NotRegisteredError
 
 class Lockable(Base):
     """Component that stores the data of a lock"""
@@ -105,3 +108,20 @@ def close_lock(lockable):
         lockable: A lockable instance
     """
     lockable.closed = True
+
+
+def check_lockable_fifeagent(fifeagent, lockable):
+    """Checks the lockable for inconsistences with the fifeagent"""
+    if lockable.closed:
+        fifeagent.behaviour.animate(lockable.closed_animation, repeating=True)
+    else:
+        fifeagent.behaviour.animate(lockable.opened_animation, repeating=True)
+        
+def register_checkers():
+    """Registers the components checkers"""
+    if not Lockable.registered_as:
+        raise NotRegisteredError("Lockable")
+    if FifeAgent.registered_as:
+        ComponentManager.register_checker(
+            (FifeAgent.registered_as, Lockable.registered_as),
+            check_lockable_fifeagent)
