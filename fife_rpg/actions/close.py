@@ -14,20 +14,20 @@
 
 #  This module is based on the scriptingsystem module from PARPG
 
-"""The open actions opens unlocked lockables
+"""The close action closes opened lockables
 
 .. module:: open
-    :synopsis: Opens unlocked lockables
+    :synopsis: Closes opened lockables
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
 from fife_rpg.actions.base import Base
 from fife_rpg.components.lockable import Lockable
-from fife_rpg.components.lockable import open_lock
+from fife_rpg.components.lockable import close_lock
 from fife_rpg.components.fifeagent import FifeAgent
 
-class OpenAction(Base):
-    """Action for opening unlocked lockables"""
+class CloseAction(Base):
+    """Action for closing lockables"""
 
     dependencies = [Lockable]
 
@@ -39,21 +39,18 @@ class OpenAction(Base):
             agent: The agent initiating the action
             target: The target of the action
             commands: List of additional commands to execute
-
-        Raises:
-            LockedError if the lockable is locked
         """
         Base.__init__(self, controller, agent, target, commands)
         
     def execute(self):
         lockable = getattr(self.target, Lockable.registered_as)        
-        open_lock(lockable)
+        close_lock(lockable)
         if FifeAgent.registered_as:
             fifeagent_data = getattr(self.target, FifeAgent.registered_as)
             if fifeagent_data:
                 behaviour = fifeagent_data.behaviour
-                behaviour.animate(lockable.open_animation)
-                behaviour.queue_animation(lockable.opened_animation, 
+                behaviour.animate(lockable.close_animation)
+                behaviour.queue_animation(lockable.closed_animation, 
                                           repeating=True)                
                       
         Base.execute(self)
@@ -79,12 +76,12 @@ class OpenAction(Base):
         Returns: True if the entity qualifes. False otherwise
         """
         lockable = getattr(entity, Lockable.registered_as) 
-        if lockable and (not lockable.locked and lockable.closed):
+        if lockable and not lockable.closed:
             return True
         return False
 
     @classmethod
-    def register(cls, name="Open"):
+    def register(cls, name="Close"):
         """Registers the class as an action
 
         Args:
@@ -96,4 +93,4 @@ class OpenAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        super(OpenAction, cls).register(name)
+        super(CloseAction, cls).register(name)
