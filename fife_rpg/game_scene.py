@@ -455,4 +455,7 @@ class GameSceneController(ControllerBase, RPGWorld):
         RPGWorld.pump(self, time_delta)
         self.current_map.update_entities(self)
         self.current_map.update_entitities_agent()
-        
+        checkers = ComponentManager.get_checkers()
+        for names, callback in checkers:
+            for components in self.components.join(*names):
+                callback(*components)
