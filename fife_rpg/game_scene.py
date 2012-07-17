@@ -250,11 +250,9 @@ class GameSceneController(ControllerBase, RPGWorld):
                     general = getattr(entity, General.registered_as)
                     layer = getattr(game_map, "%s_layer" % agent.type)
                     fife_instance = layer.createInstance(
-                                        map_object,
-                                        fife.ExactModelCoordinate(agent.pos_x,
-                                                                  agent.pos_y,
-                                                                  agent.pos_z),
-                                        general.identifier)
+                                    map_object,
+                                    fife.ExactModelCoordinate(*agent.position),
+                                    general.identifier)
                     fife_instance.setRotation(agent.rotation)
                     visual = fife.InstanceVisual.create(fife_instance)
                     visual.setStackPosition(agent.stack_position)

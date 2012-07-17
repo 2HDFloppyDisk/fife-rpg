@@ -187,9 +187,7 @@ class Map(object):
                 fifeagent = getattr(entity, FifeAgent.registered_as)
                 agent = getattr(entity, Agent.registered_as)
                 location = fifeagent.behaviour.location
-                agent.pos_x = location.x
-                agent.pos_y = location.y
-                agent.pos_z = location.z
+                agent.position = (location.x, location.y, location.z)
                 agent.rotation = fifeagent.behaviour.rotation
                 
     def remove_entity(self, identifier):
