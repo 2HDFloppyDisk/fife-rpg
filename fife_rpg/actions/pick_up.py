@@ -53,6 +53,11 @@ class PickUpAction(Base):
         put_item(self.agent, self.target)
         super(PickUpAction, self).execute()
         
+    @property
+    def menu_text(self):
+        """Returns the text that is to be displayed in menus"""
+        return "Pick up"
+    
     @classmethod
     def check_agent(cls, entity): #pylint: disable-msg=W0613
         """Checks whether the entity qualifies as an agent for this action
@@ -76,7 +81,7 @@ class PickUpAction(Base):
         return bool(getattr(entity, Containable.registered_as))
 
     @classmethod
-    def register(cls, name="Pick up"):
+    def register(cls, name="PickUp"):
         """Registers the class as an action
 
         Args:

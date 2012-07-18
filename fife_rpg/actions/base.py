@@ -22,6 +22,7 @@
 
 from fife_rpg.exceptions import NoSuchCommandError, AlreadyRegisteredError
 from fife_rpg.actions import ActionManager
+from fife_rpg.helpers import ClassProperty
 
 class Base(object):
     """Base Action class, to define the structure"""
@@ -43,6 +44,11 @@ class Base(object):
         self.agent = agent
         self.target = target
         self.executed = False
+        
+    @property
+    def menu_text(self):
+        """Returns the text that is to be displayed in menus"""
+        return self.registered_as
     
     def execute(self):
         """Execute the action
@@ -105,3 +111,9 @@ class Base(object):
         except AlreadyRegisteredError as error:
             print error
             return False
+
+    @ClassProperty
+    @classmethod
+    def registered_as(cls):
+        """Returns the value of registered_as"""
+        return cls.__registered_as

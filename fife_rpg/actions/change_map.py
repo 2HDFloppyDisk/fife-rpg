@@ -51,6 +51,11 @@ class ChangeMapAction(Base):
         except AttributeError:
             pass
         Base.execute(self)
+    
+    @property
+    def menu_text(self):
+        """Returns the text that is to be displayed in menus"""
+        return "Change Map"
         
     @classmethod
     def check_agent(cls, entity): #pylint: disable-msg=W0613
@@ -81,7 +86,7 @@ class ChangeMapAction(Base):
         return False
 
     @classmethod
-    def register(cls, name="Change Map"):
+    def register(cls, name="ChangeMap"):
         """Registers the class as an action
 
         Args:
