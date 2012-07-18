@@ -23,11 +23,7 @@ from bGrease import System
 
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.systems import SystemManager
-
-class ClassProperty(property):
-    """Class to make class properties"""
-    def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)() # pylint: disable=E1101
+from fife_rpg.helpers import ClassProperty
 
 class Base(System):
     """Base system for fife-rpg."""

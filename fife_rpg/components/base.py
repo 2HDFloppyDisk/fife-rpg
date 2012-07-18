@@ -26,11 +26,7 @@ from bGrease.component import Component
 from fife_rpg.components import ComponentManager
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.exceptions import NotRegisteredError
-
-class ClassProperty(property):
-    """Class to make class properties"""
-    def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)() # pylint: disable=E1101
+from fife_rpg.helpers import ClassProperty
 
 class Base(Component):
     """Base component for fife-rpg."""
