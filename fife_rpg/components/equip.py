@@ -130,7 +130,7 @@ def equip(wearer, equipable, slot):
         slot: The slot to which the equipable shoud be equipped
 
     Returns:
-        The Entity of the equipable that was at the given slot, or None
+        The Entities of the equipable that had to be unqeuipped, or None
 
     Raises:
         AlreadyEquippedError if the equipable is already equipped elsewhere.
@@ -141,24 +141,31 @@ def equip(wearer, equipable, slot):
     equipable_data = getattr(equipable, Equipable.registered_as)
     if equipable_data.wearer:
         raise AlreadyEquippedError
-    if slot in equipable_data.possible_slots:
-        try:
-            old_item = (getattr(wearer_data, slot)
-                        if hasattr(wearer_data, slot) 
-                        else None)
-            setattr(wearer_data, slot, equipable.identifier)
-            equipable_data.in_slot = slot
-            equipable_data.wearer = wearer.identifier
-            if old_item:
-                old_item_entity = wearer.world.get_entity(old_item)
-                old_item_data = getattr(old_item_entity, 
-                                        Equipable.registered_as)
-                old_item_data.in_slot = None
-                old_item_data.wearer = None
-                return old_item_entity
-            return old_item
-        except AttributeError:
-            raise SlotInvalidError(slot)
+    for possible_slots in equipable_data.possible_slots:
+        possible_slots = possible_slots.split(",")
+        if slot in possible_slots:
+            try:
+                old_items = []
+                if isinstance(possible_slots, str):
+                    possible_slots = [possible_slots]
+                for possible_slot in possible_slots:
+                    old_item = (getattr(wearer_data, possible_slot)
+                                if hasattr(wearer_data, possible_slot) 
+                                else None)
+                    setattr(wearer_data, slot, equipable.identifier)
+                    if old_item:
+                        old_item_entity = wearer.world.get_entity(old_item)
+                        old_item_data = getattr(old_item_entity, 
+                                                Equipable.registered_as)
+                        old_item_data.in_slot = None
+                        old_item_data.wearer = None
+                        old_items.append(old_item_entity)
+
+                equipable_data.in_slot = ",".join(possible_slots)
+                equipable_data.wearer = wearer.identifier
+                return old_items
+            except AttributeError:
+                raise SlotInvalidError(slot)
     raise CannotBeEquippedInSlot(slot, equipable_data)
 
 def get_equipable(wearer, slot):
@@ -189,7 +196,11 @@ def take_equipable(wearer, slot):
     item = wearer.world.get_entity(get_equipable(wearer, slot))
     wearer_data = getattr(wearer, Equip.registered_as)
     item_data = getattr(item, Equipable.registered_as)
-    setattr(wearer_data, slot, None)
+    if isinstance(item_data.in_slot, str):
+        setattr(wearer_data, slot, None)
+    else:     
+        for in_slot in item_data.in_slot:
+            setattr(wearer_data, in_slot, None)
     if item_data:
         item_data.in_slot = None
         item_data.wearer = None
