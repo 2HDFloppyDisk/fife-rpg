@@ -43,7 +43,7 @@ class KeyFilter(fife.IKeyFilter):
         fife.IKeyFilter.__init__(self)
         self._keys = keys
     
-    def is_filtered(self, event):
+    def isFiltered(self, event):
         """Checks whether the key is filtered or not.
 
         Args:
