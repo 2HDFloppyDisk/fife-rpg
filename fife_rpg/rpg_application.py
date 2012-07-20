@@ -21,12 +21,18 @@
 """
 
 import time
+import sys
+from fife_rpg import code
+from StringIO import StringIO
 
 from bGrease.grease_fife.mode import FifeManager
 
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
 from fife.extensions.pychan.internal import get_manager
+
+from fife_rpg.systems import GameEnvironment
+from fife_rpg.world import RPGWorld
 
 class KeyFilter(fife.IKeyFilter):
     """This is the implementation of the fife.IKeyFilter class.
@@ -171,7 +177,7 @@ class ApplicationListener(
         else:
             result = self._application.onConsoleCommand(command)
 
-        if not result:
+        if not result: 
             result = 'Command Not Found...'
 
         return result
@@ -230,6 +236,75 @@ class RPGApplication(ApplicationBase, FifeManager):
         cmd.setCommandType(fife.CMD_QUIT_GAME)
         self.engine.getEventManager().dispatchCommand(cmd)
 
+
+    def handle_python(self, command):
+        """Handles python commands
+        
+        Args:
+            command: The command string
+            env_locals: The locals that will be used
+            env_globals: The globals that will be used
+        
+        Returns:
+            The result of the command
+        """
+        current_mode = self.current_mode
+        if current_mode and isinstance(current_mode, RPGWorld):
+            environment = getattr(current_mode.systems, 
+                                  GameEnvironment.registered_as)
+            env_locals, env_globals = environment.get_environement()       
+
+            env_globals.update({"__name__":"__rpg_console__", "__doc__":None})
+            console = code.InteractiveConsole(env_globals, env_locals)
+            codeOut = StringIO()
+            #make stdout and stderr write to our file, not the terminal
+            sys.stdout = codeOut
+            sys.stderr = codeOut
+            #Process the code
+            try:
+                console.push(command)
+            except Exception as error:
+                print error
+            output = codeOut.getvalue()
+            #restore stdout and stderr
+            sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
+            temp_output = output
+            output = ""
+            counter = 0
+            #Make the output fit in the console screen
+            for char in temp_output:
+                counter += 1
+                if char == "\n":
+                    counter = 0
+                elif counter == 110:
+                    output += "\n"
+                    counter = 0
+                output += char
+            
+            return output
+        return ""
+
+    def onConsoleCommand(self, command):# pylint: disable-msg=C0103,W0221
+        """Process console commands
+
+        Args:
+            command: A string containing the command
+
+        Returns:
+            A string representing the result of the command
+        """
+        #TODO: List exceptions that maybe raised here if any
+        result = ""
+        if GameEnvironment.registered_as:
+            
+            if (command.startswith("python")):
+                return self.handle_python(command[7:])
+            else:
+                return self.handle_python(command)
+    
+        return result
+        
     def _pump(self):
         """Performs actions every frame."""
         if self._listener.quit:
