@@ -86,7 +86,7 @@ class ApplicationListener(
         fife.ConsoleExecuter.__init__(self)
         get_manager().getConsole().setConsoleExecuter(self)
 
-        keyfilter = KeyFilter([fife.Key.ESCAPE, fife.Key.BACKQUOTE,
+        keyfilter = KeyFilter([fife.Key.ESCAPE, fife.Key.CARET,
                                fife.Key.PRINT_SCREEN])
         keyfilter.__disown__()
 
@@ -105,11 +105,11 @@ class ApplicationListener(
             return
 
         keyval = event.getKey().getValue()
-
+                
         if keyval == fife.Key.ESCAPE:
             self.quit = True
             event.consume()
-        elif keyval == fife.Key.BACKQUOTE:
+        elif keyval == fife.Key.CARET:
             get_manager().getConsole().toggleShowHide()
             event.consume()
         elif keyval == fife.Key.PRINT_SCREEN:
