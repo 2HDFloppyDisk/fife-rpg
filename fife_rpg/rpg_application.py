@@ -187,7 +187,7 @@ class ApplicationListener(
         print "No tools set up yet"
 
 
-class RPGApplication(ApplicationBase, FifeManager):
+class RPGApplication(FifeManager, ApplicationBase):
     """The main application.  It inherits fife.extensions.ApplicationBase."""
 
     def __init__(self, TDS):
@@ -305,9 +305,12 @@ class RPGApplication(ApplicationBase, FifeManager):
     
         return result
         
-    def _pump(self):
-        """Performs actions every frame."""
+    def pump(self, dt):
+        """Performs actions every frame.
+        
+        
+        Args:
+            dt: Time elapsed since last call to pump
+        """
         if self._listener.quit:
             self.quit()
-        else:
-            FifeManager._pump(self)
