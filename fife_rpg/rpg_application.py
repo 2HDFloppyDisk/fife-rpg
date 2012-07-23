@@ -223,7 +223,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         return self._log
 
     def createListener(self):# pylint: disable-msg=C0103
-        """Creates the listener for the application."""
+        """Creates the listener for the application and returns it."""
         self._listener = ApplicationListener(self.engine,  self)
         return self._listener
 

@@ -32,8 +32,8 @@ class ViewBase(object):
 
         Args:
             engine: A fife.Engine instance
-            controller: A ControllerBase instance
-                            that signifies the current controller of the View
+            controller: A ControllerBase instance that signifies the current
+            controller of the View
 
         """
         self.engine = engine
@@ -47,6 +47,7 @@ class ControllerBase(Mode):
 
         Args:
             application: The application that created this controller
+            view: The view that is used by this controller
         """
         Mode.__init__(self, application.engine)
         self.view = view
