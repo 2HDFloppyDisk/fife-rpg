@@ -199,6 +199,8 @@ class RPGApplication(FifeManager, ApplicationBase):
         ApplicationBase.__init__(self, TDS)
         FifeManager.__init__(self)
         self._listener = None
+        self.world = None
+        self.create_world()
 
     @property
     def settings(self):
@@ -224,6 +226,10 @@ class RPGApplication(FifeManager, ApplicationBase):
         """Creates the listener for the application."""
         self._listener = ApplicationListener(self.engine,  self)
         return self._listener
+
+    def create_world(self):
+        """Creates the world used by this application"""
+        self.world = RPGWorld(self)
 
     def request_quit(self):
         """Sends the quit command to the application's listener.
@@ -314,3 +320,5 @@ class RPGApplication(FifeManager, ApplicationBase):
         """
         if self._listener.quit:
             self.quit()
+        if self.world:
+            self.world.pump(dt)
