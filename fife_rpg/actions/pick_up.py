@@ -32,18 +32,7 @@ class PickUpAction(Base):
     """Action for picking up items from a map"""
 
     dependencies = [General, Agent, Containable, Container]
-
-    def __init__(self, controller, agent, target, commands = None):
-        """Basic action constructor
-
-        Args:
-            controller: A fife_rpg.ControllerBase instance
-            agent: The agent initiating the action
-            target: The target of the action
-            commands: List of additional commands to execute
-        """
-        Base.__init__(self, controller, agent, target, commands)
-        
+       
     def execute(self):
         agent = getattr(self.target, Agent.registered_as)
         game_map = self.controller.maps[agent.map]

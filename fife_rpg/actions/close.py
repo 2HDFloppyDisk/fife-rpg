@@ -30,18 +30,7 @@ class CloseAction(Base):
     """Action for closing lockables"""
 
     dependencies = [Lockable]
-
-    def __init__(self, controller, agent, target, commands = None):
-        """Basic action constructor
-
-        Args:
-            controller: A fife_rpg.ControllerBase instance
-            agent: The agent initiating the action
-            target: The target of the action
-            commands: List of additional commands to execute
-        """
-        Base.__init__(self, controller, agent, target, commands)
-        
+       
     def execute(self):
         lockable = getattr(self.target, Lockable.registered_as)        
         close_lock(lockable)

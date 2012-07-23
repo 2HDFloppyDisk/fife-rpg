@@ -30,17 +30,17 @@ class Base(object):
     __registered_as = None
     dependencies = []
 
-    def __init__(self, controller, agent, target, commands = None):
+    def __init__(self, application, agent, target, commands = None):
         """Basic action constructor
 
         Args:
-            controller: A fife_rpg.ControllerBase instance
+            application: A fife_rpg.RPGApplication instance
             agent: The agent initiating the action
             target: The target of the action
             commands: List of additional commands to execute
         """
         self.commands = commands or ()
-        self.controller = controller
+        self.application = application
         self.agent = agent
         self.target = target
         self.executed = False

@@ -29,20 +29,6 @@ class LookAction(Base):
 
     dependencies = [Description]
 
-    def __init__(self, controller, agent, target, commands = None):
-        """Basic action constructor
-
-        Args:
-            controller: A fife_rpg.ControllerBase instance
-            agent: The agent initiating the action
-            target: The target of the action
-            commands: List of additional commands to execute
-
-        Raises:
-            OpenError if the lockable is open.
-        """
-        Base.__init__(self, controller, agent, target, commands)
-
     def execute(self):
         description = getattr(self.target, Description.registered_as)
         print "You see %s. \n%s" % (description.view_name, description.desc)

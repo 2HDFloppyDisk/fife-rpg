@@ -29,17 +29,6 @@ class ChangeMapAction(Base):
     """Switches to a different map and places the agent on the location"""
 
     dependencies = [ChangeMap, Agent]
-
-    def __init__(self, controller, agent, target, commands = None):
-        """Basic action constructor
-
-        Args:
-            controller: A fife_rpg.ControllerBase instance
-            agent: The agent initiating the action
-            target: The target of the action
-            commands: List of additional commands to execute
-        """
-        Base.__init__(self, controller, agent, target, commands)
         
     def execute(self):
         change_map = getattr(self.target, ChangeMap.registered_as)
@@ -47,7 +36,7 @@ class ChangeMapAction(Base):
         agent.map = change_map.target_map
         agent.position = change_map.target_position
         try:            
-            self.controller.switch_map(agent.map)
+            self.application.switch_map(agent.map)
         except AttributeError:
             pass
         Base.execute(self)
