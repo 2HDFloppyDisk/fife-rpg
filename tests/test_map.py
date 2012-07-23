@@ -18,6 +18,9 @@ from fife.fife import DoubleRect, DoublePoint
 
 from fife_rpg.map import Map, NoSuchRegionError
 
+ACTOR_LAYER = "actor"
+GROUND_LAYER = "ground"
+ITEM_LAYER = "item"
 # Dummy classes
 
 class FifeCamera(object):
@@ -35,23 +38,26 @@ class FifeCamera(object):
 class FifeLayer(object):
     """Dummy class that acts like a fife layer as needed"""
     
-    #Not actually doing anything as the map is not using the layer itself
-    pass
+    def __init__(self, identifier):
+        self.identifier = identifier
 
 class FifeMap(object):
     """Dummy class that acts like a fife map as needed"""
     
     def __init__(self):
         self.camera = FifeCamera()
-        self.layer = FifeLayer()
+        self.layers = layers = {}
+        layers[ACTOR_LAYER] = FifeLayer(ACTOR_LAYER)
+        layers[ITEM_LAYER] = FifeLayer(ITEM_LAYER)
+        layers[GROUND_LAYER] = FifeLayer(GROUND_LAYER)
 
     def getCamera(self, name=None):#pylint: disable=W0613
         #Being lazy here as this is not part of the actual test
         return self.camera
     
-    def getLayer(self, name=None):#pylint: disable=W0613
+    def getLayer(self, name):#pylint: disable=W0613
         #Being lazy here as this is not part of the actual test
-        return self.layer
+        return self.layers[name]
 
 # Test cases
 
@@ -65,24 +71,29 @@ class Test(unittest.TestCase):
         self.map_name = "Test"
         self.fife_map = FifeMap()
         self.fife_camera = self.fife_map.getCamera()
-        self.fife_layer = self.fife_map.getLayer()
-
+        self.actor_layer = self.fife_map.getLayer(ACTOR_LAYER)
+        self.ground_layer = self.fife_map.getLayer(GROUND_LAYER)
+        self.item_layer = self.fife_map.getLayer(ITEM_LAYER)
 
     def tearDown(self):
         pass
 
 
     def test_map(self):        
-        rpg_map = Map(self.fife_map, self.map_name, "Default", "agent",
-                      self.regions)
+        rpg_map = Map(self.fife_map, self.map_name, "Default", ACTOR_LAYER, GROUND_LAYER,
+                     ITEM_LAYER, self.regions)
         self.assertEqual(self.map_name, rpg_map.name, 
                          "Map.name does not return the correct value")
         self.assertEqual(self.fife_map, rpg_map.map, 
                          "Map.map does not return the correct value")
         self.assertEqual(self.fife_camera, rpg_map.camera,
                          "Map.camera does not return the correct value")
-        self.assertEqual(self.fife_layer, rpg_map.agent_layer, 
-                         "Map.agent_layer does not return the correct value")
+        self.assertEqual(self.actor_layer, rpg_map.actor_layer, 
+                         "Map.actor_layer does not return the correct value")
+        self.assertEqual(self.ground_layer, rpg_map.ground_object_layer, 
+                         "Map.ground_object_layer does not return the correct value")
+        self.assertEqual(self.item_layer, rpg_map.item_layer, 
+                         "Map.item_layer does not return the correct value")
         self.assertDictEqual(self.regions, rpg_map.regions,
                          "Map.regions does not return the correct value")
         self.assertDictEqual({}, rpg_map.entities,

@@ -47,7 +47,7 @@ class NoSuchRegionError(Exception):
 class Map(object):
     """Contains the data of a map"""
 
-    def __init__(self, fife_map, name, camera, agent_layer, 
+    def __init__(self, fife_map, name, camera, actor_layer, 
                  ground_object_layer, item_layer, regions):
         """Constructor
 
@@ -55,7 +55,9 @@ class Map(object):
             fife_map: A fife.Map instance, representing the fife_map
             name: The name of the fife_map.
             camera: The name of the default camera
-            actor_layer: The name of the agent layer
+            actor_layer: The name of the actor layer
+            ground_object_layer: The name of the ground object layer
+            item_layer: The name of the item layer
             regions: A dictionary that defines specific regions on the fife_map, as
             fife.DoubleRect instances.
         """
@@ -64,7 +66,7 @@ class Map(object):
         self.__regions = regions
         self.__entities = {}
         self.__camera = fife_map.getCamera(camera)
-        self.__agent_layer = fife_map.getLayer(agent_layer)
+        self.__actor_layer = fife_map.getLayer(actor_layer)
         self.__ground_object_layer = fife_map.getLayer(ground_object_layer)
         self.__item_layer = fife_map.getLayer(item_layer)
         if not FifeAgent.registered_as:
@@ -102,7 +104,7 @@ class Map(object):
     @property
     def actor_layer(self):
         """Returns the agent layer of the map"""
-        return self.__agent_layer
+        return self.__actor_layer
 
     @property
     def ground_object_layer(self):
