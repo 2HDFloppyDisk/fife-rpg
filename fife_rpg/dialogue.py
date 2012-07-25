@@ -1,0 +1,178 @@
+# -*- coding: utf-8 -*-
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#   
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#   
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# This package is based on the gamescene classes of PARPG
+
+"""This module contains the the functions and classes for playing dialogues.
+
+.. module:: controllers
+    :synopsis: Functions and classes for playing dialogues.
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
+from fife_rpg.systems import GameEnvironment
+
+class DialogueSection(object):
+    """Represents a section of a dialogue"""
+    
+    def __init__(self, talker, text, 
+                 condition=None, commands=None, responses=None):
+        """Constructor
+        
+        Args:
+            talker: The Entity that is talking
+            text: The text that is being said
+            condition: String that is being evaluated
+            commands: Commands that are to be executed when 
+            the section is displayed
+            responses: Possible responses for this section
+        """
+        self.talker = talker
+        self.text = text
+        self.condition = condition or "True"
+        self.commands = commands or []
+        self.responses = responses or []
+
+class Dialogue(object):
+    """Represents a single dialogue"""
+
+    def __init__(self, world, dialogue_data):
+        """Constructor
+
+        Args:
+            world: RPGWorld that the dialogue is run on
+            dialogue_data: A dictionary containing the dialogue data
+        """
+        self.world = world
+        self.current_section = None
+        self.sections = {}
+        sections_data = dialogue_data["Sections"]
+        self.create_sections(sections_data)
+        greetings_data = dialogue_data["Greetings"]
+        self.select_greeting(greetings_data)
+        
+    def get_game_environment(self, section):
+        """Checks if the GameEnvironment system is registered and returns 
+        its current values and additional values used by the dialogues.
+        
+        Args:
+            section: A DialogueSection, this will be used to get 
+            the additional values
+        """
+        game_environment = GameEnvironment.registered_as
+        if game_environment:
+            game_environment = getattr(self.world.systems, 
+                                       game_environment)
+            env_globals, env_locals = game_environment.get_environement()
+        else:
+            env_globals, env_locals = {}
+            env_globals["__builtins__"] = None
+            print ("The dialogue controller needs the GameEnvironment system "
+                   "to function properly.")
+        env_globals["dialogue_talker"] = self.world.get_entity(section.talker)
+        return env_globals, env_locals
+    
+    @property
+    def possible_responses(self):
+        """Returns a dictionary of the possible responses of the current section"""
+        if not self.current_section or not self.current_section.responses:
+            return []
+        possible_responses = {}
+        for response_name in self.current_section.responses:
+            response = self.sections[response_name]
+            env_globals, env_locals = self.get_game_environment(response)
+            if eval(response.condition, env_globals, env_locals):
+                possible_responses[response_name] = response
+        return possible_responses
+    
+    @property
+    def is_dialogue_finished(self):
+        """Returns whether the dialogue is finished or not"""
+        return bool(self.possible_responses)
+    
+    def run_section(self, section):
+        """Runs the commands of the section and replaces the text variables
+        
+        Args:
+            section: A DialogueSection
+        """
+        env_globals, env_locals = self.get_game_environment(section)
+        text_vals = env_globals.copy()
+        text_vals.update(env_locals)
+        section.text = section.text.format(**text_vals)
+        for command in section.commands:
+            exec(command, env_globals, env_locals) #pylint:disable=W0122
+            
+    def select_response(self, response_name):
+        """Selects the given response and performs its actions
+        
+        Args:
+            response_name: The name of the response
+        """
+        if (not self.sections.has_key(response_name) or
+            not response_name in self.possible_responses):
+            raise KeyError("There is no '%s' response available" % response_name)
+        response = self.sections[response_name]
+        self.current_section = response
+        self.run_section(response)
+
+
+    def create_section(self, section_data):
+        """Create a section and return it
+        
+        Args: 
+            section_data: A dictionary containing the data of a section
+        """
+        talker = section_data["talker"]
+        text = section_data["text"]
+        if section_data.has_key("condition"):
+            condition = section_data["condition"]
+        else:
+            condition = None
+        if section_data.has_key("commands"):
+            commands = section_data["commands"]
+        else:
+            commands = None
+        if section_data.has_key("responses"):
+            responses = section_data["responses"]
+        else:
+            responses = None
+        return DialogueSection(talker, text, condition, commands, responses)
+
+    def create_sections(self, sections_data):
+        """Create the dialogue sections
+        
+        Args:
+            sections_data: A dictionary containing the data of the sections
+        """
+        for section_name, section_data in sections_data.iteritems():
+            section = self.create_section(section_data)
+            self.sections[section_name] = section 
+
+    def select_greeting(self, greetings_data):
+        """Selects the first greeting which condition passes
+        
+        Args:
+            greetings_data: A dictionary containing the data of the greetings
+        """
+        for greeting_data in greetings_data.itervalues():
+            greeting = self.create_section(greeting_data)
+            env_globals, env_locals = self.get_game_environment(greeting)
+            if eval(greeting.condition, env_globals, env_locals):
+                self.current_section = greeting
+                self.run_section(greeting)
+
+
+        
