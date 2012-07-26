@@ -21,8 +21,10 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+import yaml
 
 from fife_rpg.systems import GameEnvironment
+from fife_rpg import ControllerBase
 
 class DialogueSection(object):
     """Represents a section of a dialogue"""
@@ -174,5 +176,50 @@ class Dialogue(object):
                 self.current_section = greeting
                 self.run_section(greeting)
 
+class DialogueController(ControllerBase):
+    """Controller that handles Dialogues"""
+    
+    def __init__(self, view, application):
+        """Constructor
 
+        Args:
+            application: The application that created this controller
+            view: The view that is used by this controller
+        """
+        ControllerBase.__init__(self, view, application)
+        self.dialogues = {}
+        self.current_dialogue = None
         
+    def add_dialogue(self, identifier, dialogue_data):
+        """Add a dialogue to the controller
+        
+        Args:
+            identifier: The name of the dialogue
+            dialogue_data: The data of the dialogue
+        """
+        self.dialogues[identifier] = dialogue_data
+    
+    def add_dialogue_from_file(self, filename):
+        """Loads a dialogue from a file and adds it to the controller
+        
+        Args:
+            filename: The path to the file
+        """
+        dialogue_file = file(filename, "r")
+        dialogue_data = yaml.load(dialogue_file)
+        self.add_dialogue(dialogue_data["Identifier"], dialogue_data)
+        
+    def start_dialogue(self, identifier):
+        """Starts a dialogue
+        
+        Args:
+            identifier: The name of the dialogue to start
+        """
+        if not self.dialogues.has_key(identifier):
+            raise KeyError("Dialogue '%s' not found" % identifier)
+        dialogue_data = self.dialogues[identifier]
+        self.current_dialogue = Dialogue(self.application.world, dialogue_data)
+        
+    def end_dialogue(self):
+        """Ends the current dialogue"""
+        self.current_dialogue = None
