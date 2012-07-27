@@ -27,17 +27,13 @@ from bGrease.grease_fife.mode import Mode
 class ViewBase(object):
     """Base class for views"""
 
-    def __init__(self, engine, controller=None):
+    def __init__(self, application):
         """Constructor
 
         Args:
-            engine: A fife.Engine instance
-            controller: A ControllerBase instance that signifies the current
-            controller of the View
-
+            application: A fife_rpg.RPGApplication instance
         """
-        self.engine = engine
-        self.controller = controller
+        self.application = application
 
 class ControllerBase(Mode):
     """Base of Controllers"""

@@ -84,14 +84,13 @@ class GameSceneListener(fife.IMouseListener):
 class GameSceneView(ViewBase):
     """The view responsible for showing the in-game gui"""
 
-    def __init__(self, engine, controller=None):
+    def __init__(self, application):
         """Constructor
 
         Args:
-            engine: The FIFE engine
-            controller: The GameSceneController
+            application: A fife_rpg.RPGApplication instance
         """
-        ViewBase.__init__(self, engine,  controller)
+        ViewBase.__init__(self, application)
 
 class GameSceneController(ControllerBase):
     """Handles the input for a game scene"""
