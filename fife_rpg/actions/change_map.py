@@ -32,9 +32,10 @@ class ChangeMapAction(Base):
         
     def execute(self):
         change_map = getattr(self.target, ChangeMap.registered_as)
-        agent = getattr(self.agent, Agent.registered_as) 
-        agent.map = change_map.target_map
-        agent.position = change_map.target_position
+        agent = getattr(self.agent, Agent.registered_as)
+        self.application.move_agent(self.agent, 
+                                    position=change_map.target_position,
+                                    new_map=change_map.target_map)
         try:            
             self.application.switch_map(agent.map)
         except AttributeError:

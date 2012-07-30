@@ -271,6 +271,51 @@ class RPGApplication(FifeManager, ApplicationBase):
         else:
             raise AlreadyRegisteredError(name, "Map")
 
+    def update_agents(self, game_map):
+        """Updates the map to be in sync with the entities
+        
+        Args:
+            game_map: The name of the map, or a Map instance
+        """
+        if isinstance(game_map, str):
+            game_map = self.maps[game_map]
+        if isinstance(game_map, str): #The map is not yet loaded
+            return
+        object_namespace = self.settings.get("fife-rpg", "ObjectNamespace", 
+                                             "fife-rpg")
+        fife_model = self.engine.getModel()
+        for entity in game_map.entities:
+            agent = getattr(entity, Agent.registered_as)
+            map_object = fife_model.getObject(agent.gfx, 
+                object_namespace)
+            general = getattr(entity, General.registered_as)
+            layer = getattr(game_map, "%s_layer" % agent.type)
+            fife_instance = layer.getInstance(general.identifier)
+            if not fife_instance:                 
+                fife_instance = layer.createInstance(
+                    map_object, 
+                    fife.ExactModelCoordinate(*agent.position), 
+                    general.identifier)
+                visual = fife.InstanceVisual.create(fife_instance)
+                if (map_object.getAction('default')):
+                    target = fife.Location(game_map.actor_layer)
+                    fife_instance.act('default', target, True)
+                fifeagent = getattr(entity, FifeAgent.registered_as)
+                behaviour = BehaviourManager.get_behaviour(agent.behaviour_type)()
+                behaviour.agent = fife_instance
+                fifeagent.behaviour = behaviour
+                fifeagent.layer = layer
+                setup_behaviour(fifeagent)
+                fifeagent.behaviour.idle()
+            else:
+                visual = fife_instance.get2dGfxVisual()
+                location = fife_instance.getLocation()
+                location.setExactLayerCoordinates(fife.ExactModelCoordinate(
+                                                    *agent.position))
+                fife_instance.setLocation(location)
+            fife_instance.setRotation(agent.rotation)
+            visual.setStackPosition(agent.stack_position)
+            
     def load_map(self, name):
         """Load the map with the given name
 
@@ -338,36 +383,9 @@ class RPGApplication(FifeManager, ApplicationBase):
                 renderer.addActiveLayer(game_map.ground_object_layer)
                 renderer.addActiveLayer(game_map.actor_layer)
                 game_map.update_entities(self.world)
-                object_namespace = self.settings.get("fife-rpg", 
-                        "ObjectNamespace", "fife-rpg")
-                fife_model = self.engine.getModel()
-                for entity in game_map.entities:
-                    agent = getattr(entity, Agent.registered_as)
-                    map_object = fife_model.getObject(agent.gfx,
-                                                     object_namespace)
-                    general = getattr(entity, General.registered_as)
-                    layer = getattr(game_map, "%s_layer" % agent.type)
-                    fife_instance = layer.createInstance(
-                                    map_object,
-                                    fife.ExactModelCoordinate(*agent.position),
-                                    general.identifier)
-                    fife_instance.setRotation(agent.rotation)
-                    visual = fife.InstanceVisual.create(fife_instance)
-                    visual.setStackPosition(agent.stack_position)
-
-                    if (map_object.getAction('default')):
-                        target = fife.Location(game_map.actor_layer)
-                        fife_instance.act('default', target, True)
-                    
-                    behaviour = BehaviourManager.get_behaviour(
-                                            agent.behaviour_type)()
-                    behaviour.agent = fife_instance
-                    fifeagent = getattr(entity, FifeAgent.registered_as)
-                    fifeagent.behaviour = behaviour
-                    fifeagent.layer = layer
-                    setup_behaviour(fifeagent)
-                    fifeagent.behaviour.idle()
                 self.__maps[name] = game_map
+            self.update_agents(game_map)
+
         else:
             raise LookupError("The map with the name '%s' cannot be found"
                               %(name))
@@ -387,7 +405,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         else:
             raise LookupError("The map with the name '%s' cannot be found" 
                         %(name))
-
+    
     def load_maps(self):
         """Load the names of the available maps from a map file."""
         self.__maps = {}
@@ -398,7 +416,37 @@ class RPGApplication(FifeManager, ApplicationBase):
         maps_doc = yaml.load(maps_file)
         for name, filename in maps_doc["Maps"].iteritems():
             self.add_map(name, filename)
+            
+    def move_agent(self, entity, position=None, rotation=None, 
+                   stack_position=None, new_map=None):
+        """Instantly moves an agent on the current map, or to a new map
+        
+        Args:
+            entity: The entity of the agent to move or the name of the agent
+            position: The new position of the agent
+            rotation: The new rotation of the agent
+            stack_postition: The new stack position of the agent
+            new_map: The new map to move the agent to.
+        """
+        if isinstance(entity, str):
+            entity = self.world.get_entity(entity)
+        fifeagent = getattr(entity, FifeAgent.registered_as)
+        if not fifeagent:
+            print "The entity is not a fife agent"
+            return
+        agent = getattr(entity, Agent.registered_as)
+        current_map = agent.map
+        if new_map and new_map != current_map:
+            current_game_map = self.maps[current_map]
+            current_game_map.remove_entity(entity.identifier)
+            agent.map = new_map
+            agent.position = position or agent.position
+            agent.rotation = rotation or agent.rotation
+            agent.stack_position = stack_position or agent.stack_position
+            self.update_agents(new_map)
+        fifeagent.behaviour.agent.setLocation
 
+            
     def createListener(self):# pylint: disable-msg=C0103
         """Creates the listener for the application and returns it."""
         self._listener = ApplicationListener(self.engine,  self)
