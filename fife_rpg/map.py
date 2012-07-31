@@ -69,6 +69,7 @@ class Map(object):
         self.__actor_layer = fife_map.getLayer(actor_layer)
         self.__ground_object_layer = fife_map.getLayer(ground_object_layer)
         self.__item_layer = fife_map.getLayer(item_layer)
+        self.__last_world = None
         if not FifeAgent.registered_as:
             FifeAgent.register()
         if not Agent.registered_as:
@@ -178,6 +179,7 @@ class Map(object):
         Args:
             world: The world on which the map looks for its entities
         """
+        self.__last_world = world
         extent = world[...]
         self.__entities = getattr(extent, 
                                   Agent.registered_as).map == self.name
@@ -207,9 +209,11 @@ class Map(object):
             fifeagent = getattr(entity, FifeAgent.registered_as)
             instance = fifeagent.layer.getInstance(identifier)
             fifeagent.layer.deleteInstance(instance)
+            instance = fifeagent.layer.getInstance(identifier)
             delattr(entity, FifeAgent.registered_as)
             agent = getattr(entity, Agent.registered_as)
             agent.map = None
+            self.update_entities(self.__last_world)
         except KeyError as error:
             raise error
         except TypeError as error:

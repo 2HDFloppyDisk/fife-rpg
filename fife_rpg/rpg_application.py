@@ -430,6 +430,9 @@ class RPGApplication(FifeManager, ApplicationBase):
         """
         if isinstance(entity, str):
             entity = self.world.get_entity(entity)
+        if isinstance(position, fife.Location):
+            model_coordinates = position.getExactLayerCoordinates()
+            position=(model_coordinates.x, model_coordinates.y)
         fifeagent = getattr(entity, FifeAgent.registered_as)
         if not fifeagent:
             print "The entity is not a fife agent"
@@ -440,12 +443,14 @@ class RPGApplication(FifeManager, ApplicationBase):
             current_game_map = self.maps[current_map]
             current_game_map.remove_entity(entity.identifier)
             agent.map = new_map
-            agent.position = position or agent.position
-            agent.rotation = rotation or agent.rotation
-            agent.stack_position = stack_position or agent.stack_position
-            self.update_agents(new_map)
-        fifeagent.behaviour.agent.setLocation
-
+            new_game_map = self.maps[new_map]
+            if not isinstance(new_game_map, str):
+                new_game_map.update_entities(self.world)
+            self.update_agents(current_game_map)
+        agent.position = position or agent.position
+        agent.rotation = rotation or agent.rotation
+        agent.stack_position = stack_position or agent.stack_position        
+        self.update_agents(agent.map)
             
     def createListener(self):# pylint: disable-msg=C0103
         """Creates the listener for the application and returns it."""
