@@ -1,0 +1,1 @@
+from fife_rpg.behaviours import behaviour_manager as BehaviourManager

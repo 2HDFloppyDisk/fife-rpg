@@ -9,5 +9,5 @@ setup(name='fife-rpg',
       author_email='KarstenBock@gmx.net',
       url='https://bitbucket.org/Beliar/fife-rpg',
       packages=['fife_rpg', 'fife_rpg.components', 'fife_rpg.entities', 
-                'fife_rpg.systems', 'fife_rpg.actions'],
+                'fife_rpg.systems', 'fife_rpg.actions', 'fife_rpg.behaviours'],
      )

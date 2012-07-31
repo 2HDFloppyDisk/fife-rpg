@@ -40,7 +40,7 @@ from fife_rpg.world import RPGWorld
 from fife_rpg.components.agent import Agent
 from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
 from fife_rpg.components.general import General
-from fife_rpg import behaviours as BehaviourManager
+from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.systems import GameEnvironment
 
 class KeyFilter(fife.IKeyFilter):

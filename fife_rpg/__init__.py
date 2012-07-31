@@ -14,4 +14,3 @@ from fife_rpg.game_scene import GameSceneController
 from fife_rpg.game_scene import GameSceneListener
 from fife_rpg.dialogue import Dialogue
 from fife_rpg.dialogue import DialogueController
-from fife_rpg import behaviours as BehaviourManager

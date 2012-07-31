@@ -14,27 +14,27 @@
 
 #  This module is based on the behaviour package from PARPG
 
-"""This module manages the behaviours of fife-rpg agents.
+"""This module contains the basic behaviour for agents.
 
-.. module:: behaviours
-    :synopsis: Manages the behaviours of fife-rpg agents.
+.. module:: base
+    :synopsis: Contains the basic behaviour for agents.
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from copy import copy
 from collections import deque
 
 from fife import fife
 
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.components.general import General
+from fife_rpg.behaviours import BehaviourManager
 
 (_AGENT_STATE_NONE, _AGENT_STATE_IDLE, _AGENT_STATE_APPROACH, _AGENT_STATE_RUN,
 _AGENT_STATE_WANDER, _AGENT_STATE_TALK)= xrange(6)
 
-class Behaviour (fife.InstanceActionListener):
-    """Fife agent listener"""
+class Base (fife.InstanceActionListener):
+    """Behaviour that contains the basic methods for agents"""
 
     __registered_as = None
 
@@ -163,36 +163,9 @@ class Behaviour (fife.InstanceActionListener):
             True if the behaviour was registered, False if not.
         """
         try:
-            register_behaviour(name, cls)
+            BehaviourManager.register_behaviour(name, cls)
             cls.__registered_as = name
             return True
         except AlreadyRegisteredError as error:
             print error
             return False
-
-_BEHAVIOURS = {}
-
-def register_behaviour(name, behaviour):
-    """Registers a behaviour
-
-    Args:
-        name: The name of the behaviour
-        behaviour: The behaviour class
-
-    Raises:
-        AlreadyRegisteredError if there is already a behaviour with that name
-    """
-    if name in _BEHAVIOURS:
-        raise AlreadyRegisteredError("behaviour", name)
-    else:
-        _BEHAVIOURS[name] = behaviour
-
-def get_behaviours():
-    """Returns a copy of the behaviour dictionary"""
-    return copy(_BEHAVIOURS)
-
-def get_behaviour(name):
-    """Returns the behaviour with the given name"""
-    if name in _BEHAVIOURS:
-        return _BEHAVIOURS[name]
-    return None
