@@ -38,12 +38,14 @@ class Base (fife.InstanceActionListener):
 
     __registered_as = None
 
-    def __init__(self):
+    def __init__(self, walk_speed, run_speed):
         fife.InstanceActionListener.__init__(self)
         self.agent = None
         self.state = None
         self.animation_queue = deque()
         self.next_action = None
+        self.walk_speed = walk_speed
+        self.run_speed = run_speed
 
     @property
     def location(self):
@@ -151,6 +153,50 @@ class Base (fife.InstanceActionListener):
     def clear_animations(self):
         """Remove all actions from the queue"""
         self.animation_queue.clear()
+
+    def approach(self, location_or_agent, action=None):
+        """Approaches a location or another agent and then perform an action 
+        (if set).
+        
+        Args:
+            loc: the location or agent to approach
+            action: The action to schedule for execution after the 
+            approach.
+        """
+            
+        self.state = _AGENT_STATE_APPROACH
+        self.next_action = action
+        if  isinstance(location_or_agent, fife.Instance):
+            agent = location_or_agent
+            self.agent.follow('run', agent, self.run_speed)
+        else:
+            location = location_or_agent
+            boxLocation = tuple([int(float(i)) for i in location])
+            location = fife.Location(self.getLocation())
+            location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
+            self.agent.move('run', location, self.run_speed)   
+
+    def run(self, location):
+        """Makes the agent run to a certain location
+        
+        Args:
+            location: Screen position to run to.
+        """
+        self.state = _AGENT_STATE_RUN
+        self.clear_animations()
+        self.next_action = None
+        self.agent.move('run', location, self.run_speed)
+
+    def walk(self, location):
+        """Makes the agent walk to a certain location.
+        
+        Args:
+            location: Screen position to walk to.
+        """
+        self.state = _AGENT_STATE_RUN
+        self.clear_animations()
+        self.next_action = None
+        self.agent.move('walk', location, self.walk_speed)
 
     @classmethod
     def register(cls, name="Base"):

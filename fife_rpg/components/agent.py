@@ -29,8 +29,11 @@ class Agent(Base):
     def __init__(self):
         """Constructor"""
         Base.__init__(self, gfx=str, map=str, type=str, position=list,
-                      rotation=int, stack_position=int, behaviour_type=str)
+                      rotation=int, stack_position=int, behaviour_type=str, 
+                      walk_speed=float, run_speed=float)
         self.fields["type"].default = lambda: "actor"
+        self.fields["walk_speed"].default = lambda: 0.0
+        self.fields["run_speed"].default = lambda: 0.0
 
     @classmethod
     def register(cls, name="agent", auto_register=True):
