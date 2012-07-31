@@ -373,9 +373,16 @@ class RPGApplication(FifeManager, ApplicationBase):
                 if not found_layer:
                     fife_map.createLayer(actor_layer, grid_type)                    
                     
-                #TODO: (Beliar) Add loading of additional objects, like regions
-                #TODO: and entities
                 regions = {}
+                regions_file = file(os.path.join(maps_path, "map_regions.yaml"), 
+                                    "r")
+                regions_data = yaml.load(regions_file)[name]
+                for region_name,  region_data in regions_data.iteritems():
+                    region = fife.DoubleRect(x=region_data[0],
+                                             y=region_data[1],
+                                             width=region_data[2],
+                                             height=region_data[3])
+                    regions[region_name] = region
                 game_map = Map(fife_map, name, camera, actor_layer,            
                                ground_object_layer, item_layer, regions)
                 renderer = fife.InstanceRenderer.getInstance(game_map.camera)
