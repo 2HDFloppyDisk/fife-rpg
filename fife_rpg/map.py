@@ -20,6 +20,8 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from fife import fife
+
 from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.components.agent import Agent
 from fife_rpg.components.general import General
@@ -154,12 +156,14 @@ class Map(object):
         """Checks if a given point is inside the given region
 
         Args:
-            location: A fife.DoublePoint instance
+            location: A fife.DoublePoint instance or a tuple with 2 elements
             region: The name of the region
 
         Raises:
             NoSuchRegionError: The specified region does not exist.
         """
+        if isinstance(location, tuple) or isinstance(location, list):
+            location = fife.DoublePoint(location[0], location[1])
         if not region in self.regions:
             raise NoSuchRegionError(self.name,  region)
         else:
