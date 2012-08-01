@@ -55,5 +55,4 @@ class ControllerBase(Mode):
         Args:
             time_delta: Time that passed since the last call
         """
-        #TODO: List exceptions that maybe raised here if any
         Mode.pump(self, time_delta)

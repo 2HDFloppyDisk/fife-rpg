@@ -58,7 +58,7 @@ class KeyFilter(fife.IKeyFilter):
         fife.IKeyFilter.__init__(self)
         self._keys = keys
     
-    def isFiltered(self, event):
+    def isFiltered(self, event): # pylint: disable-msg=W0221
         """Checks whether the key is filtered or not.
 
         Args:
@@ -67,7 +67,6 @@ class KeyFilter(fife.IKeyFilter):
         Returns:
             True if the key is filtered, False if not.
         """
-        #TODO: List exceptions that maybe raised here if any
         return event.getKey().getValue() in self._keys
 
 
@@ -87,7 +86,6 @@ class ApplicationListener(
             engine: A fife.Engine instance
             application: A RPGApplication instance
         """
-        #TODO: List exceptions that maybe raised here if any
         self._engine = engine
         self._application = application
         self._eventmanager = self._engine.getEventManager()
@@ -115,7 +113,6 @@ class ApplicationListener(
         Args:
             event: The fife.KeyEvent that happened
         """
-        #TODO: List exceptions that maybe raised here if any
         if event.isConsumed():
             return
 
@@ -146,7 +143,6 @@ class ApplicationListener(
         Args:
             command: The fife.Command that is being processed
         """
-        #TODO: List exceptions that maybe raised here if any
         self.quit = (command.getCommandType() == fife.CMD_QUIT_GAME)
         if self.quit:
             command.consume()
@@ -160,7 +156,6 @@ class ApplicationListener(
         Returns:
             A string representing the result of the command
         """
-        #TODO: List exceptions that maybe raised here if any
         result = ""
 
         args = command.split(" ")
@@ -508,7 +503,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             #Process the code
             try:
                 console.push(command)
-            except Exception as error:
+            except Exception as error: #pylint: disable=W0703
                 print error
             output = codeOut.getvalue()
             #restore stdout and stderr
@@ -539,7 +534,6 @@ class RPGApplication(FifeManager, ApplicationBase):
         Returns:
             A string representing the result of the command
         """
-        #TODO: List exceptions that maybe raised here if any
         result = ""
         if GameEnvironment.registered_as:
             

@@ -12,7 +12,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# This package is based on the gamescene classes of PARPG
 
 """This module contains the the functions and classes for playing dialogues.
 
