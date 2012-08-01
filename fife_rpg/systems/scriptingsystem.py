@@ -22,7 +22,7 @@
 """
 
 from collections import deque
-from copy import deepcopy
+from copy import copy
 
 from fife_rpg.systems import Base
 from fife_rpg.systems import GameEnvironment
@@ -51,7 +51,7 @@ class Script(object):
 
     def reset(self):
         """Resets the state of the script"""
-        self.running_actions = deepcopy(self.actions)
+        self.running_actions = copy(self.actions)
         self.running = False
         self.finished = False
         self.time = 0
