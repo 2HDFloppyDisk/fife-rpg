@@ -12,13 +12,11 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#  This module is based on the scriptingsystem module from PARPG
-
 """The game environment system manages what variables and functions are 
 available to scripts.
 
 .. module:: game_environment
-    :synopsis: Manages script variables and functions
+    :synopsis: Manages the game environment
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
