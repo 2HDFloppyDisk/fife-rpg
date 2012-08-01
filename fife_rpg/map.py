@@ -214,7 +214,8 @@ class Map(object):
             instance = fifeagent.layer.getInstance(identifier)
             fifeagent.layer.deleteInstance(instance)
             instance = fifeagent.layer.getInstance(identifier)
-            delattr(entity, FifeAgent.registered_as)
+            fifeagent.layer = None
+            fifeagent.behaviour = None
             agent = getattr(entity, Agent.registered_as)
             agent.map = None
             self.update_entities(self.__last_world)
