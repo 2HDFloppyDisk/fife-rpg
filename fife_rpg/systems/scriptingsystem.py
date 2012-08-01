@@ -82,7 +82,8 @@ class Script(object):
                 if not (isinstance(action_params, list) 
                         or isinstance(action_params, tuple)):
                     action_params = [action_params]
-                self.cur_action = action(self.system.world, *action_params)
+                self.cur_action = action(self.system.world.application,
+                                         *action_params)
                 self.wait = action_data[2]
                 if len(action_data) >= 4:
                     vals = (
