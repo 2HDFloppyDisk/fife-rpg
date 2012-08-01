@@ -310,6 +310,7 @@ class RPGWorld(World):
         Args:
             time_delta: Time that passed since the last call
         """
+        World.pump(self, time_delta)
         checkers = ComponentManager.get_checkers()
         for names, callback in checkers:
             for components in self.components.join(*names):
