@@ -20,6 +20,8 @@
     :synopsis: Manages the character statistics
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+import math
+from copy import copy
 
 from fife_rpg.systems import Base
 from fife_rpg.entities import RPGEntity
@@ -237,10 +239,13 @@ class CharacterStatisticSystem(Base):
         """
         comp_name = CharacterStatistics.registered_as
         entity_extent = getattr(self.world[RPGEntity], comp_name)
+        safe_functions = {"math": math}
         for entity in entity_extent:
             stats_component = getattr(entity, comp_name) 
             values = self.get_statistic_values(entity)
-            comp_secondary_stats = stats_component.secondary_stats            
+            safe_dict = copy(safe_functions)
+            safe_dict.update(values)
+            comp_secondary_stats = stats_component.secondary_stats                   
             for statistic_name, statistic in self.secondary_statistics.iteritems():
-                value = eval(statistic.formula, values)
+                value = eval(statistic.formula, {"__builtins__":None}, safe_dict)
                 comp_secondary_stats[statistic_name] = value
