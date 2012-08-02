@@ -28,15 +28,14 @@ class CharacterStatistics(Base):
     def __init__(self):
         """Constructor"""
         Base.__init__(self, gender=str, picture=str, age=int, origin=str, 
-                      primary_stats=dict, secondary_stats=dict, traits=list, 
+                      primary_stats=dict, secondary_stats=dict, stat_points=int,
+                      traits=list, 
                       )
 
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
         fields = self.fields.keys()
-        fields.remove("primary_stats")
-        fields.remove("secondary_stats")
         return fields
 
     @classmethod
@@ -53,38 +52,3 @@ class CharacterStatistics(Base):
             True if the component was registered, False if not.
         """        
         return (super(CharacterStatistics, cls).register(name, auto_register))
-
-def get_statistic(stats, name):
-    """Gets the statistic by its name
-
-    Args:
-        name: The name of the statistic.
-
-    Returns:
-        The statistic with the given name or None
-    """
-    if name in stats.primary_stats:
-        return stats.primary_stats[name]
-    elif name in stats.secondary_stats:
-        return stats.secondary_stats[name]
-    else:
-        for stat in stats.primary_stats:
-            if stat.statistic_type.short_name == name:
-                return stat
-    return None
-
-def get_stat_values(char_stats):
-    """Gets the values of the stats as a dictionary.
-
-    Args:
-        char_stats: A CharacterStatistics instance.
-
-    Returns:
-        The values of the statistics in a dictionary.
-    """
-    stats = {"primary":{}, "secondary":{}}
-    for name, stat in char_stats.primary_stats.iteritems():
-        stats["primary"][name] = stat.value
-    for name, stat in char_stats.secondary_stats.iteritems():
-        stats["secondary"][name] = stat.value
-    return stats
