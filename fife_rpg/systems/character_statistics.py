@@ -24,7 +24,7 @@
 from fife_rpg.systems import Base
 from fife_rpg.entities import RPGEntity
 from fife_rpg.components.character_statistics import CharacterStatistics
-
+from fife_rpg.exceptions import AlreadyRegisteredError
 
 class NoSuchStatisticError(Exception):
     """Exception that gets raised when a statistic was tried to be accessed that
@@ -115,7 +115,34 @@ class CharacterStatisticSystem(Base):
     def __init__(self, primary_statistics=None, secondary_statistics=None):
         Base.__init__(self)
         self.primary_statistics = primary_statistics or {}
-        self.secondary_statistics= secondary_statistics or {}
+        self.secondary_statistics = secondary_statistics or {}
+    
+    def add_primary_statistic(self, name, view_name, description):
+        """Adds a primary statistic to the system
+        
+        Args:
+            name: Short internal name for the statistic
+            view_name: Name that is displayed
+            description: Text that describes the statistic
+        """
+        if self.primary_statistics.has_key(name):
+            raise AlreadyRegisteredError(name, "Statistic")
+        statistic = Statistic(name, view_name, description)
+        self.primary_statistics[name] = statistic
+    
+    def add_secondary_statistic(self, name, view_name, description, formula):
+        """Adds a secondary statistic to the system
+        
+        Args:
+            name: Short internal name for the statistic
+            view_name: Name that is displayed
+            description: Text that describes the statistic
+            formula: How the statistic is calculated
+        """
+        if self.secondary_statistics.has_key(name):
+            raise AlreadyRegisteredError(name, "Statistic")
+        statistic = CalculatedStatistic(name, view_name, description, formula)
+        self.secondary_statistics[name] = statistic
     
     def get_statistic_value(self, entity, statistic):
         """Get the entities value of the given statistic
