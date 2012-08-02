@@ -74,6 +74,33 @@ class Statistic(object):
         self.name = name
         self.view_name = view_name
 
+def getStatCost(offset):
+    """Gets and returns the cost to increase stat based on the offset"""
+
+    if offset < 0:
+        offset *= -1
+
+    if offset < 22:
+        return 1
+    elif offset < 29:
+        return 2
+    elif offset < 32:
+        return 3
+    elif offset < 35:
+        return 4
+    elif offset < 36:
+        return 5
+    elif offset < 38:
+        return 6
+    elif offset < 39:
+        return 7
+    elif offset < 40:
+        return 8
+    elif offset < 41:
+        return 9
+    else:
+        return 10  
+
 class CalculatedStatistic(Statistic):
     """Class to store the data about a calculated statistic
     
@@ -96,7 +123,10 @@ class CharacterStatisticSystem(Base):
         primary_statistics: Dictionary holding the primary statistics
         secondary_statistics: Dictionary holfing the secondary statistics
     """
-
+    min_stat_value = 0
+    default_stat_value = 50
+    max_stat_value = 100
+    
     dependencies = [CharacterStatistics]
 
     @classmethod
@@ -229,7 +259,123 @@ class CharacterStatisticSystem(Base):
         statistics.update(self.get_primary_statistic_values(entity))
         statistics.update(self.get_secondary_statistic_values(entity))
         return statistics
+    
+    def get_statistic_points(self, entity):
+        """Gets the available statistic points of the entity
+
+        Args:
+            entity: An RPGEntity or the name of the entity
+        """
+        if isinstance(entity, str):
+            entity = self.world.get_entity(entity)
+        if not getattr(entity, CharacterStatistics.registered_as):
+            raise NoStatisticComponentError(entity)
+        char_stats = getattr(entity, CharacterStatistics.registered_as)
+        return char_stats.stat_points
         
+    def get_statistic_increase_cost(self, entity, statistic):
+        """Calculate and return the cost to increase the statistic
+        
+        Args:
+            entity: An RPGEntity or the name of the entity
+            statistic: The internal name of the statistic
+        """
+        if isinstance(entity, str):
+            entity = self.world.get_entity(entity)
+        if not getattr(entity, CharacterStatistics.registered_as):
+            raise NoStatisticComponentError(entity)
+        char_stats = getattr(entity, CharacterStatistics.registered_as)
+        cur_value = char_stats.primary_stats[statistic]
+        new_value = cur_value + 1
+        offset =  new_value - self.default_stat_value
+        return getStatCost(offset)
+    
+    def get_statistic_decrease_gain(self, entity, statistic):
+        """Calculate and return the gain of decreasing the statistic
+        
+        Args:
+            entity: An RPGEntity or the name of the entity
+            statistic: The internal name of the statistic
+        """
+        if isinstance(entity, str):
+            entity = self.world.get_entity(entity)
+        if not getattr(entity, CharacterStatistics.registered_as):
+            raise NoStatisticComponentError(entity)
+        char_stats = getattr(entity, CharacterStatistics.registered_as)
+        cur_value = char_stats.primary_stats[statistic].value
+        new_value = cur_value - 1
+        offset =  new_value - self.default_stat_value
+        return getStatCost(offset)
+    
+    def can_increase_statistic(self, entity, statistic):
+        """Checks whether the given statistic can be increased or not.
+        
+        Args:        
+            entity: An RPGEntity or the name of the entity
+            statistic: The internal name of the statistic
+        
+        Returns:
+            True if the statistic can be increase, False if not.
+        """
+        if not self.primary_statistics.has_key(statistic):
+            return False #Only primary statistics can be increased
+        value = self.get_statistic_value(entity, statistic)
+        if value < self.max_stat_value:
+            cost = self.get_statistic_increase_cost(entity, statistic)
+            return cost <= self.get_statistic_points(entity)
+        return False
+   
+    def can_decrease_statistic(self, entity, statistic):
+        """Checks whether the given statistic can be decreased or not.
+        
+        Args:        
+            entity: An RPGEntity or the name of the entity
+            statistic: The internal name of the statistic
+        
+        Returns:
+            True if the statistic can be decrease, False if not.
+        """
+        if not self.primary_statistics.has_key(statistic):
+            return False #Only primary statistics can be decreased
+        statistic = self.get_statistic_value(entity, statistic)
+        return statistic > self.min_stat_value
+    
+    def increase_statistic(self, entity, statistic):
+        """Increase the statistic by one, if possible.
+        
+        Args:        
+            entity: An RPGEntity or the name of the entity
+            statistic: The internal name of the statistic        
+        """
+        if not self.can_increase_statistic(entity, statistic):
+            return
+        if isinstance(entity, str):
+            entity = self.world.get_entity(entity)
+        if not getattr(entity, CharacterStatistics.registered_as):
+            raise NoStatisticComponentError(entity)
+        char_stats = getattr(entity, CharacterStatistics.registered_as)
+        cost = self.get_statistic_increase_cost(entity, statistic)
+        char_stats.primary_stats[statistic] += 1
+        char_stats.stat_points -= cost
+            
+    def decrease_statistic(self, entity, statistic):
+        """Decrease the statistic by one, if possible.
+        
+        Args:        
+            entity: An RPGEntity or the name of the entity
+            statistic: The internal name of the statistic        
+        """
+        if not self.can_decrease_statistic(entity, statistic):
+            return
+        if isinstance(entity, str):
+            entity = self.world.get_entity(entity)
+        if not getattr(entity, CharacterStatistics.registered_as):
+            raise NoStatisticComponentError(entity)
+        char_stats = getattr(entity, CharacterStatistics.registered_as)
+        gain = self.get_statistic_increase_cost(entity, statistic)
+        char_stats.primary_stats[statistic] -= 1
+        char_stats.stat_points += gain
+    
     def step(self, time_delta): #pylint: disable=W0613
         """Execute a time step for the system. Must be defined
         by all system classes.
