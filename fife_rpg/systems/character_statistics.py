@@ -302,7 +302,7 @@ class CharacterStatisticSystem(Base):
         if not getattr(entity, CharacterStatistics.registered_as):
             raise NoStatisticComponentError(entity)
         char_stats = getattr(entity, CharacterStatistics.registered_as)
-        cur_value = char_stats.primary_stats[statistic].value
+        cur_value = char_stats.primary_stats[statistic]
         new_value = cur_value - 1
         offset =  new_value - self.default_stat_value
         return getStatCost(offset)
