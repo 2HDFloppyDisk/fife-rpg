@@ -12,10 +12,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""The Graphics component and functions
+"""The Agent component and functions
 
 .. module:: agent
-    :synopsis: The Graphics component and functions
+    :synopsis: The Agent component and functions
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """

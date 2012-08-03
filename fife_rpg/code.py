@@ -1,4 +1,4 @@
-"""Utilities needed to emulate Python's interactive interpreter with changes for PARPG
+"""Utilities needed to emulate Python's interactive interpreter with changes for PARPG.
 The original code module is part of pythons standard modules.
 """
 
