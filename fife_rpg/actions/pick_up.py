@@ -87,4 +87,4 @@ class PickUpAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        super(PickUpAction, cls).register(name)
+        return super(PickUpAction, cls).register(name)

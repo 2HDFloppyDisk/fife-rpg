@@ -162,7 +162,8 @@ class CharacterStatisticSystem(Base):
         Returns:
             True if the system was registered, False if not.
         """
-        (super(CharacterStatisticSystem, cls).register(name, **kwargs))
+        return (super(CharacterStatisticSystem, cls).register(name, *args, 
+                                                              **kwargs))
         
     def __init__(self, primary_statistics=None, secondary_statistics=None):
         Base.__init__(self)

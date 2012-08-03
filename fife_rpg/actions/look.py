@@ -77,4 +77,4 @@ class LookAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        super(LookAction, cls).register(name)
+        return super(LookAction, cls).register(name)

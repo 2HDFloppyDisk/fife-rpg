@@ -143,7 +143,7 @@ class ScriptingSystem(Base):
         Returns:
             True if the system was registered, False if not.
         """
-        (super(ScriptingSystem, cls).register(name, **kwargs))
+        return (super(ScriptingSystem, cls).register(name, *args, **kwargs))
     
     def __init__(self, commands, actions):
         Base.__init__(self)

@@ -43,7 +43,7 @@ class GameEnvironment(Base):
         Returns:
             True if the system was registered, False if not.
         """
-        (super(GameEnvironment, cls).register(name, **kwargs))
+        return (super(GameEnvironment, cls).register(name, *args, **kwargs))
         
     def __init__(self):
         Base.__init__(self)

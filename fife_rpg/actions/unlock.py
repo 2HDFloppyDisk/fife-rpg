@@ -78,4 +78,4 @@ class UnlockAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        super(UnlockAction, cls).register(name)
+        return super(UnlockAction, cls).register(name)

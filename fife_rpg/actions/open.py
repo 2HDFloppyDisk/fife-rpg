@@ -87,4 +87,4 @@ class OpenAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        super(OpenAction, cls).register(name)
+        return super(OpenAction, cls).register(name)

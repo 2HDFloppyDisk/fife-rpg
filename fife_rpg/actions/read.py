@@ -77,4 +77,4 @@ class ReadAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        super(ReadAction, cls).register(name)
+        return super(ReadAction, cls).register(name)

@@ -87,4 +87,4 @@ class CloseAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        super(CloseAction, cls).register(name)
+        return super(CloseAction, cls).register(name)

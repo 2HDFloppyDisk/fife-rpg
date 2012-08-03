@@ -93,4 +93,4 @@ class ChangeMapAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        super(ChangeMapAction, cls).register(name)
+        return super(ChangeMapAction, cls).register(name)

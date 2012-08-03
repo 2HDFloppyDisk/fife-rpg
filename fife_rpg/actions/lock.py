@@ -78,4 +78,4 @@ class LockAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        super(LockAction, cls).register(name)
+        return super(LockAction, cls).register(name)
