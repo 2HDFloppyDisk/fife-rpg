@@ -34,8 +34,27 @@ from fife_rpg.behaviours import BehaviourManager
 _AGENT_STATE_WANDER, _AGENT_STATE_TALK)= xrange(6)
 
 class Base (fife.InstanceActionListener):
-    """Behaviour that contains the basic methods for agents"""
+    """Behaviour that contains the basic methods for agents
+    
+    Properties:
+        agent: A :class:`fife.Instance` that represents the agent
+        
+        state: The current state of the behaviour
+        
+        animation_queue: A deque that contains the queued animations
+        
+        next_action: The :class:`fife_rpg.actions.base.Base` that will be executed
+        after the current animation is finished
+        
+        walk_speed: How fast the agent will move when walking
+        
+        run_speed: How fast the agent will move when running
 
+        registered_as: Class property that sets under what name the class is
+        registered
+        
+        dependencies: Class property that sets the classes this System depends on
+    """
     __registered_as = None
 
     def __init__(self, walk_speed, run_speed):
@@ -67,7 +86,8 @@ class Base (fife.InstanceActionListener):
 
         Args:
            agent_id: ID of the layer to attach to.
-           layer: Layer of the agent to attach the behaviour to
+           
+           layer: :class:`fife.Layer` of the agent to attach the behaviour to
         """
         self.agent = layer.getInstance(agent_id)
         self.agent.addActionListener(self)
@@ -77,7 +97,7 @@ class Base (fife.InstanceActionListener):
         """Called when the agent is moved to a different map
 
         Args:
-            layer: The layer that the agent was moved to
+            layer: The :class:`fife.Layer` that the agent was moved to
         """
         if self.agent is not None:
             self.agent.removeActionListener(self)
@@ -90,13 +110,14 @@ class Base (fife.InstanceActionListener):
         """Set the state to idle"""
         self.state = _AGENT_STATE_IDLE
 
-    def onInstanceActionFinished(self, instance, action):
+    def onInstanceActionFinished(self, instance, animation):
         #pylint: disable=C0103,W0613,W0221
-        """Called by FIFE when an action of an agent is finished
+        """Called by FIFE when an animation of an agent is finished
 
         Args:
             instance: The agent instance
-            action: The action that the agent was doing
+            
+            animation: The animation that the agent was doing
         """
         # First we reset the next behavior 
         act = self.next_action
@@ -111,13 +132,15 @@ class Base (fife.InstanceActionListener):
         except IndexError:
             self.idle()
 
-    def onInstanceActionFrame(self, instance, action, frame):
+    def onInstanceActionFrame(self, instance, animation, frame):
         #pylint: disable=C0103,W0613,W0221
-        """Called by FIFE when a frame of an action of an agent is finished
+        """Called by FIFE when a frame of an animation of an agent is finished
 
         Args:
             instance: The agent instance
-            action: The action that the agent was doing
+            
+            animation: The animation that the agent was doing
+            
             frame: The frame that the was done
         """
         pass
@@ -128,26 +151,30 @@ class Base (fife.InstanceActionListener):
         self.clear_animations()
         self.idle()
 
-    def animate(self, action, direction = None, repeating = False):
+    def animate(self, animation, direction = None, repeating = False):
         """Perform an animation
 
         Args:
-            action: The action to perform
+            animation: The animation to perform
+            
             direction: The direction to which the agent should face
-            repeating: Whether to repeat the action or not
+            
+            repeating: Whether to repeat the animation or not
         """
         direction = direction or self.agent.getFacingLocation()
-        self.agent.act(action, direction, repeating)
+        self.agent.act(animation, direction, repeating)
 
-    def queue_animation(self, action, direction = None, repeating = False):
-        """Add an action to the queue
+    def queue_animation(self, animation, direction = None, repeating = False):
+        """Add an animation to the queue
 
         Args:
-            action: The action to perform
+            animation: The animation to perform
+            
             direction: The direction to which the agent should face
-            repeating: Whether to repeat the action or not
+            
+            repeating: Whether to repeat the animation or not
         """
-        self.animation_queue.append({"action": action, "direction": direction,
+        self.animation_queue.append({"animation": animation, "direction": direction,
                                   "repeating": repeating})
         
     def clear_animations(self):
@@ -155,13 +182,14 @@ class Base (fife.InstanceActionListener):
         self.animation_queue.clear()
 
     def approach(self, location_or_agent, action=None):
-        """Approaches a location or another agent and then perform an action 
+        """Approaches a location or another agent and then perform an animation 
         (if set).
         
         Args:
             loc: the location or agent to approach
-            action: The action to schedule for execution after the 
-            approach.
+            
+            action: The :class:`fife_rpg.actions.base.Base` to schedule for 
+            execution after the approach.
         """
             
         self.state = _AGENT_STATE_APPROACH

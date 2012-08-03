@@ -24,7 +24,6 @@ class TestLockable(unittest.TestCase):
         """Enity representing an Lock"""
         
         def __init__(self, world, locked, closed):#pylint: disable=W0613,W0231
-            """Constructor"""
             self.lockable.locked = locked
             self.lockable.closed = closed
 

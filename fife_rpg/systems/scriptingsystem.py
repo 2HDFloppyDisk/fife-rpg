@@ -28,15 +28,25 @@ from fife_rpg.systems import Base
 from fife_rpg.systems import GameEnvironment
 
 class Script(object):
-    """Script object"""
+    """Script object
+    
+    Properties:
+        actions: The actions that the script will run
+        
+        system: The Scriptsystem that this script will run on
+        
+        running_actions: The actions that are currently running
+        
+        running: Whether the script is currently running or not
+        
+        finished: Whether the script has finished running or not
+        
+        wait: The seconds that have to pass before the next action is run.
+        
+        cur_action: The current running action     
+    """
 
     def __init__(self, actions, system):
-        """Constructor
-        
-        Args:
-            actions: The actions that the script will run
-            system: The Scriptsystem that this script will run on
-        """
         assert(isinstance(actions, deque))
         self.actions = actions
         assert(isinstance(system, ScriptingSystem))
@@ -44,7 +54,7 @@ class Script(object):
         self.running_actions = None
         self.running = False
         self.finished = False
-        self.time = 0
+        self._time = 0
         self.wait = 0
         self.cur_action = None
         self.reset()
@@ -54,7 +64,7 @@ class Script(object):
         self.running_actions = copy(self.actions)
         self.running = False
         self.finished = False
-        self.time = 0
+        self._time = 0
         self.wait = 0
         self.cur_action = None
     
@@ -68,9 +78,9 @@ class Script(object):
             return
         if self.cur_action and not self.cur_action.executed:
             return
-        self.time += time
-        if self.wait <= self.time:
-            self.time = 0
+        self._time += time
+        if self.wait <= self._time:
+            self._time = 0
             try:
                 script_vals = self.system.getScriptEnvironment()
                 action_data = self.running_actions.popleft()
@@ -105,6 +115,15 @@ class Script(object):
 
 class ScriptingSystem(Base):
     """System responsible for managing scripts.
+    
+    Properties:
+        commands: The commands available to scripts
+        
+        actions: Actions that the scripts can do
+        
+        scripts: Dictionary of the registered scripts
+        
+        conditions: List of the registered conditions
     """
 
     dependencies = [GameEnvironment]
@@ -115,8 +134,10 @@ class ScriptingSystem(Base):
 
         Args:
             name: The name under which the class should be registered
-            *args: Additional arguments to pass to the class constructor
-            **kwargs: Additional keyword arguments to pass to the class 
+            
+            args: Additional arguments to pass to the class constructor
+            
+            kwargs: Additional keyword arguments to pass to the class 
             constructor
 
         Returns:
@@ -125,12 +146,6 @@ class ScriptingSystem(Base):
         (super(ScriptingSystem, cls).register(name, **kwargs))
     
     def __init__(self, commands, actions):
-        """Constructor
-        
-        Args:
-            commands: The commands available to scripts
-            actions: Actions that the scripts can do
-        """
         Base.__init__(self)
         self.commands = commands
         self.actions = actions
@@ -150,7 +165,7 @@ class ScriptingSystem(Base):
         return environment.get_environement()
 
     def step(self, time_delta):
-        """Execute a time step for the system. Must be defined
+        """Execute a _time step for the system. Must be defined
         by all system classes.
 
         Args:
@@ -177,6 +192,7 @@ class ScriptingSystem(Base):
 
         Args:
             name: The name of the script
+            
             actions: What the script does
         """
         if not(isinstance(actions, deque)):
@@ -190,6 +206,7 @@ class ScriptingSystem(Base):
 
         Args:
             condition: Condition which will be evaluated
+            
             script_name: Name of the script that will be executed if the
             condition evaluates to True.
         """

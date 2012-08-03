@@ -32,6 +32,7 @@ def register_behaviour(name, behaviour):
 
     Args:
         name: The name of the behaviour
+        
         behaviour: The behaviour class
 
     Raises:

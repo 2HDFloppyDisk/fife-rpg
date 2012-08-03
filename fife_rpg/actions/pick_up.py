@@ -34,8 +34,14 @@ class PickUpAction(Base):
     dependencies = [General, Agent, Containable, Container]
        
     def execute(self):
+        """Execute the action
+        
+        Raises:
+            :class:`fife_rpg.exceptions.NoSuchCommandError`
+            if a command is detected that is not registered.
+        """
         agent = getattr(self.target, Agent.registered_as)
-        game_map = self.controller.maps[agent.map]
+        game_map = self.application.maps[agent.map]
         general = getattr(self.target, General.registered_as)
         game_map.remove_entity(general.identifier)
         
@@ -52,7 +58,8 @@ class PickUpAction(Base):
         """Checks whether the entity qualifies as an agent for this action
         
         Args:
-            entity: The entity to ceck. A bGrease.Entity instance.
+            entity: The entity to ceck. 
+            A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """
@@ -63,7 +70,8 @@ class PickUpAction(Base):
         """Checks whether the entity qualifies as a target for this action
         
         Args:
-            entity: The entity to ceck. A bGrease.Entity instance.
+            entity: The entity to ceck. 
+            A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """
@@ -75,9 +83,6 @@ class PickUpAction(Base):
 
         Args:
             name: The name under which the class should be registered
-            *args: Additional arguments to pass to the class constructor
-            **kwargs: Additional keyword arguments to pass to the class 
-            constructor
 
         Returns:
             True if the action was registered, False if not.

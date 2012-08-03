@@ -84,7 +84,7 @@ class Test(unittest.TestCase):
                      ITEM_LAYER, self.regions)
         self.assertEqual(self.map_name, rpg_map.name, 
                          "Map.name does not return the correct value")
-        self.assertEqual(self.fife_map, rpg_map.map, 
+        self.assertEqual(self.fife_map, rpg_map.fife_map, 
                          "Map.map does not return the correct value")
         self.assertEqual(self.fife_camera, rpg_map.camera,
                          "Map.camera does not return the correct value")

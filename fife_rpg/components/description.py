@@ -23,10 +23,17 @@
 from fife_rpg.components.base import Base
 
 class Description(Base):
-    """Component that stores the description of an object"""
+    """Component that stores the description of an object
+    
+    Fields:
+        view_name: The displayed name of the entity
+        
+        real_name: The real name of the entity
+        
+        desc: Text describing the entity
+        """
 
     def __init__(self):
-        """Constructor"""
         Base.__init__(self, view_name=str, real_name=str, desc=str)
 
     @classmethod
@@ -35,7 +42,8 @@ class Description(Base):
 
         Args:
             name: The name under which the class should be registered
-            auto_register: This sets whether components this component
+            
+            auto_register: This sets whether components this component            
             derives from will have their registered_as property set to the same
             name as this class.
 

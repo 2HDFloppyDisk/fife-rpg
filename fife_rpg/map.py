@@ -28,15 +28,15 @@ from fife_rpg.components.general import General
 
 class NoSuchRegionError(Exception):
     """Gets thrown when the code tried to access a region that does not exits 
-    on the map."""
+    on the map.
+
+    Properties:
+        map_name: The name of the map_name
+        
+        region_name: The name of the region_name
+    """
 
     def __init__(self, map_name, region_name):
-        """Constructor
-
-        Args:
-            map_name: The name of the map_name
-            region_name: The name of the region_name
-        """
         Exception.__init__(self)
         self.map = map_name
         self.region = region_name
@@ -47,22 +47,29 @@ class NoSuchRegionError(Exception):
                     (self.map,  self.region))
 
 class Map(object):
-    """Contains the data of a map"""
+    """Contains the data of a map
 
+    Properties:
+        fife_map: A fife.Map instance, representing the fife_map
+
+        name: The name of the fife_map.
+
+        camera: The name of the default camera
+
+        actor_layer: The name of the actor layer
+
+        ground_object_layer: The name of the ground object layer
+
+        item_layer: The name of the item layer
+
+        regions: A dictionary that defines specific regions on the fife_map, as
+        :class:`fife.DoubleRect` instances.
+        
+        is_active: Whether the map is currently active or nor
+    """
+        
     def __init__(self, fife_map, name, camera, actor_layer, 
                  ground_object_layer, item_layer, regions):
-        """Constructor
-
-        Args:
-            fife_map: A fife.Map instance, representing the fife_map
-            name: The name of the fife_map.
-            camera: The name of the default camera
-            actor_layer: The name of the actor layer
-            ground_object_layer: The name of the ground object layer
-            item_layer: The name of the item layer
-            regions: A dictionary that defines specific regions on the fife_map, as
-            fife.DoubleRect instances.
-        """
         self.__map = fife_map
         self.__name = name
         self.__regions = regions
@@ -80,7 +87,7 @@ class Map(object):
             General.register()
 
     @property
-    def map(self):
+    def fife_map(self):
         """Returns the fife.Map"""
         return self.__map
 
@@ -132,6 +139,7 @@ class Map(object):
             
         Raises:
             KeyError: If the map has no entity with that name
+            
             TypeError: If the key is not a string
         """
         if not type(name) == str:
@@ -147,8 +155,9 @@ class Map(object):
         """Query the main camera for instances on the specified layer.
         
         Args:
-            point: The point that should be checked
-            layer: The layer from which we want the instances 
+            point: A :class:`fife.ScreenPoint`
+            
+            layer: The :class:`fife.Layer` from which we want the instances 
         """
         return self.camera.getMatchingInstances(point, layer)
     
@@ -157,10 +166,12 @@ class Map(object):
 
         Args:
             location: A fife.DoublePoint instance or a tuple with 2 elements
+            
             region: The name of the region
 
         Raises:
-            NoSuchRegionError: The specified region does not exist.
+            :class:`fife_rpg.map.NoSuchRegionError` if the specified region does 
+            not exist.
         """
         if isinstance(location, tuple) or isinstance(location, list):
             location = fife.DoublePoint(location[0], location[1])
@@ -181,7 +192,8 @@ class Map(object):
         """Update the maps entites from the entities of the world
         
         Args:
-            world: The world on which the map looks for its entities
+            world: The :class:`fife_rpg.world.RPGWorld` on which the map looks
+            for its entities
         """
         self.__last_world = world
         extent = world[...]
@@ -206,6 +218,7 @@ class Map(object):
         
         Raises:
             KeyError: If the map has no entity with that name
+            
             TypeError: If the identifier is not a string
         """
         try:

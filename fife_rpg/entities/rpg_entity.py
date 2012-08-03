@@ -24,14 +24,17 @@ from bGrease import Entity
 from fife_rpg.components.general import General
 
 class RPGEntity(Entity):
-    """The Base for all fife-rpg entities"""
+    """The Base for all fife-rpg entities
+        
+    Properties:
+            world: The world the entity belongs to. 
+            A :class:`fife_rpg.world.RPGWorld`
+            
+            identifier: A unique identifier
+    """
 
     def __init__(self, world, identifier):
-        """Constructor
 
-        Args:
-            world: The world the entity belongs to
-            identifier: A unique identifier"""
         Entity.__init__(self, world)
         if not General.registered_as:
             General.register()

@@ -28,52 +28,6 @@ from fife_rpg.entities import RPGEntity
 from fife_rpg.components.character_statistics import CharacterStatistics
 from fife_rpg.exceptions import AlreadyRegisteredError
 
-class NoSuchStatisticError(Exception):
-    """Exception that gets raised when a statistic was tried to be accessed that
-    does not exist
-    
-    Properties:        
-        name: The name of the statistic
-    """
-    
-    def __init__(self, name):
-        Exception.__init__(self)
-        self.name = name
-    
-    def __str__(self):
-        """Returns the message of the Exception"""
-        return "There is no %s statistic" % (self.name)
-    
-class NoStatisticComponentError(Exception):
-    """Exception that gets raised when an entity does not have a
-    character_statistics component
-    
-    Properties:
-        entity: The entity
-    """
-    
-    def __init__(self, entity):
-        Exception.__init__(self)
-        self.entity = entity
-
-    def __str__(self):
-        """Returns the message of the Exception"""
-        return ("The %s entity does not have character statistics" %
-                self.entity.identifier)
-        
-class Statistic(object):
-    """Class to store the data about a statistic
-    
-    Properties:
-        name: The internal name of the statistic
-        view_name: The displayed name of the statistic
-        description: The description of the statistic
-    """
-    
-    def __init__(self, name, view_name, description):
-        self.name = name
-        self.view_name = view_name
-
 def getStatCost(offset):
     """Gets and returns the cost to increase stat based on the offset"""
 
@@ -99,15 +53,67 @@ def getStatCost(offset):
     elif offset < 41:
         return 9
     else:
-        return 10  
+        return 10 
+
+class NoSuchStatisticError(Exception):
+    """Exception that gets raised when a statistic was tried to be accessed that
+    does not exist
+    
+    Properties:        
+        name: The name of the statistic
+    """
+    
+    def __init__(self, name):       
+        Exception.__init__(self)
+        self.name = name
+    
+    def __str__(self):
+        """Returns the message of the Exception"""
+        return "There is no %s statistic" % (self.name)
+    
+class NoStatisticComponentError(Exception):
+    """Exception that gets raised when an entity does not have a
+    character_statistics component
+    
+    Properties:
+        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity`
+    """
+    
+    def __init__(self, entity):
+        Exception.__init__(self)
+        self.entity = entity
+
+    def __str__(self):
+        """Returns the message of the Exception"""
+        return ("The %s entity does not have character statistics" %
+                self.entity.identifier)
+        
+class Statistic(object):
+    """Class to store the data about a statistic
+    
+    Properties:
+        name: The internal name of the statistic
+        
+        view_name: The displayed name of the statistic
+        
+        description: The description of the statistic
+    """
+    
+    def __init__(self, name, view_name, description):
+        self.name = name
+        self.view_name = view_name
+        self.description = description 
 
 class CalculatedStatistic(Statistic):
     """Class to store the data about a calculated statistic
     
     Properties:
         name: The internal name of the statistic
+        
         view_name: The displayed name of the statistic
+        
         formula: How the statistic is calculated
+        
         description: The description of the statistic
     """
     
@@ -121,7 +127,19 @@ class CharacterStatisticSystem(Base):
     
     Properties:
         primary_statistics: Dictionary holding the primary statistics
+        
         secondary_statistics: Dictionary holfing the secondary statistics
+        
+        min_stat_value: Class property that determines the minimum value a
+        statistic can have
+        
+        default_stat_value: Class property that determines the average value of
+        the statistic. This is used for offset calculation.
+        
+        max_stat_value: Class property that determines the maximum value a
+        statistic can have
+        
+        dependencies: List of class this system depends on
     """
     min_stat_value = 0
     default_stat_value = 50
@@ -135,8 +153,10 @@ class CharacterStatisticSystem(Base):
 
         Args:
             name: The name under which the class should be registered
-            *args: Additional arguments to pass to the class constructor
-            **kwargs: Additional keyword arguments to pass to the class 
+            
+            args: Additional arguments to pass to the class constructor
+            
+            kwargs: Additional keyword arguments to pass to the class 
             constructor
 
         Returns:
@@ -154,7 +174,9 @@ class CharacterStatisticSystem(Base):
         
         Args:
             name: Short internal name for the statistic
+            
             view_name: Name that is displayed
+            
             description: Text that describes the statistic
         """
         if self.primary_statistics.has_key(name):
@@ -167,8 +189,11 @@ class CharacterStatisticSystem(Base):
         
         Args:
             name: Short internal name for the statistic
+            
             view_name: Name that is displayed
+            
             description: Text that describes the statistic
+            
             formula: How the statistic is calculated
         """
         if self.secondary_statistics.has_key(name):
@@ -180,7 +205,9 @@ class CharacterStatisticSystem(Base):
         """Get the entities value of the given statistic
         
         Args:
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
+            
             statistic: The internal name of the statistic
         """
         if isinstance(entity, str):
@@ -207,7 +234,8 @@ class CharacterStatisticSystem(Base):
         of the entity.
         
         Args:
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
         
         Returns:
             A dictionary containing the statistic short names and the values
@@ -228,7 +256,8 @@ class CharacterStatisticSystem(Base):
         of the entity.
         
         Args:
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
         
         Returns:
             A dictionary containing the statistic short names and the values
@@ -249,7 +278,8 @@ class CharacterStatisticSystem(Base):
         statitistic values of the entity.
         
         Args:
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
         
         Returns:
             A dictionary containing the statistic short names and the values
@@ -264,7 +294,8 @@ class CharacterStatisticSystem(Base):
         """Gets the available statistic points of the entity
 
         Args:
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
         """
         if isinstance(entity, str):
             entity = self.world.get_entity(entity)
@@ -277,7 +308,9 @@ class CharacterStatisticSystem(Base):
         """Calculate and return the cost to increase the statistic
         
         Args:
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
+            
             statistic: The internal name of the statistic
         """
         if isinstance(entity, str):
@@ -294,7 +327,9 @@ class CharacterStatisticSystem(Base):
         """Calculate and return the gain of decreasing the statistic
         
         Args:
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or 
+            the name of the entity
+            
             statistic: The internal name of the statistic
         """
         if isinstance(entity, str):
@@ -311,7 +346,9 @@ class CharacterStatisticSystem(Base):
         """Checks whether the given statistic can be increased or not.
         
         Args:        
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
+            
             statistic: The internal name of the statistic
         
         Returns:
@@ -329,7 +366,9 @@ class CharacterStatisticSystem(Base):
         """Checks whether the given statistic can be decreased or not.
         
         Args:        
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
+            
             statistic: The internal name of the statistic
         
         Returns:
@@ -344,7 +383,9 @@ class CharacterStatisticSystem(Base):
         """Increase the statistic by one, if possible.
         
         Args:        
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
+            
             statistic: The internal name of the statistic        
         """
         if not self.can_increase_statistic(entity, statistic):
@@ -362,7 +403,9 @@ class CharacterStatisticSystem(Base):
         """Decrease the statistic by one, if possible.
         
         Args:        
-            entity: An RPGEntity or the name of the entity
+            entity: An :class:`fife_rpg.entities.rpg_entity.RPGEntity` or the
+            name of the entity
+            
             statistic: The internal name of the statistic        
         """
         if not self.can_decrease_statistic(entity, statistic):

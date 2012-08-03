@@ -76,6 +76,9 @@ class ApplicationListener(
     inputs.
 
     Does not process game related input.
+    
+    Properties:
+        quit: Sets whether to quit the application on the next pump or not.
     """
 
     def __init__(self, engine, application):
@@ -84,6 +87,7 @@ class ApplicationListener(
 
         Args:
             engine: A fife.Engine instance
+            
             application: A RPGApplication instance
         """
         self._engine = engine
@@ -192,14 +196,13 @@ class ApplicationListener(
 
 
 class RPGApplication(FifeManager, ApplicationBase):
-    """The main application.  It inherits fife.extensions.ApplicationBase."""
+    """The main application.  It inherits fife.extensions.ApplicationBase.
+    
+    Properties:
+        TDS: A fife_settings.Setting instance
+    """
 
     def __init__(self, TDS):
-        """Constructor
-        
-        Args:
-            TDS: A fife_settings.Setting instance
-        """
         ApplicationBase.__init__(self, TDS)
         FifeManager.__init__(self)
         self._listener = None
@@ -258,6 +261,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         
         Args:
             name: The name of the map
+            
             filename_or_map: The file name map, without the extension,
             or a Map instance.
         """
@@ -427,9 +431,13 @@ class RPGApplication(FifeManager, ApplicationBase):
         
         Args:
             entity: The entity of the agent to move or the name of the agent
+            
             position: The new position of the agent
+            
             rotation: The new rotation of the agent
+            
             stack_postition: The new stack position of the agent
+            
             new_map: The new map to move the agent to.
         """
         if isinstance(entity, str):
@@ -482,7 +490,9 @@ class RPGApplication(FifeManager, ApplicationBase):
         
         Args:
             command: The command string
+            
             env_locals: The locals that will be used
+            
             env_globals: The globals that will be used
         
         Returns:
@@ -545,8 +555,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         return result
         
     def pump(self, dt):
-        """Performs actions every frame.
-        
+        """Performs actions every frame.        
         
         Args:
             dt: Time elapsed since last call to pump

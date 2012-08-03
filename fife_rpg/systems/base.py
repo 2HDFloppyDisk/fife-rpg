@@ -26,7 +26,14 @@ from fife_rpg.systems import SystemManager
 from fife_rpg.helpers import ClassProperty
 
 class Base(System):
-    """Base system for fife-rpg."""
+    """Base system for fife-rpg.
+    
+    Properties:
+        registered_as: Class property that sets under what name the class is
+        registered
+        
+        dependencies: Class property that sets the classes this System depends on
+    """
 
     __registered_as = None
     dependencies = []
@@ -43,8 +50,8 @@ class Base(System):
 
         Args:
             name: The name under which the class should be registered
-            *args: Additional arguments to pass to the class constructor
-            **kwargs: Additional keyword arguments to pass to the class 
+            args: Additional arguments to pass to the class constructor
+            kwargs: Additional keyword arguments to pass to the class 
             constructor
 
         Returns:

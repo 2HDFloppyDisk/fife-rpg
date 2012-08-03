@@ -51,15 +51,14 @@ class  TestContainer(unittest.TestCase):
         """Enity representing an Iventory"""
         
         def __init__(self, world, identifier, max_bulk, slots):
-            """Constructor"""
             RPGEntity.__init__(self, world, identifier)
             self.container.children = slots
             self.container.max_bulk = max_bulk
                 
     
     class Item(RPGEntity):
+
         def __init__(self, world, identifier, bulk):
-            """Constructor"""
             RPGEntity.__init__(self, world, identifier)
             self.containable.bulk = bulk
         

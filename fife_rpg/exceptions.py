@@ -23,14 +23,15 @@
 
 class AlreadyRegisteredError(Exception):
     """Exception that gets raised when an object with the name is already
-    registered"""
-    def __init__(self, name, obj_type):
-        """Constructor
+    registered
+    
+    Properties:
+        name: The name of the action that was already registered
         
-        Args:
-            name: The name of the action that was already registered
-            obj_type: The obj_type of the object
-        """
+        obj_type: The obj_type of the object
+    """
+    
+    def __init__(self, name, obj_type):
         Exception.__init__(self)
         self.name = name
         self.type = obj_type
@@ -41,13 +42,13 @@ class AlreadyRegisteredError(Exception):
                     (self.type,  self.name))
 
 class NotRegisteredError(Exception):
-    """Exception that gets raised when a class is not registered"""
+    """Exception that gets raised when a class is not registered
+    
+    Properties:
+        obj_type: The obj_type of the object
+    """
+    
     def __init__(self, obj_type):
-        """Constructor
-        
-        Args:
-            obj_type: The obj_type of the object
-        """
         Exception.__init__(self)
         self.type = obj_type
     
@@ -57,13 +58,13 @@ class NotRegisteredError(Exception):
                     (self.type))
 
 class NoSuchCommandError(Exception):
-    """Exception that gets raised when the command is not found"""
+    """Exception that gets raised when the command is not found
+    
+    Properties:
+        name: The name of the command that was being tried to execute
+    """
+    
     def __init__(self, name):
-        """Constructor
-        
-        Args:
-            name: The name of the command that was being tried to execute
-        """
         Exception.__init__(self)
         self.name = name
     

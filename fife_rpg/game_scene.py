@@ -15,11 +15,10 @@
 # This package is based on the gamescene classes of PARPG
 
 """This module contains the generic controller and view to display a
-fife_rpg map.
+:class:`fife_rpg.map.GameMap`.
 
-.. module:: controllers
-    :synopsis: The generic controller and view to display a
-fife_rpg map.
+.. module:: game_scene
+    :synopsis: The generic controller and view to display a fife_rpg map.
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
@@ -34,15 +33,16 @@ class GameSceneListener(fife.IMouseListener):
 
     Handle mouse events in relation
     with game process.
+
+    Properties:
+        engine: The FIFE engine
+
+        gamecontroller: A :class:`fife_rpg.game_scene.GameSceneController`
+        
+        eventmanager: The engines eventmanager. A :class:`fife.EventManager`
     """
 
     def __init__(self, engine, gamecontroller):
-        """Constructor
-
-        Args:
-            engine: The FIFE engine
-            gamecontroller: The GameSceneController
-        """
         self.engine = engine
         self.gamecontroller = gamecontroller
 
@@ -82,26 +82,25 @@ class GameSceneListener(fife.IMouseListener):
         pass
 
 class GameSceneView(ViewBase):
-    """The view responsible for showing the in-game gui"""
+    """The view responsible for showing the in-game gui
+
+    Properties:
+        application: A :class:`fife_rpg.rpg_application.RPGApplication` instance
+    """
 
     def __init__(self, application):
-        """Constructor
-
-        Args:
-            application: A fife_rpg.RPGApplication instance
-        """
         ViewBase.__init__(self, application)
 
 class GameSceneController(ControllerBase):
-    """Handles the input for a game scene"""
+    """Handles the input for a game scene
+
+    Properties:
+        view: A :class:`fife_rpg.game_scene.GameSceneView`
+        
+        application: A :class:`fife_rpg.rpg_application.RPGApplication`
+    """
 
     def __init__(self, view, application):
-        """Constructor
-
-        Args:
-            view: The GameSceneView
-            application: The RPGApplication
-        """
         ControllerBase.__init__(self, view, application)
 
     def pump(self, time_delta):

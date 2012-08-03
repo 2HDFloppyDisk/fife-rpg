@@ -24,10 +24,29 @@ from fife_rpg.components.base import Base
 
 
 class Agent(Base):
-    """Component that stores the general values of an agent"""
+    """Component that stores the general values of an agent
+    
+    Fields:
+        gfx: The name of the graphical representation
+        
+        map: On what map the agent is
+        
+        type: The type of the agent. actor, ground_object or item
+        
+        position: The position of the agent as a 2 or 3 item list or tuple
+        
+        rotation: The rotation of the agent in degrees
+        
+        stack_position: The stackposition of the agent
+        
+        behaviour_type: The behaviour of the agent
+        
+        walk_speed: How fast the agent walks
+        
+        run_speed: How fast the agent runs
+    """
 
     def __init__(self):
-        """Constructor"""
         Base.__init__(self, gfx=str, map=str, type=str, position=list,
                       rotation=int, stack_position=int, behaviour_type=str, 
                       walk_speed=float, run_speed=float)
@@ -41,6 +60,7 @@ class Agent(Base):
 
         Args:
             name: The name under which the class should be registered
+            
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.

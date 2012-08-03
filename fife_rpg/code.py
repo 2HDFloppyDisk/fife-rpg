@@ -11,10 +11,9 @@ The original code module is part of pythons standard modules.
 
 import sys
 import traceback
-from codeop import CommandCompiler, compile_command
+from codeop import CommandCompiler
 
-__all__ = ["InteractiveInterpreter", "InteractiveConsole", "interact",
-           "compile_command"]
+__all__ = ["InteractiveInterpreter", "InteractiveConsole"]
 
 def softspace(file, newvalue):
     oldvalue = 0

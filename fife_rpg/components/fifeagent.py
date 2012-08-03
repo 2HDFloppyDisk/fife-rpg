@@ -23,10 +23,15 @@
 from fife_rpg.components.base import Base
 
 class FifeAgent(Base):
-    """Component that stores the values for a fife agent"""
+    """Component that stores the values for a fife agent
+    
+    Fields:
+        layer: The layer the agent is on
+        
+        behaviour: The behaviour object of this agent
+    """
 
     def __init__(self):
-        """Constructor"""
         Base.__init__(self, layer=object, behaviour=object)
 
     @property
@@ -43,6 +48,7 @@ class FifeAgent(Base):
 
         Args:
             name: The name under which the class should be registered
+            
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.
@@ -55,8 +61,8 @@ class FifeAgent(Base):
 def setup_behaviour(agent):
     """Attach the behaviour to the layer
     
-    Args;
-        agent: A FifeAgent instance
+    Args:
+        agent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
     """
     if agent.behaviour:   
         agent.behaviour.attach_to_layer(agent.entity.identifier, agent.layer)
@@ -66,8 +72,10 @@ def approach(agent, target_or_location, action):
     performing the given action
 
     Args:
-        agent: A FifeAgent instance
+        agent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
+        
         target_or_location: A location to move to or another agent to follow
+        
         action: The name of the action to perform
     """
     if agent.behaviour: 

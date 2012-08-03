@@ -39,16 +39,18 @@ from fife_rpg.components.general import General
 class RPGWorld(World):
     """The Base world for all rpgs.
     
-    Sets up the generic systems and components"""
+    Sets up the generic systems and components
+    
+    Properties:
+        application: The :class:`fife_rpg.rpg_application.RPGApplication` that 
+        uses this engine
+        
+        object_db: Stores the template data        
+    """
     
     MAX_ID_NUMBER = 1000
     
     def __init__(self, application):
-        """Constructor
-
-        Args:
-            application: The Application that uses this engine
-        """
         World.__init__(self, application.engine)
         self.application = application
         self.object_db = {}
@@ -129,7 +131,9 @@ class RPGWorld(World):
         
             Args:
                 identifier: The identifier of the new object
+                
                 info: Stores information about the object we want to create
+                
                 extra: Stores additionally required attributes
         
             Returns:
@@ -198,6 +202,7 @@ class RPGWorld(World):
 
         Args:
             entity_data: The dictionary in which the data should be put.
+            
             template_name: The name of the template to use
 
         Returns:
@@ -260,6 +265,7 @@ class RPGWorld(World):
         
         Args:
             dumper: A yaml BaseRepresenter
+            
             data: The Entity
         
         Returns:
@@ -274,6 +280,7 @@ class RPGWorld(World):
         
         Args:
             loader: A yaml BaseConstructor
+            
             node: The yaml node
             
         Returns:

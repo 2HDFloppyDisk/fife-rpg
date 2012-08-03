@@ -23,10 +23,27 @@
 from fife_rpg.components.base import Base
 
 class CharacterStatistics(Base):
-    """Component that defines character statistics."""
+    """Component that defines character statistics.
+    
+    Fields:
+        gender: The gender of the character
+        
+        picture: The identifier portrait picture
+        
+        age: The age of the character
+        
+        origin: The origin of the character
+        
+        primary_stats: The primary, directly increasable statistics
+        
+        secondary_stats: The secondary, calculated statistics
+        
+        stat_points: The points that can be used to raise stats
+        
+        traits: The characters traits
+    """
 
     def __init__(self):
-        """Constructor"""
         Base.__init__(self, gender=str, picture=str, age=int, origin=str, 
                       primary_stats=dict, secondary_stats=dict, stat_points=int,
                       traits=list, 
@@ -44,6 +61,7 @@ class CharacterStatistics(Base):
 
         Args:
             name: The name under which the class should be registered
+            
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.

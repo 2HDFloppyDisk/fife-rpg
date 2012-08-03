@@ -26,20 +26,23 @@ from fife_rpg.systems import GameEnvironment
 from fife_rpg import ControllerBase
 
 class DialogueSection(object):
-    """Represents a section of a dialogue"""
+    """Represents a section of a dialogue
+
+    Properties:
+        talker: The Entity that is talking
+
+        text: The text that is being said
+
+        condition: String that is being evaluated
+
+        commands: Commands that are to be executed when 
+        the section is displayed
+
+        responses: Possible responses for this section
+        """
     
     def __init__(self, talker, text, 
                  condition=None, commands=None, responses=None):
-        """Constructor
-        
-        Args:
-            talker: The Entity that is talking
-            text: The text that is being said
-            condition: String that is being evaluated
-            commands: Commands that are to be executed when 
-            the section is displayed
-            responses: Possible responses for this section
-        """
         self.talker = talker
         self.text = text
         self.condition = condition or "True"
@@ -47,13 +50,20 @@ class DialogueSection(object):
         self.responses = responses or []
 
 class Dialogue(object):
-    """Represents a single dialogue"""
+    """Represents a single dialogue
+
+    Properties:
+        world: RPGWorld that the dialogue is run on
+
+        sections: The sections of the dialogue
+        
+        current_section: The section that is currently active
+    """
 
     def __init__(self, world, dialogue_data):
-        """Constructor
-
+        """Create the sections based on the dialogue data
+        
         Args:
-            world: RPGWorld that the dialogue is run on
             dialogue_data: A dictionary containing the dialogue data
         """
         self.world = world
@@ -69,8 +79,8 @@ class Dialogue(object):
         its current values and additional values used by the dialogues.
         
         Args:
-            section: A DialogueSection, this will be used to get 
-            the additional values
+            section: A :class:`fife_rpg.dialogue.DialogueSection`. This will be 
+            used to get the additional values
         """
         game_environment = GameEnvironment.registered_as
         if game_environment:
@@ -107,7 +117,7 @@ class Dialogue(object):
         """Runs the commands of the section and replaces the text variables
         
         Args:
-            section: A DialogueSection
+            section: A :class:`fife_rpg.dialogue.DialogueSection`
         """
         env_globals, env_locals = self.get_game_environment(section)
         text_vals = env_globals.copy()
@@ -176,15 +186,15 @@ class Dialogue(object):
                 self.run_section(greeting)
 
 class DialogueController(ControllerBase):
-    """Controller that handles Dialogues"""
+    """Controller that handles Dialogues
+
+    Properties:
+        application: The application that created this controller
+
+        view: The view that is used by this controller
+    """
     
     def __init__(self, view, application):
-        """Constructor
-
-        Args:
-            application: The application that created this controller
-            view: The view that is used by this controller
-        """
         ControllerBase.__init__(self, view, application)
         self.dialogues = {}
         self.current_dialogue = None
@@ -194,6 +204,7 @@ class DialogueController(ControllerBase):
         
         Args:
             identifier: The name of the dialogue
+            
             dialogue_data: The data of the dialogue
         """
         self.dialogues[identifier] = dialogue_data

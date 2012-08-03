@@ -36,6 +36,7 @@ def register_component(component_name, component_object):
     
     Args:
         component_name: The name of the component_object
+        
         component_object: A bGrease component object
     """
     if not component_name in _COMPONENTS:
@@ -53,6 +54,7 @@ def register_checker(component_names, callback):
     Args:
         component_name: A list of the names of the components 
         which the checker will check
+        
         callback: The checker function
     """
     _CHECKERS.append((component_names, callback))

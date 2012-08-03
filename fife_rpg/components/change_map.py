@@ -22,10 +22,15 @@
 from fife_rpg.components.base import Base
 
 class ChangeMap(Base):
-    """Component that allows an entity to be contained by Container entity."""
+    """Component that stores the values of a entity that can change the map.
+    
+    Fields:
+        target_map: The map to change to
+        
+        target_position: Where the entity appears on the map
+    """
 
     def __init__(self):
-        """Constructor"""
         Base.__init__(self, target_map=str, target_position=list)
 
     @classmethod
@@ -34,6 +39,7 @@ class ChangeMap(Base):
 
         Args:
             name: The name under which the class should be registered
+            
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.

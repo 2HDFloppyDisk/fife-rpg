@@ -35,6 +35,7 @@ def register_system(system_name, system_object):
     
     Args:
         system_name: The name of the system_object
+        
         system_object: A bGrease system object
     """
     if not system_name in _SYSTEMS:

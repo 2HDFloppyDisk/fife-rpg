@@ -24,8 +24,12 @@ from fife_rpg.components.base import Base
 from fife_rpg.components.containable import Containable
 
 class Container(Base):
-    """
-    Component that allows an entity to contain one or more child entities.
+    """Component that allows an entity to contain one or more child entities.
+    
+    Fields:
+        children: The entites that are in this container
+        
+        max_bulk: How much place the container has
     """
 
     dependencies = [Containable]
@@ -46,6 +50,7 @@ class Container(Base):
 
         Args:
             name: The name under which the class should be registered
+            
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.
@@ -57,15 +62,15 @@ class Container(Base):
 
 class BulkLimitError(Exception):
     """Error that gets raised when the item would exceed the 
-    bulk limit of the container."""
+    bulk limit of the container.
+    
+    Properties:
+        bulk: What the bulk would be
+        
+        max_bulk: What the max bulk is
+    """
     
     def __init__(self, bulk, max_bulk):
-        """Constructor
-        
-        Args:
-            bulk: What the bulk would be
-            max_bulk: What the max bulk is
-        """
         Exception.__init__(self)
         self.bulk = bulk
         self.max_bulk = max_bulk
@@ -85,13 +90,15 @@ def get_free_slot(container):
     """Returns the first slot of the container that is not occupied.
 
     Args:
-        container: An RPGEntity with a container component
+        container: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        container component
 
     Returns:
         The index of a free slot if there is any.
 
     Raises:
-        NoFreeSlotError if there is no free slot.
+        :class:`fife_rpg.components.container.NoFreeSlotError`
+        if there is no free slot.
     """
     container = getattr(container, Container.registered_as)
     index = 0
@@ -105,7 +112,8 @@ def get_total_bulk(container):
     """Returns the bulk of all items in the container.
 
     Args:
-        container: An RPGEntity with a container component
+        container: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        container component
     """
     world = container.world
     container = getattr(container, Container.registered_as)
@@ -122,7 +130,8 @@ def get_total_weight(container):
     """Returns the weight of all items in the container.
     
     Args:
-        container: An RPGEntity with a container component
+        container: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        container component
     """
     world = container.world
     container = getattr(container, Container.registered_as)
@@ -139,7 +148,9 @@ def get_item(container, slot_or_type):
     """Returns the item that is in the slot, or has the given type.
 
     Args:
-        container: An RPGEntity with a container component
+        container: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        container component
+        
         slot_or_type: The index of the slot, or an item type
     """
     world = container.world
@@ -159,7 +170,9 @@ def remove_item(container, slot_or_type):
     """Removes the item at the given slot, or with the given type.
 
     Args:
-        container: An RPGEntity with a container component
+        container: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        container component
+        
         slot_or_type: The index of the slot, or an item type
     """
     container_data = getattr(container, Container.registered_as)
@@ -176,7 +189,9 @@ def take_item(container, slot_or_type):
     out of the container and returns it.
 
     Args:
-        container: An RPGEntity with a container component
+        container: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        container component
+        
         slot_or_type: The index of the slot, or an item type
 
     Returns:
@@ -193,12 +208,17 @@ def put_item(container, item, slot=-1):
     item previously at the slot.
 
     Args:
-        container: An RPGEntity with a container component
-        item: An RPGEntity with a containable component
+        container: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        container component
+        
+        item: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        containable component
+        
         slot: The slot where to pu the item. Defaults to first free slot.
 
     Raises:
-        BulkLimitError if the item would exceed the containers bulk.
+        :class:`fife_rpg.components.container.BulkLimitError` if the item would
+        exceed the containers bulk.
     """
     container_data = getattr(container, Container.registered_as)
     item_data = getattr(item, Containable.registered_as)

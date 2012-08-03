@@ -25,12 +25,7 @@ from fife_rpg.systems import Base
 
 class GameEnvironment(Base):
     """The game environment system manages what variables and functions are 
-    available to scripts.
-    
-    Properties:
-        __locals: Variables that are set by scripts
-        __callbacks: Functions that provide the global variables and functions
-        __globals: Automatically generated variables and functions
+    available to scripts.    
     """
 
     @classmethod
@@ -39,8 +34,10 @@ class GameEnvironment(Base):
 
         Args:
             name: The name under which the class should be registered
-            *args: Additional arguments to pass to the class constructor
-            **kwargs: Additional keyword arguments to pass to the class 
+            
+            args: Additional arguments to pass to the class constructor
+            
+            kwargs: Additional keyword arguments to pass to the class 
             constructor
 
         Returns:
@@ -49,7 +46,6 @@ class GameEnvironment(Base):
         (super(GameEnvironment, cls).register(name, **kwargs))
         
     def __init__(self):
-        """Constructor"""
         Base.__init__(self)
         self.__locals = {}
         self.__callbacks = []

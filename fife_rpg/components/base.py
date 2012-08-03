@@ -29,8 +29,14 @@ from fife_rpg.exceptions import NotRegisteredError
 from fife_rpg.helpers import ClassProperty
 
 class Base(Component):
-    """Base component for fife-rpg."""
-
+    """Base component for fife-rpg.
+    
+    Properties:
+        registered_as: Class property that sets under what name the class is
+        registered
+        
+        dependencies: Class property that sets the classes this System depends on
+    """
     __registered_as = None
     dependencies = []
 
@@ -51,6 +57,7 @@ class Base(Component):
 
         Args:
             name: The name under which the class should be registered
+            
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.

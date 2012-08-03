@@ -25,20 +25,26 @@ from fife_rpg.actions import ActionManager
 from fife_rpg.helpers import ClassProperty
 
 class Base(object):
-    """Base Action class, to define the structure"""
+    """Base Action class, to define the structure
+    
+    Properties:
+        application: A :class:`fife_rpg.rpg_application.RPGApplication`
+        
+        agent: The agent initiating the action
+        
+        target: The target of the action
+        
+        commands: List of additional commands to execute
 
+        registered_as: Class property that sets under what name the class is
+        registered
+        
+        dependencies: Class property that sets the classes this System depends on
+    """
     __registered_as = None
     dependencies = []
 
     def __init__(self, application, agent, target, commands = None):
-        """Basic action constructor
-
-        Args:
-            application: A fife_rpg.RPGApplication instance
-            agent: The agent initiating the action
-            target: The target of the action
-            commands: List of additional commands to execute
-        """
         self.commands = commands or ()
         self.application = application
         self.agent = agent
@@ -54,7 +60,8 @@ class Base(object):
         """Execute the action
         
         Raises:
-            NoSuchCommandError if there is no command with the name
+            :class:`fife_rpg.exceptions.NoSuchCommandError`
+            if a command is detected that is not registered.
         """
         #Check if there are special commands and execute them
         for command_data in self.commands:
@@ -71,7 +78,8 @@ class Base(object):
         """Checks whether the entity qualifies as an agent for this action
         
         Args:
-            entity: The entity to ceck. A bGrease.Entity instance.
+            entity: The entity to ceck. 
+            A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """
@@ -82,7 +90,8 @@ class Base(object):
         """Checks whether the entity qualifies as a target for this action
         
         Args:
-            entity: The entity to ceck. A bGrease.Entity instance.
+            entity: The entity to check. 
+            A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """
@@ -94,9 +103,6 @@ class Base(object):
 
         Args:
             name: The name under which the class should be registered
-            *args: Additional arguments to pass to the class constructor
-            **kwargs: Additional keyword arguments to pass to the class 
-            constructor
 
         Returns:
             True if the action was registered, False if not.

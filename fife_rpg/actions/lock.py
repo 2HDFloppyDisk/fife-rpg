@@ -16,7 +16,7 @@
 
 """The lock action locks closed lockables
 
-.. module:: open
+.. module:: lock
     :synopsis: Locks closed lockables
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
@@ -31,6 +31,12 @@ class LockAction(Base):
     dependencies = [Lockable]
 
     def execute(self):
+        """Execute the action
+        
+        Raises:
+            :class:`fife_rpg.exceptions.NoSuchCommandError`
+            if a command is detected that is not registered.
+        """
         lockable = getattr(self.target, Lockable.registered_as)
         lock_lock(lockable)
         Base.execute(self)
@@ -40,7 +46,8 @@ class LockAction(Base):
         """Checks whether the entity qualifies as an agent for this action
         
         Args:
-            entity: The entity to ceck. A bGrease.Entity instance.
+            entity: The entity to ceck. 
+            A :class:`fife_rpg.rpg_application.RPGApplication` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """
@@ -51,7 +58,8 @@ class LockAction(Base):
         """Checks whether the entity qualifies as a target for this action
         
         Args:
-            entity: The entity to ceck. A bGrease.Entity instance.
+            entity: The entity to ceck. 
+            A :class:`fife_rpg.rpg_application.RPGApplication` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """
@@ -66,9 +74,6 @@ class LockAction(Base):
 
         Args:
             name: The name under which the class should be registered
-            *args: Additional arguments to pass to the class constructor
-            **kwargs: Additional keyword arguments to pass to the class 
-            constructor
 
         Returns:
             True if the action was registered, False if not.
