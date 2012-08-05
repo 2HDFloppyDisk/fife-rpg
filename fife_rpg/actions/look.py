@@ -37,7 +37,10 @@ class LookAction(Base):
             if a command is detected that is not registered.
         """
         description = getattr(self.target, Description.registered_as)
-        print "You see %s. \n%s" % (description.view_name, description.desc)
+        #pylint: disable=E0602
+        print _("You see %s. \n%s") %  (_(description.view_name), 
+                                        _(description.desc))
+        #pylint: enable=E0602
         Base.execute(self)
 
     @classmethod
