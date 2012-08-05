@@ -1,0 +1,21 @@
+# Default strings for fife-rpg.
+# Copyright (C) 2012 fife-rpg
+# Karsten Bock <KarstenBock@gmx.net>, 2012
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fife-rpg 0.0\n"
+"POT-Creation-Date: 2012-08-05 21:50+CEST\n"
+"PO-Revision-Date: 2012-07-05 22:32+CEST\n"
+"Last-Translator: KarstenBock <KarstenBock@gmx.net>\n"
+"Language-Team: fife-rpg <fife-rpg@gmx.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#fife_rpg/actions/look.py:41
+#You see <entity_name>
+#<Entity description>
+msgid "You see %s. \n%s"
+msgstr ""
+
