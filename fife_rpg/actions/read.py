@@ -37,7 +37,7 @@ class ReadAction(Base):
             if a command is detected that is not registered.
         """
         readable = getattr(self.target, Readable.registered_as)
-        print(readable.text)
+        print _(readable.text) #pylint: disable=E0602
         Base.execute(self)
         
     @classmethod
