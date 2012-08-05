@@ -25,8 +25,9 @@ import sys
 from StringIO import StringIO
 import os
 from copy import copy 
-import yaml
+import gettext
 
+import yaml
 from bGrease.grease_fife.mode import FifeManager
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
@@ -205,11 +206,25 @@ class RPGApplication(FifeManager, ApplicationBase):
     def __init__(self, TDS):
         ApplicationBase.__init__(self, TDS)
         FifeManager.__init__(self)
+        self.name = self.settings.get("fife-rpg", "ProjectName")
         self._listener = None
         self.world = None
         self.__maps = {}
         self.__current_map = None           
         self.create_world()
+        self.languages = {}
+        self.current_language = ""
+        default_language = self.settings.get("i18n", "DefaultLanguage", "")
+        languages_dir = self.settings.get("i18n", "Directory", "languages")
+        for language in self.settings.get("i18n", "Languages", ("en", )):
+            fallback = (language == default_language)
+            print language
+            self.languages[language] = gettext.translation(self.name, 
+                                                           languages_dir, 
+                                                           [language],
+                                                           fallback=fallback)
+        language = self.settings.get("i18n", "Language", default_language)
+        self.switch_language(language)
         registered_as = GameEnvironment.registered_as
         world = self.world
         if registered_as and hasattr(world.systems, registered_as):
@@ -245,6 +260,14 @@ class RPGApplication(FifeManager, ApplicationBase):
     def maps(self):
         """Returns a copy of the maps dictionary"""
         return copy(self.__maps)
+
+    def switch_language(self, language):
+        """Switch to the given language"""
+        if not self.languages.has_key(language):
+            raise KeyError("The language '%s' is not available" % language)
+        if not language == self.current_language:
+            self.languages[language].install()
+            self.current_language = language
 
     def update_environment(self, environment_globals):
         """Called by the game environment when it wants to update its globals
