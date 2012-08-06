@@ -213,7 +213,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.__current_map = None           
         self.create_world()
         self.languages = {}
-        self.current_language = ""
+        self.__current_language = ""
         default_language = self.settings.get("i18n", "DefaultLanguage", "")
         languages_dir = self.settings.get("i18n", "Directory", "languages")
         for language in self.settings.get("i18n", "Languages", ("en", )):
@@ -231,6 +231,21 @@ class RPGApplication(FifeManager, ApplicationBase):
             environment = getattr(world.systems, registered_as) 
             environment.add_callback(self.update_environment)
             
+    
+    @property
+    def language(self):
+        """Returns the current set language"""
+        return self.__current_language
+    
+    @language.setter
+    def language(self, language):
+        """Sets the current language
+        
+        Args:
+            language: The language to switch to
+        """
+        self.switch_language(language)
+    
     @property
     def settings(self):
         """Returns the settings of the application.
@@ -265,9 +280,9 @@ class RPGApplication(FifeManager, ApplicationBase):
         """Switch to the given language"""
         if not self.languages.has_key(language):
             raise KeyError("The language '%s' is not available" % language)
-        if not language == self.current_language:
+        if not language == self.__current_language:
             self.languages[language].install()
-            self.current_language = language
+            self.__current_language = language
 
     def update_environment(self, environment_globals):
         """Called by the game environment when it wants to update its globals
