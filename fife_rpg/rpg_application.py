@@ -200,10 +200,30 @@ class RPGApplication(FifeManager, ApplicationBase):
     """The main application.  It inherits fife.extensions.ApplicationBase.
     
     Properties:
-        TDS: A fife_settings.Setting instance
+        name: The name of the Application
+        
+        world: The fife_rpg.world.RPGWorld this application uses
+        
+        language: The language the application uses
+        
+        settings: A fife_settings.Setting instance that stores the settings of
+        the application
+        
+        maps: A dictionary containing the maps the application has
+        
+        current_map: The current active map
+        
+        log_manager: The log manager of the application
+        
+        engine: A fife.Engine instance        
     """
 
     def __init__(self, TDS):
+        """Initialized the application
+        
+        Args:
+            TDS: A fife_settings.Setting instance
+        """
         ApplicationBase.__init__(self, TDS)
         FifeManager.__init__(self)
         self.name = self.settings.get("fife-rpg", "ProjectName")
@@ -212,14 +232,14 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.__maps = {}
         self.__current_map = None           
         self.create_world()
-        self.languages = {}
+        self.__languages = {}
         self.__current_language = ""
         default_language = self.settings.get("i18n", "DefaultLanguage", "")
-        languages_dir = self.settings.get("i18n", "Directory", "languages")
+        languages_dir = self.settings.get("i18n", "Directory", "__languages")
         for language in self.settings.get("i18n", "Languages", ("en", )):
             fallback = (language == default_language)
             print language
-            self.languages[language] = gettext.translation(self.name, 
+            self.__languages[language] = gettext.translation(self.name, 
                                                            languages_dir, 
                                                            [language],
                                                            fallback=fallback)
@@ -278,10 +298,10 @@ class RPGApplication(FifeManager, ApplicationBase):
 
     def switch_language(self, language):
         """Switch to the given language"""
-        if not self.languages.has_key(language):
+        if not self.__languages.has_key(language):
             raise KeyError("The language '%s' is not available" % language)
         if not language == self.__current_language:
-            self.languages[language].install()
+            self.__languages[language].install()
             self.__current_language = language
 
     def update_environment(self, environment_globals):
