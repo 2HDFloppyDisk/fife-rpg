@@ -278,6 +278,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         """
         environment_globals.update(self.maps)
         environment_globals["current_map"] = self.current_map
+        environment_globals["_"] = _ #pylint: disable=E0602
 
     def add_map(self, name, filename_or_map):
         """Adds a map to the maps dictionary.
