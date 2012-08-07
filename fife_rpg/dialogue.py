@@ -122,7 +122,7 @@ class Dialogue(object):
         env_globals, env_locals = self.get_game_environment(section)
         text_vals = env_globals.copy()
         text_vals.update(env_locals)
-        section.text = section.text.format(**text_vals)
+        section.text = _(section.text).format(**text_vals) #pylint: disable=E0602
         for command in section.commands:
             exec(command, env_globals, env_locals) #pylint:disable=W0122
             
