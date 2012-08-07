@@ -114,15 +114,12 @@ class Dialogue(object):
         return bool(self.possible_responses)
     
     def run_section(self, section):
-        """Runs the commands of the section and replaces the text variables
+        """Runs the commands of the section
         
         Args:
             section: A :class:`fife_rpg.dialogue.DialogueSection`
         """
         env_globals, env_locals = self.get_game_environment(section)
-        text_vals = env_globals.copy()
-        text_vals.update(env_locals)
-        section.text = _(section.text).format(**text_vals) #pylint: disable=E0602
         for command in section.commands:
             exec(command, env_globals, env_locals) #pylint:disable=W0122
             
@@ -160,7 +157,12 @@ class Dialogue(object):
             responses = section_data["responses"]
         else:
             responses = None
-        return DialogueSection(talker, text, condition, commands, responses)
+        section = DialogueSection(talker, text, condition, commands, responses)
+        env_globals, env_locals = self.get_game_environment(section)
+        text_vals = env_globals.copy()
+        text_vals.update(env_locals)
+        section.text = _(section.text).format(**text_vals) #pylint: disable=E0602        
+        return section
 
     def create_sections(self, sections_data):
         """Create the dialogue sections
