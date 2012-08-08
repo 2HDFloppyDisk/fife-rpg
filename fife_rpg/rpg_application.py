@@ -32,7 +32,6 @@ from bGrease.grease_fife.mode import FifeManager
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
 from fife.extensions.pychan.internal import get_manager
-from fife.extensions.loaders import loadMapFile
 
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg import Map
@@ -385,8 +384,6 @@ class RPGApplication(FifeManager, ApplicationBase):
         if name in self.__maps:
             game_map = self.__maps[name]
             if not isinstance(game_map, Map):
-                use_lighting = self.settings.get(
-                    "fife-rpg", "UseLighting", False)
                 maps_path = self.settings.get(
                     "fife-rpg", "MapsPath", "maps")
                 grid_type = self.settings.get(
@@ -396,16 +393,24 @@ class RPGApplication(FifeManager, ApplicationBase):
                              )
                 camera = self.settings.get(
                     "fife-rpg", "Camera", "main")
+                ground_layer = self.settings.get(
+                "fife-rpg", "GroundLayer", "ground_layer")
                 actor_layer = self.settings.get(
                 "fife-rpg", "ActorLayer", "actors")
                 ground_object_layer = self.settings.get(
                 "fife-rpg", "GroundObjectLayer", "objects")
                 item_layer = self.settings.get(
                 "fife-rpg", "ItemLayer", "items")
-                fife_map = loadMapFile(os.path.join(
-                                            maps_path, game_map + '.xml'),
-                                       self.engine, extensions = {
-                                            'lights': use_lighting})
+                
+                loader = fife.MapLoader(self.engine.getModel(), 
+                                        self.engine.getVFS(), 
+                                        self.engine.getImageManager(), 
+                                        self.engine.getRenderBackend())
+                
+                filename = os.path.join(maps_path, game_map + '.xml')
+                if loader.isLoadable(filename):               
+                    fife_map = loader.load(filename)
+                
                 found_layer = False
                 for layer in fife_map.getLayers():
                     if layer.getId() == item_layer:
@@ -414,7 +419,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                     
                 if not found_layer:
                     fife_map.createLayer(item_layer, grid_type)
-                    
+
                 found_layer = False
                 for layer in fife_map.getLayers():
                     if layer.getId() == ground_object_layer:
@@ -423,15 +428,23 @@ class RPGApplication(FifeManager, ApplicationBase):
                     
                 if not found_layer:
                     fife_map.createLayer(ground_object_layer, grid_type)
-
+                    
                 found_layer = False
                 for layer in fife_map.getLayers():
                     if layer.getId() == actor_layer:
                         found_layer = True
                         break                
-                    
+                
+                print found_layer
+                print actor_layer
                 if not found_layer:
-                    fife_map.createLayer(actor_layer, grid_type)                    
+                    layer = fife_map.createLayer(actor_layer, grid_type)                    
+                    layer.setWalkable(True)
+                    layer.createCellCache()
+                    layer.addInteractLayer(fife_map.getLayer(ground_layer))
+                    cache = layer.getCellCache()
+                    cache.createCells()
+                    cache.forceUpdate()
                     
                 regions = {}
                 regions_file = file(os.path.join(maps_path, "map_regions.yaml"), 
@@ -449,6 +462,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                 renderer.addActiveLayer(game_map.item_layer)
                 renderer.addActiveLayer(game_map.ground_object_layer)
                 renderer.addActiveLayer(game_map.actor_layer)
+                
                 game_map.update_entities(self.world)
                 self.__maps[name] = game_map
             self.update_agents(game_map)
