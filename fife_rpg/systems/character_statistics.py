@@ -23,6 +23,8 @@
 import math
 from copy import copy
 
+import yaml
+
 from fife_rpg.systems import Base
 from fife_rpg.entities import RPGEntity
 from fife_rpg.components.character_statistics import CharacterStatistics
@@ -201,6 +203,29 @@ class CharacterStatisticSystem(Base):
             raise AlreadyRegisteredError(name, "Statistic")
         statistic = CalculatedStatistic(name, view_name, description, formula)
         self.secondary_statistics[name] = statistic
+    
+    def load_statistics_from_file(self, filename):
+        """Clears the statistics and populates them from a file
+        
+        Args:
+            filename: The path to the file
+        """
+        statistics_file = file(filename, "r")
+        statistics_data = yaml.load(statistics_file)
+        for name, primary_data in statistics_data["primary"].iteritems():
+            view_name = primary_data["name"]
+            desc = primary_data["description"]
+            self.add_primary_statistic(name,
+                                       view_name,
+                                       desc)
+        for name, secondary_data in statistics_data["secondary"].iteritems():
+            view_name = secondary_data["name"]
+            desc = secondary_data["description"]
+            formula = secondary_data["formula"]
+            self.add_secondary_statistic(name,
+                                         view_name,
+                                         desc,
+                                         formula)        
     
     def get_statistic_value(self, entity, statistic):
         """Get the entities value of the given statistic
