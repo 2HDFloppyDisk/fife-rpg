@@ -237,7 +237,6 @@ class RPGApplication(FifeManager, ApplicationBase):
         languages_dir = self.settings.get("i18n", "Directory", "__languages")
         for language in self.settings.get("i18n", "Languages", ("en", )):
             fallback = (language == default_language)
-            print language
             self.__languages[language] = gettext.translation(self.name, 
                                                            languages_dir, 
                                                            [language],
@@ -435,8 +434,6 @@ class RPGApplication(FifeManager, ApplicationBase):
                         found_layer = True
                         break                
                 
-                print found_layer
-                print actor_layer
                 if not found_layer:
                     layer = fife_map.createLayer(actor_layer, grid_type)                    
                     layer.setWalkable(True)
