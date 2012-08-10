@@ -443,10 +443,10 @@ class RPGApplication(FifeManager, ApplicationBase):
                     cache.createCells()
                     cache.forceUpdate()
                     
+                regions_filename = "%s_regions.yaml" % os.path.splitext(filename)[0]
                 regions = {}
-                regions_file = file(os.path.join(maps_path, "map_regions.yaml"), 
-                                    "r")
-                regions_data = yaml.load(regions_file)[name]
+                regions_file = file(regions_filename, "r")
+                regions_data = yaml.load(regions_file)
                 for region_name,  region_data in regions_data.iteritems():
                     region = fife.DoubleRect(x=region_data[0],
                                              y=region_data[1],
