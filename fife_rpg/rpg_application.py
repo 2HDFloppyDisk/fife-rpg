@@ -636,13 +636,17 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.world.pump(dt)
         FifeManager.pump(self, dt)
     
-    def load_components(self, filename="components.yaml"):
+    def load_components(self, filename=None):
         """Load the component definitions from a file
         
         Args:
-            filename: The path to the components file
+            filename: The path to the components file. If this is set to None the
+            ComponentsFile setting will be used.
         """
-        self.__components = {}
+        if filename is None:
+            filename = self.settings.get("fife-rpg", "ComponentsFile", 
+                                         "components.yaml")
+        self.__components = {}        
         components_file = file(filename, "r")
         for name, path in yaml.load(components_file).iteritems():
             self.__components[name] = path 
@@ -671,17 +675,25 @@ class RPGApplication(FifeManager, ApplicationBase):
         if hasattr(module, "register_checkers"):
             module.register_checkers()
 
-    def register_components(self, component_list, register_checkers=True):
+    def register_components(self, component_list=None, register_checkers=True):
         """Calls the register method of the components in the component list
         
         Args:
             component_list: A list of components if an item is not a string
             it will be interpreted as a tuple or list with the second item
-            as the name to use when registering
+            as the name to use when registering. If this is None the Components
+            settings will be used.
             
             register_checkers: If True a "register_checkers" function will be search
             in the module and called
         """
+        if component_list is None:
+            component_list = self.settings.get("fife-rpg", "Components")
+        
+        if component_list is None:
+            raise ValueError("No component list supplied and no \"Components\" "
+                             "Setting found")
+           
         for component in component_list:
             if not isinstance(component, str):
                 self.register_component(*component, 
