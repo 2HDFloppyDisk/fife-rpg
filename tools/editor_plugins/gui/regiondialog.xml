@@ -1,0 +1,31 @@
+<Panel title="Region Editor" min_size="200, 220">
+	<VBox hexpand="1">
+		<HBox>
+			<Label name="RegionLabel" text="Region Name:" />
+			<TextField name="regionBox" hexpand="3" />
+		</HBox>
+		<Spacer fixed_size="10" />
+		
+		<HBox>
+			<Label name="positionLabel" text="Position:" />
+			<Label name="xPosLabel" text="X:" hexpand="0"/>
+			<TextField name="xPosBox" text="1.0"  min_size="45,10" />
+			<Label name="yPosLabel" text="Y:" hexpand="0"/>
+			<TextField name="yPosBox" text="1.0"  min_size="45,10" />
+		</HBox>
+		<HBox>
+			<Label name="sizeLabel" text="Size:" />
+			<Label name="widthLabel" text="Width:" hexpand="0"/>
+			<TextField name="widthBox" text="1.0"  min_size="45,10" />
+			<Label name="heightLabel" text="Height:" hexpand="0"/>
+			<TextField name="heightBox" text="1.0"  min_size="45,10" />
+		</HBox>
+	</VBox>
+	
+	<HBox>
+		<Spacer />
+		<Button name="okButton" text="OK" />
+		<Button name="cancelButton" text="Cancel" />
+	</HBox>
+	
+</Panel>

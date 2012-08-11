@@ -1,0 +1,25 @@
+<Panel title="Regiontool" position="10,200" min_size="110, 150">
+	<ScrollArea horizontal_scrollbar="0">
+		<VBox name="regions_wrapper">
+			<!-- Content is added dynamically here -->
+		</VBox>
+	</ScrollArea>
+	<VBox name="edit_layer_wrapper" min_size="110, 60" size="110, 60">
+		<Label name="layer_select_label" text="Editor Layer:" />
+		<DropDown name="layer_select_drop_down" min_size="110, 20" size="110, 20"></DropDown>
+	</VBox>
+	<HBox name="button_wrapper" padding="4">
+		<Spacer size="1" />
+	
+		<ImageButton name="add_region_button" hexpand="0" offset="1,1" 
+				helptext="Creates a new region"
+				up_image="gui/icons/add_region.png" down_image="gui/icons/add_region.png" hover_image="gui/icons/add_region.png" />
+		<ImageButton name="edit_region_button" hexpand="0" offset="1,1"
+				helptext="Edit selected region"
+				up_image="gui/icons/edit.png" down_image="gui/icons/edit.png" hover_image="gui/icons/edit.png" />
+		<ImageButton name="remove_region_button" hexpand="0" offset="1,1" 
+				helptext="Removes selected region"
+				up_image="gui/icons/delete_region.png" down_image="gui/icons/delete_region.png" hover_image="gui/icons/delete_region.png" />	
+		<Spacer size="1" />
+	</HBox>
+</Panel>
