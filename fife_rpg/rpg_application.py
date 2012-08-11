@@ -232,6 +232,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.__current_map = None           
         self.__languages = {}
         self.__current_language = ""
+        self.__components = {}
         default_language = self.settings.get("i18n", "DefaultLanguage", "")
         languages_dir = self.settings.get("i18n", "Directory", "__languages")
         for language in self.settings.get("i18n", "Languages", ("en", )):
@@ -634,3 +635,57 @@ class RPGApplication(FifeManager, ApplicationBase):
         if self.world:
             self.world.pump(dt)
         FifeManager.pump(self, dt)
+    
+    def load_components(self, filename="components.yaml"):
+        """Load the component definitions from a file
+        
+        Args:
+            filename: The path to the components file
+        """
+        self.__components = {}
+        components_file = file(filename, "r")
+        for name, path in yaml.load(components_file).iteritems():
+            self.__components[name] = path 
+        components_file.close()
+        
+    def register_component(self, component_name, registered_name=None,
+                           register_checkers=True):
+        """Calls the components register method.
+        
+        Args:
+            component_name: Name of the component
+            
+            registered_name: Name under which the component should be registered
+            
+            register_checkers: If True a "register_checkers" function will be search
+            in the module and called
+        """
+        component_path = self.__components[component_name]
+        module = __import__(component_path, fromlist=[component_path])
+        print module
+        component = getattr(module, component_name)
+        if not registered_name is None:
+            component.register(registered_name)
+        else:
+            component.register()
+        if hasattr(module, "register_checkers"):
+            module.register_checkers()
+
+    def register_components(self, component_list, register_checkers=True):
+        """Calls the register method of the components in the component list
+        
+        Args:
+            component_list: A list of components if an item is not a string
+            it will be interpreted as a tuple or list with the second item
+            as the name to use when registering
+            
+            register_checkers: If True a "register_checkers" function will be search
+            in the module and called
+        """
+        for component in component_list:
+            if not isinstance(component, str):
+                self.register_component(*component, 
+                                        register_checkers=register_checkers)
+            else:
+                self.register_component(component, 
+                                        register_checkers=register_checkers)
