@@ -230,7 +230,6 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.world = None
         self.__maps = {}
         self.__current_map = None           
-        self.create_world()
         self.__languages = {}
         self.__current_language = ""
         default_language = self.settings.get("i18n", "DefaultLanguage", "")
@@ -243,12 +242,6 @@ class RPGApplication(FifeManager, ApplicationBase):
                                                            fallback=fallback)
         language = self.settings.get("i18n", "Language", default_language)
         self.switch_language(language)
-        registered_as = GameEnvironment.registered_as
-        world = self.world
-        if registered_as and hasattr(world.systems, registered_as):
-            environment = getattr(world.systems, registered_as) 
-            environment.add_callback(self.update_environment)
-            
     
     @property
     def language(self):
@@ -542,6 +535,10 @@ class RPGApplication(FifeManager, ApplicationBase):
     def create_world(self):
         """Creates the world used by this application"""
         self.world = RPGWorld(self)
+        registered_as = GameEnvironment.registered_as            
+        if registered_as and hasattr(self.world.systems, registered_as):
+            environment = getattr(self.world.systems, registered_as) 
+            environment.add_callback(self.update_environment)
 
     def request_quit(self):
         """Sends the quit command to the application's listener.
