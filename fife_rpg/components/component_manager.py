@@ -26,6 +26,7 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 
 _COMPONENTS = {}
 _CHECKERS = []
+_SCRIPT_COMMANDS = {}
 
 def get_components():
     """Returns the registered components"""
@@ -58,3 +59,17 @@ def register_checker(component_names, callback):
         callback: The checker function
     """
     _CHECKERS.append((component_names, callback))
+
+def get_script_commands():
+    """Returns the registered script commands"""
+    return copy(_SCRIPT_COMMANDS)
+
+def register_script_command(command_name, command):
+    """Add a script command to the commands list
+    
+    Args:
+        command_name: The name of the command
+        
+        command: The command function
+    """
+    _SCRIPT_COMMANDS[command_name] = command
