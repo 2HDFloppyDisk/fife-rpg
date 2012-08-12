@@ -233,6 +233,8 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.__languages = {}
         self.__current_language = ""
         self.__components = {}
+        self.__actions = {}
+        self.__systems = {}
         default_language = self.settings.get("i18n", "DefaultLanguage", "")
         languages_dir = self.settings.get("i18n", "Directory", "__languages")
         for language in self.settings.get("i18n", "Languages", ("en", )):
@@ -701,3 +703,111 @@ class RPGApplication(FifeManager, ApplicationBase):
             else:
                 self.register_component(component, 
                                         register_checkers=register_checkers)
+                
+    def load_actions(self, filename=None):
+        """Load the action definitions from a file
+        
+        Args:
+            filename: The path to the actions file. If this is set to None the
+            ActionsFile setting will be used.
+        """
+        if filename is None:
+            filename = self.settings.get("fife-rpg", "ActionsFile", 
+                                         "actions.yaml")
+        self.__actions = {}        
+        actions_file = file(filename, "r")
+        for name, path in yaml.load(actions_file).iteritems():
+            self.__actions[name] = path 
+        actions_file.close()
+        
+    def register_action(self, action_name, registered_name=None):
+        """Calls the actions register method.
+        
+        Args:
+            action_name: Name of the action
+            
+            registered_name: Name under which the action should be registered            
+        """
+        action_path = self.__actions[action_name]
+        module = __import__(action_path, fromlist=[action_path])
+        action = getattr(module, action_name)
+        if not registered_name is None:
+            action.register(registered_name)
+        else:
+            action.register()
+
+    def register_actions(self, action_list=None):
+        """Calls the register method of the actions in the action list
+        
+        Args:
+            action_list: A list of actions if an item is not a string
+            it will be interpreted as a tuple or list with the second item
+            as the name to use when registering. If this is None the Actions
+            settings will be used.
+        """
+        if action_list is None:
+            action_list = self.settings.get("fife-rpg", "Actions")
+        
+        if action_list is None:
+            raise ValueError("No action list supplied and no \"Actions\" "
+                             "Setting found")
+           
+        for action in action_list:
+            if not isinstance(action, str):
+                self.register_action(*action)
+            else:
+                self.register_action(action)
+                
+    def load_systems(self, filename=None):
+        """Load the system definitions from a file
+        
+        Args:
+            filename: The path to the systems file. If this is set to None the
+            SystemsFile setting will be used.
+        """
+        if filename is None:
+            filename = self.settings.get("fife-rpg", "SystemsFile", 
+                                         "systems.yaml")
+        self.__systems = {}        
+        systems_file = file(filename, "r")
+        for name, path in yaml.load(systems_file).iteritems():
+            self.__systems[name] = path 
+        systems_file.close()
+        
+    def register_system(self, system_name, registered_name=None):
+        """Calls the systems register method.
+        
+        Args:
+            system_name: Name of the system
+            
+            registered_name: Name under which the system should be registered            
+        """
+        system_path = self.__systems[system_name]
+        module = __import__(system_path, fromlist=[system_path])
+        system = getattr(module, system_name)
+        if not registered_name is None:
+            system.register(registered_name)
+        else:
+            system.register()
+
+    def register_systems(self, system_list=None):
+        """Calls the register method of the systems in the system list
+        
+        Args:
+            system_list: A list of systems if an item is not a string
+            it will be interpreted as a tuple or list with the second item
+            as the name to use when registering. If this is None the Systems
+            settings will be used.
+        """
+        if system_list is None:
+            system_list = self.settings.get("fife-rpg", "Systems")
+        
+        if system_list is None:
+            raise ValueError("No system list supplied and no \"Systems\" "
+                             "Setting found")
+           
+        for system in system_list:
+            if not isinstance(system, str):
+                self.register_system(*system)
+            else:
+                self.register_system(system)
