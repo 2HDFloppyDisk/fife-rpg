@@ -650,7 +650,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          "components.yaml")
         self.__components = {}        
         components_file = file(filename, "r")
-        for name, path in yaml.load(components_file).iteritems():
+        for name, path in yaml.load(components_file)["Components"].iteritems():
             self.__components[name] = path 
         components_file.close()
         
@@ -715,7 +715,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          "actions.yaml")
         self.__actions = {}        
         actions_file = file(filename, "r")
-        for name, path in yaml.load(actions_file).iteritems():
+        for name, path in yaml.load(actions_file)["Actions"].iteritems():
             self.__actions[name] = path 
         actions_file.close()
         
@@ -769,7 +769,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          "systems.yaml")
         self.__systems = {}        
         systems_file = file(filename, "r")
-        for name, path in yaml.load(systems_file).iteritems():
+        for name, path in yaml.load(systems_file)["Systems"].iteritems():
             self.__systems[name] = path 
         systems_file.close()
         

@@ -60,5 +60,5 @@ if __name__ == "__main__":
     
     output = args.output if args.output else "actions.yaml"
     output_file = file(output, "w")
-    actions = list_actions(args.base_package, sub_package)
+    actions = {"Actions": list_actions(args.base_package, sub_package)}
     yaml.dump(actions, output_file, default_flow_style=False)

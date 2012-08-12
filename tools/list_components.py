@@ -59,5 +59,5 @@ if __name__ == "__main__":
     
     output = args.output if args.output else "components.yaml"
     output_file = file(output, "w")
-    components = list_components(args.base_package, sub_package)
+    components = {"Components": list_components(args.base_package, sub_package)}
     yaml.dump(components, output_file, default_flow_style=False)
