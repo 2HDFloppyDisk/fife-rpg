@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 from os.path import basename, splitext, join
 from glob import glob
 import sys
