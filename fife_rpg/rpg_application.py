@@ -655,7 +655,8 @@ class RPGApplication(FifeManager, ApplicationBase):
         components_file.close()
         
     def register_component(self, component_name, registered_name=None,
-                           register_checkers=True):
+                           register_checkers=True, 
+                           register_script_commands=True):
         """Calls the components register method.
         
         Args:
@@ -663,8 +664,11 @@ class RPGApplication(FifeManager, ApplicationBase):
             
             registered_name: Name under which the component should be registered
             
-            register_checkers: If True a "register_checkers" function will be search
+            register_checkers: If True a "register_checkers" function will be searched
             in the module and called
+            
+            register_script_commands: If True a "register_script_commands" functions
+            will be searched in the module and called
         """
         component_path = self.__components[component_name]
         module = __import__(component_path, fromlist=[component_path])
@@ -675,8 +679,11 @@ class RPGApplication(FifeManager, ApplicationBase):
             component.register()
         if register_checkers and hasattr(module, "register_checkers"):
             module.register_checkers()
+        if register_script_commands and hasattr(module, "register_script_commands"):
+            module.register_script_commands()
 
-    def register_components(self, component_list=None, register_checkers=True):
+    def register_components(self, component_list=None, register_checkers=True,
+                            register_script_commands=True):
         """Calls the register method of the components in the component list
         
         Args:
@@ -687,6 +694,9 @@ class RPGApplication(FifeManager, ApplicationBase):
             
             register_checkers: If True a "register_checkers" function will be search
             in the module and called
+            
+            register_script_commands: If True a "register_script_commands" functions
+            will be searched in the module and called            
         """
         if component_list is None:
             component_list = self.settings.get("fife-rpg", "Components")
@@ -697,11 +707,15 @@ class RPGApplication(FifeManager, ApplicationBase):
            
         for component in component_list:
             if not isinstance(component, str):
-                self.register_component(*component, 
-                                        register_checkers=register_checkers)
+                self.register_component(
+                            *component, 
+                            register_checkers=register_checkers,
+                            register_script_commands=register_script_commands)
             else:
-                self.register_component(component, 
-                                        register_checkers=register_checkers)
+                self.register_component(
+                            component, 
+                            register_checkers=register_checkers,
+                            register_script_commands=register_script_commands)
                 
     def load_actions(self, filename=None):
         """Load the action definitions from a file
