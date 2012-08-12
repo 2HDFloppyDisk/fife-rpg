@@ -44,12 +44,14 @@ class Agent(Base):
         walk_speed: How fast the agent walks
         
         run_speed: How fast the agent runs
+        
+        knows: What the agent knows about
     """
 
     def __init__(self):
         Base.__init__(self, gfx=str, map=str, type=str, position=list,
                       rotation=int, stack_position=int, behaviour_type=str, 
-                      walk_speed=float, run_speed=float)
+                      walk_speed=float, run_speed=float, knows=set)
         self.fields["type"].default = lambda: "actor"
         self.fields["walk_speed"].default = lambda: 0.0
         self.fields["run_speed"].default = lambda: 0.0
