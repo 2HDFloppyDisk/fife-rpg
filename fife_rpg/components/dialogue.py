@@ -25,18 +25,11 @@ class Dialogue(Base):
     """Component that stores the dialogue
     
     Fields:
-        dialogue: A :class:`fife_rpg.dialogue.Dialogue` object
+        dialogue: A string
     """
 
     def __init__(self):
         Base.__init__(self, dialogue=object)
-
-    @property
-    def saveable_fields(self):
-        """Returns the fields of the component that can be saved."""
-        fields = self.fields.keys()
-        fields.remove("dialogue")
-        return fields
 
     @classmethod
     def register(cls, name="dialogue", auto_register=True):
