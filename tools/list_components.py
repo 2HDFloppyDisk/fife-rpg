@@ -23,17 +23,19 @@ def list_components(base_package, sub_package):
     package_path = join(components.__path__[0])
     sys.path.append(package_path)
     component_dict = {}
+    package_python_path = ".".join((base_package, sub_package))
     for python_file in glob(join(package_path, "*.py")):
         module_name = splitext(basename(python_file))[0]
         module = __import__(module_name)
         for member in dir(module):
-            module_path = ".".join((base_package,
-                                    sub_package,
-                                    module_name))
+            module_path = ".".join((package_python_path, module_name))
             component = getattr(module, member)
             try:
                 if (issubclass(component, Base) and not component is Base):
                     component_name = component.__name__
+                    if "." in component.__module__:
+                        continue
+                    print component_name
                     if not component_name in component_dict:
                         component_dict[component_name] = module_path
             except TypeError:

@@ -668,7 +668,6 @@ class RPGApplication(FifeManager, ApplicationBase):
         """
         component_path = self.__components[component_name]
         module = __import__(component_path, fromlist=[component_path])
-        print module
         component = getattr(module, component_name)
         if not registered_name is None:
             component.register(registered_name)
