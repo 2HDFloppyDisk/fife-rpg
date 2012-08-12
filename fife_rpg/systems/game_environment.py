@@ -29,21 +29,16 @@ class GameEnvironment(Base):
     """
 
     @classmethod
-    def register(cls, name="game_environment", *args, **kwargs):
+    def register(cls, name="game_environment"):
         """Registers the class as a system
 
         Args:
             name: The name under which the class should be registered
-            
-            args: Additional arguments to pass to the class constructor
-            
-            kwargs: Additional keyword arguments to pass to the class 
-            constructor
 
         Returns:
             True if the system was registered, False if not.
         """
-        return (super(GameEnvironment, cls).register(name, *args, **kwargs))
+        return (super(GameEnvironment, cls).register(name))
         
     def __init__(self):
         Base.__init__(self)

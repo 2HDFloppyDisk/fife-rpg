@@ -45,14 +45,11 @@ class Base(System):
         return cls.__registered_as
 
     @classmethod
-    def register(cls, name, *args, **kwargs):
+    def register(cls, name):
         """Registers the class as a system
 
         Args:
             name: The name under which the class should be registered
-            args: Additional arguments to pass to the class constructor
-            kwargs: Additional keyword arguments to pass to the class 
-            constructor
 
         Returns:
             True if the system was registered, False if not.
@@ -61,7 +58,7 @@ class Base(System):
             for dependency in cls.dependencies:
                 if not dependency.registered_as:
                     dependency.register()
-            SystemManager.register_system(name, cls(*args, **kwargs))
+            SystemManager.register_system(name, cls())
             cls.__registered_as = name
             return True
         except AlreadyRegisteredError as error:
