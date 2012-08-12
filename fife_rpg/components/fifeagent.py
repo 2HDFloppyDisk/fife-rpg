@@ -21,6 +21,7 @@
 """
 
 from fife_rpg.components.base import Base
+from fife_rpg.components import ComponentManager
 
 class FifeAgent(Base):
     """Component that stores the values for a fife agent
@@ -81,4 +82,6 @@ def approach(agent, target_or_location, action):
     if agent.behaviour: 
         agent.behaviour.approach(target_or_location, action)
         
-COMMANDS = {"approach":approach}
+def register_script_commands():
+    """Register commands for this module"""
+    ComponentManager.register_script_command("approach", approach)
