@@ -674,7 +674,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             component.register(registered_name)
         else:
             component.register()
-        if hasattr(module, "register_checkers"):
+        if register_checkers and hasattr(module, "register_checkers"):
             module.register_checkers()
 
     def register_components(self, component_list=None, register_checkers=True):
