@@ -35,7 +35,6 @@ def list_components(base_package, sub_package):
                     component_name = component.__name__
                     if "." in component.__module__:
                         continue
-                    print component_name
                     if not component_name in component_dict:
                         component_dict[component_name] = module_path
             except TypeError:

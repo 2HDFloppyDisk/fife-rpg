@@ -33,6 +33,8 @@ def list_systems(base_package, sub_package):
             system = getattr(module, member)
             try:
                 if (issubclass(system, Base) and not system is Base):
+                    if "." in system.__module__:
+                        continue
                     system_name = system.__name__
                     if not system_name in system_dict:
                         system_dict[system_name] = module_path

@@ -33,6 +33,8 @@ def list_actions(base_package, sub_package):
             action = getattr(module, member)
             try:
                 if (issubclass(action, Base) and not action is Base):
+                    if "." in action.__module__:
+                        continue
                     action_name = action.__name__
                     if not action_name in action_dict:
                         action_dict[action_name] = module_path
