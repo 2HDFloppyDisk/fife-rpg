@@ -441,7 +441,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                     
                 regions_filename = "%s_regions.yaml" % os.path.splitext(filename)[0]
                 regions = {}
-                regions_file = file(regions_filename, "r")
+                regions_file = self.engine.getVFS().open(regions_filename)
                 regions_data = yaml.load(regions_file)
                 for region_name,  region_data in regions_data.iteritems():
                     region = fife.DoubleRect(x=region_data[0],
@@ -649,10 +649,9 @@ class RPGApplication(FifeManager, ApplicationBase):
             filename = self.settings.get("fife-rpg", "ComponentsFile", 
                                          "components.yaml")
         self.__components = {}        
-        components_file = file(filename, "r")
+        components_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(components_file)["Components"].iteritems():
             self.__components[name] = path 
-        components_file.close()
         
     def register_component(self, component_name, registered_name=None,
                            register_checkers=True, 
@@ -728,10 +727,9 @@ class RPGApplication(FifeManager, ApplicationBase):
             filename = self.settings.get("fife-rpg", "ActionsFile", 
                                          "actions.yaml")
         self.__actions = {}        
-        actions_file = file(filename, "r")
+        actions_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(actions_file)["Actions"].iteritems():
             self.__actions[name] = path 
-        actions_file.close()
         
     def register_action(self, action_name, registered_name=None):
         """Calls the actions register method.
@@ -782,10 +780,9 @@ class RPGApplication(FifeManager, ApplicationBase):
             filename = self.settings.get("fife-rpg", "SystemsFile", 
                                          "systems.yaml")
         self.__systems = {}        
-        systems_file = file(filename, "r")
+        systems_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(systems_file)["Systems"].iteritems():
             self.__systems[name] = path 
-        systems_file.close()
         
     def register_system(self, system_name, registered_name=None):
         """Calls the systems register method.

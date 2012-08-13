@@ -217,7 +217,7 @@ class DialogueController(ControllerBase):
         Args:
             filename: The path to the file
         """
-        dialogue_file = file(filename, "r")
+        dialogue_file = self.application.engine.getVFS().open(filename)
         dialogue_data = yaml.load(dialogue_file)
         self.add_dialogue(dialogue_data["Identifier"], dialogue_data)
         
