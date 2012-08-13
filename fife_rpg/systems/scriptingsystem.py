@@ -24,6 +24,8 @@
 from collections import deque
 from copy import copy
 
+import yaml
+
 from fife_rpg.systems import Base
 from fife_rpg.systems import GameEnvironment
 
@@ -217,4 +219,26 @@ class ScriptingSystem(Base):
         if self.scripts.has_key(name):
             self.scripts[name].running = True
         
-    
+    def load_scripts(self, filename=None):
+        """Load scripts from a file
+        
+        Args:
+            filename: The path to the scripts file. If set to None the 
+            "ScriptsFile" setting will be used.
+        """
+        application = self.world.application
+        if filename is None:
+            filename = application.settings.get("fife-rpg", "ScriptsFile",
+                                                "scripts.yaml")
+        scripts_file = application.engine.getVFS().open(filename)
+        scripts_data = yaml.load(scripts_file)
+        scripts = (scripts_data["Scripts"])
+        conditions = (
+            scripts_data["Conditions"] if 
+            scripts_data.has_key("Conditions") else ()
+        )
+        for name, actions in scripts.iteritems():
+            self.set_script(name, actions)
+        for condition in conditions:
+            self.add_condition(*condition)           
+        
