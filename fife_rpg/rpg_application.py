@@ -42,6 +42,7 @@ from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
 from fife_rpg.components.general import General
 from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.systems import GameEnvironment
+from fife_rpg.systems.scriptingsystem import ScriptingSystem
 
 class KeyFilter(fife.IKeyFilter):
     """This is the implementation of the fife.IKeyFilter class.
@@ -821,3 +822,43 @@ class RPGApplication(FifeManager, ApplicationBase):
                 self.register_system(*system)
             else:
                 self.register_system(system)
+
+    def is_location_in_region(self, map_name, location, region_name):
+        """Checks whether the location is in the region of the map
+        
+        Args:
+            map_name: Name of the map. If None the current map will be used
+            
+            region_name: Name of the region
+            
+            location: A list or tuple containing the location
+        """
+        game_map = (self.maps[map_name] 
+                    if not map_name is None 
+                    else self.current_map)
+        return game_map.is_in_region(location, region_name)
+                        
+    def is_agent_in_region(self, map_name, agent_name, region_name):
+        """Checks whether the agent is in the region of the map
+        
+        Args:
+            map_name: Name of the map. If None the current map will be used
+            
+            region_name: Name of the region
+            
+            agent_name: Name of the agent
+        """
+        entity = self.world.get_entity(agent_name)
+        agent = getattr(entity, Agent.registered_as)
+        location = agent.position
+        return self.is_location_in_region(map_name, location, region_name)
+    
+#Register conditions
+ScriptingSystem.register_condition("IsLocationInRegion", 
+                                   RPGApplication.is_location_in_region)
+ScriptingSystem.register_condition("IsAgentInRegion", 
+                                   RPGApplication.is_agent_in_region)
+ScriptingSystem.register_condition("CurrentMap", 
+                                   lambda application, map_name: 
+                                    application.current_map.name == map_name)
+

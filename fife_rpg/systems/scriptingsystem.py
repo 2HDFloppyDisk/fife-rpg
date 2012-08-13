@@ -28,6 +28,8 @@ import yaml
 
 from fife_rpg.systems import Base
 from fife_rpg.systems import GameEnvironment
+from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.helpers import ClassProperty
 
 class Script(object):
     """Script object
@@ -132,7 +134,9 @@ class ScriptingSystem(Base):
     """
 
     dependencies = [GameEnvironment]
-
+    
+    __condition_dictionary = {}
+    
     @classmethod
     def register(cls, name="scripting"):
         """Registers the class as a system
@@ -144,6 +148,24 @@ class ScriptingSystem(Base):
             True if the system was registered, False if not.
         """
         return (super(ScriptingSystem, cls).register(name))
+    
+    @classmethod
+    def register_condition(cls, name, condition_function):
+        """Register a condition to the condition dictionary.
+        
+        Args:
+            name: The name of the condition
+            condition_function: The condition function. This should be a
+            function that returns True or False
+        """
+        if name in cls.__condition_dictionary:
+            raise AlreadyRegisteredError(name, "Condition")
+        cls.__condition_dictionary[name] = condition_function
+        
+    @ClassProperty
+    @classmethod
+    def condition_dictionary(cls):
+        return copy(cls.__condition_dictionary)
     
     def __init__(self):
         Base.__init__(self)
@@ -172,13 +194,18 @@ class ScriptingSystem(Base):
             time_delta: Time since last step invocation
         """
         for condition_data in self.conditions:
-            condition = condition_data[0]
-            script_name = condition_data[1]
+            script_name = condition_data["Script"]
+            expressions = condition_data["Expressions"]
             if not self.scripts.has_key(script_name):
                 return
             script = self.scripts[script_name]
-            if (eval(condition, *self.getScriptEnvironment()) 
-                and not script.running):
+            for expression in expressions:
+                name = expression["Type"]
+                args = expression["Args"]
+                condition_function = self.__condition_dictionary[name]
+                if not condition_function(self.world.application, *args):
+                    break
+            else:
                 script.running = True
         for script in self.scripts.itervalues():
             assert(isinstance(script, Script))
@@ -201,16 +228,13 @@ class ScriptingSystem(Base):
                                     self
                                     )
         
-    def add_condition(self, condition, script_name):
+    def add_condition(self, condition_data):
         """Adds a condition.
 
         Args:
-            condition: Condition which will be evaluated
-            
-            script_name: Name of the script that will be executed if the
-            condition evaluates to True.
+            condition_data: Dictionary containing the data of the condition
         """
-        self.conditions.append((condition, script_name))
+        self.conditions.append(condition_data)
     
     
     def run_script(self, name):
@@ -243,5 +267,5 @@ class ScriptingSystem(Base):
         for name, actions in scripts.iteritems():
             self.set_script(name, actions)
         for condition in conditions:
-            self.add_condition(*condition)           
+            self.add_condition(condition)           
         
