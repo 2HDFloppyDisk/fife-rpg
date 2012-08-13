@@ -84,26 +84,29 @@ class Script(object):
         if self.wait <= self._time:
             self._time = 0
             try:
-                script_vals = self.system.getScriptEnvironment()
                 action_data = self.running_actions.popleft()
-                action = self.system.actions[action_data[0]]
-                action_params = eval(
-                                     action_data[1], 
-                                     script_vals[0], script_vals[1]
-                                     ) 
-                if not (isinstance(action_params, list) 
-                        or isinstance(action_params, tuple)):
-                    action_params = [action_params]
+                action = self.system.actions[action_data["Action"]]
+                agent = self.system.world.get_entity(action_data["Agent"])
+                target = self.system.world.get_entity(action_data["Target"])
+                action_commands = (action_data["ActionCommands"] if
+                                   action_data.has_key("ActionCommands") else
+                                   {}
+                                   )
+                    
                 self.cur_action = action(self.system.world.application,
-                                         *action_params)
-                self.wait = action_data[2]
-                if len(action_data) >= 4:
-                    vals = (
-                        eval(action_data[4], script_vals[0], script_vals[1]) 
-                        if len(action_data) > 4
-                        else ()
-                    )
-                    command = action_data[3]
+                                         agent, target, action_commands)
+                self.wait = action_data["Time"]
+                if action_data.has_key("Command"):
+                    vals = []
+                    types = {}
+                    types["String"] = str
+                    types["Entity"] = self.system.world.getEntity
+                    
+                    for val in action_data["Command"]["Variables"]:
+                        val_type = val["Type"]
+                        value = types[val_type](val["Value"])
+                        vals.append(value)
+                    command = action_data["Command"]["Name"]
                     self.system.commands[command](
                         *vals, 
                         action=self.cur_action
