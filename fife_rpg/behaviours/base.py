@@ -186,7 +186,8 @@ class Base (fife.InstanceActionListener):
         (if set).
         
         Args:
-            loc: the location or agent to approach
+            loc: The location, as a tuple, or agent, as a 
+            :class:`fife.Instance` to approach
             
             action: The :class:`fife_rpg.actions.base.Base` to schedule for 
             execution after the approach.
