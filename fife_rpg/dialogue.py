@@ -184,8 +184,6 @@ class Dialogue(object):
         """
         for greeting_data in greetings_data.itervalues():
             greeting = self.create_section(greeting_data)
-            print ScriptingSystem.check_condition(self.world.application,
-                                                greeting.conditions)
             if (greeting.conditions is None or
                 ScriptingSystem.check_condition(self.world.application,
                                                 greeting.conditions)): 
