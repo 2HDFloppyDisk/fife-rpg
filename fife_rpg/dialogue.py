@@ -24,6 +24,7 @@ import yaml
 
 from fife_rpg.systems import GameEnvironment
 from fife_rpg import ControllerBase
+from fife_rpg.systems.scriptingsystem import ScriptingSystem
 
 class DialogueSection(object):
     """Represents a section of a dialogue
@@ -33,7 +34,7 @@ class DialogueSection(object):
 
         text: The text that is being said
 
-        condition: String that is being evaluated
+        conditions: List of conditions that are evaluated
 
         commands: Commands that are to be executed when 
         the section is displayed
@@ -42,10 +43,10 @@ class DialogueSection(object):
         """
     
     def __init__(self, talker, text, 
-                 condition=None, commands=None, responses=None):
+                 conditions=None, commands=None, responses=None):
         self.talker = talker
         self.text = text
-        self.condition = condition or "True"
+        self.conditions = conditions
         self.commands = commands or []
         self.responses = responses or []
 
@@ -103,8 +104,9 @@ class Dialogue(object):
         possible_responses = {}
         for response_name in self.current_section.responses:
             response = self.sections[response_name]
-            env_globals, env_locals = self.get_game_environment(response)
-            if eval(response.condition, env_globals, env_locals):
+            if (response.conditions is None or
+                ScriptingSystem.check_condition(self.world.application,
+                                                response.conditions)): 
                 possible_responses[response_name] = response
         return possible_responses
     
@@ -145,8 +147,8 @@ class Dialogue(object):
         """
         talker = section_data["talker"]
         text = section_data["text"]
-        if section_data.has_key("condition"):
-            condition = section_data["condition"]
+        if section_data.has_key("conditions"):
+            condition = section_data["conditions"]
         else:
             condition = None
         if section_data.has_key("commands"):
@@ -175,15 +177,18 @@ class Dialogue(object):
             self.sections[section_name] = section 
 
     def select_greeting(self, greetings_data):
-        """Selects the first greeting which condition passes
+        """Selects the first greeting which conditions passes
         
         Args:
             greetings_data: A dictionary containing the data of the greetings
         """
         for greeting_data in greetings_data.itervalues():
             greeting = self.create_section(greeting_data)
-            env_globals, env_locals = self.get_game_environment(greeting)
-            if eval(greeting.condition, env_globals, env_locals):
+            print ScriptingSystem.check_condition(self.world.application,
+                                                greeting.conditions)
+            if (greeting.conditions is None or
+                ScriptingSystem.check_condition(self.world.application,
+                                                greeting.conditions)): 
                 self.current_section = greeting
                 self.run_section(greeting)
 
