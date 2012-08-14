@@ -186,6 +186,31 @@ class ScriptingSystem(Base):
                               GameEnvironment.registered_as)
         return environment.get_environement()
 
+
+    @classmethod
+    def check_condition(cls, application, expressions):
+        """Iterates over the expressions of the condition and returns
+        whether all evaluate to True or not.
+        
+        Args:
+            application: A :class:`fife_rpg.rpg_application.RPGApplication`
+            object
+            
+            expressions: A list of expressions
+            
+        Returns:
+            True: If ALL expressions evaluate to True
+            
+            False: If one of the expressions evaluates to False
+        """
+        for expression in expressions:
+            name = expression["Type"]
+            args = expression["Args"]
+            condition_function = cls.__condition_dictionary[name]
+            if not condition_function(application, *args):
+                return False        
+        return True
+
     def step(self, time_delta):
         """Execute a _time step for the system. Must be defined
         by all system classes.
@@ -195,18 +220,12 @@ class ScriptingSystem(Base):
         """
         for condition_data in self.conditions:
             script_name = condition_data["Script"]
-            expressions = condition_data["Expressions"]
             if not self.scripts.has_key(script_name):
                 return
             script = self.scripts[script_name]
-            for expression in expressions:
-                name = expression["Type"]
-                args = expression["Args"]
-                condition_function = self.__condition_dictionary[name]
-                if not condition_function(self.world.application, *args):
-                    break
-            else:
-                script.running = True
+            expressions = condition_data["Expressions"]
+            script.running = self.check_condition(self.world.application,
+                                                  expressions)
         for script in self.scripts.itervalues():
             assert(isinstance(script, Script))
             if script.finished:
