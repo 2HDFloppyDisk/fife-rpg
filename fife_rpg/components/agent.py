@@ -90,9 +90,28 @@ def knows(agent, knowledge):
     agent_data = getattr(agent, Agent.registered_as)
     return knowledge in agent_data.knows
 
+def add_knowledge(agent, knowledge):
+    """Add a knowledge item to the agent
+    
+    Args:
+        agent: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` that has a
+        agent component.
+        
+        knowledge: A string containing the knowledge
+    """
+    agent_data = getattr(agent, Agent.registered_as)
+    agent_data.knows.add(knowledge)
+    
 #Register conditions
 ScriptingSystem.register_condition("Knows", 
                                    lambda application, agent_name, knowledge:
                                    knows(application.world.get_entity(
                                                 agent_name), 
                                          knowledge))
+
+#Register console commands
+
+from fife_rpg.console_commands import register_command
+register_command("AddKnowledge", lambda application, agent_name, knowledge:
+                 add_knowledge(application.world.get_entity(agent_name), 
+                               knowledge))

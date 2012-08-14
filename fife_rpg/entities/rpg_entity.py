@@ -21,6 +21,7 @@
 """
 
 from bGrease import Entity
+
 from fife_rpg.components.general import General
 
 class RPGEntity(Entity):
@@ -44,3 +45,26 @@ class RPGEntity(Entity):
     def identifier(self):
         """Returns the identifier of the entity"""
         return getattr(self, General.registered_as).identifier
+
+def set_component_value(entity, component, field, value):
+    """Sets the field value of an entities component to the specified value
+    
+    Args:
+        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity`
+        
+        component: The name of the component
+        
+        field: The field of the component
+        
+        value: The value to which the field is set
+    """
+    component_data = getattr(entity, component)
+    setattr(component_data, field, value)
+    
+
+from fife_rpg.console_commands import register_command
+register_command("SetComponentValue", lambda application, entity_name, *args:
+                 set_component_value(application.world.get_entity(entity_name),
+                                     *args))
+    
+#__register_commands()
