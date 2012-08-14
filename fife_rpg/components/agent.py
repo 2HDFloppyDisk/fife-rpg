@@ -21,7 +21,7 @@
 """
 
 from fife_rpg.components.base import Base
-
+from fife_rpg.systems.scriptingsystem import ScriptingSystem
 
 class Agent(Base):
     """Component that stores the general values of an agent
@@ -71,3 +71,28 @@ class Agent(Base):
             True if the component was registered, False if not.
         """
         return (super(Agent, cls).register(name, auto_register))
+
+
+def knows(agent, knowledge):
+    """Checks wheter the agent knows about something.
+    
+    Args:
+        agent: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` that has a
+        agent component.
+        
+        knowledge: A string containing the knowledge
+        
+    Returns:
+        True: If the agent knows about the knowlegde
+        
+        False: If the agent does not know about the knowledge
+    """
+    agent_data = getattr(agent, Agent.registered_as)
+    return knowledge in agent_data.knows
+
+#Register conditions
+ScriptingSystem.register_condition("Knows", 
+                                   lambda application, agent_name, knowledge:
+                                   knows(application.world.get_entity(
+                                                agent_name), 
+                                         knowledge))
