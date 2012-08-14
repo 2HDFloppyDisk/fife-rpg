@@ -9,10 +9,10 @@ fife_rpg Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`code` Module
-------------------
+:mod:`console_commands` Module
+------------------------------
 
-.. automodule:: fife_rpg.code
+.. automodule:: fife_rpg.console_commands
     :members:
     :undoc-members:
     :show-inheritance:
@@ -69,6 +69,14 @@ fife_rpg Package
 -----------------------------
 
 .. automodule:: fife_rpg.rpg_application
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`sound_engine` Module
+--------------------------
+
+.. automodule:: fife_rpg.sound_engine
     :members:
     :undoc-members:
     :show-inheritance:
