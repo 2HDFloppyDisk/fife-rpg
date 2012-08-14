@@ -180,13 +180,6 @@ class ScriptingSystem(Base):
         self.scripts = {}
         self.conditions = []
 
-    def getScriptEnvironment(self):
-        """Returns the environment that the scripts are running on"""
-        environment = getattr(self.world.systems, 
-                              GameEnvironment.registered_as)
-        return environment.get_environement()
-
-
     @classmethod
     def check_condition(cls, application, expressions):
         """Iterates over the expressions of the condition and returns
