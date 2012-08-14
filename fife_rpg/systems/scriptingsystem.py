@@ -199,9 +199,18 @@ class ScriptingSystem(Base):
         for expression in expressions:
             name = expression["Type"]
             args = expression["Args"]
+            reverse = False
+            if name.startswith("Not_"):
+                name = name[4:]
+                reverse = True
             condition_function = cls.__condition_dictionary[name]
-            if not condition_function(application, *args):
-                return False        
+            if not reverse:
+                result = not condition_function(application, *args)
+            else:
+                result = condition_function(application, *args)
+            if result:
+                return False
+                
         return True
 
     def step(self, time_delta):
