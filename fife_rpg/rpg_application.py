@@ -780,6 +780,16 @@ class RPGApplication(FifeManager, ApplicationBase):
         location = agent.position
         return self.is_location_in_region(map_name, location, region_name)
     
+    def execute_console_command(self, command):
+        """Executes a console command
+        
+        Args:
+            command: The command string to execute
+            
+        Returns: The result of the command
+        """
+        return self._listener.onConsoleCommand(command)
+    
 #Register conditions
 ScriptingSystem.register_condition("IsLocationInRegion", 
                                    RPGApplication.is_location_in_region)
