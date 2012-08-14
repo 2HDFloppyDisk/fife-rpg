@@ -122,8 +122,17 @@ class Dialogue(object):
             section: A :class:`fife_rpg.dialogue.DialogueSection`
         """
         env_globals, env_locals = self.get_game_environment(section)
+        vals = env_globals.copy()
+        vals.update(env_locals)
         for command in section.commands:
-            exec(command, env_globals, env_locals) #pylint:disable=W0122
+            name = command["Name"]
+            args = []
+            for arg in command["Args"]:
+                value = arg.format(**vals)
+                args.append(value)
+            arg_string = " ".join(args)
+            command_string = "%s %s" % (name, arg_string)
+            self.world.application.execute_console_command(command_string)
             
     def select_response(self, response_name):
         """Selects the given response and performs its actions
