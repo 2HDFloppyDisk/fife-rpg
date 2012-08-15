@@ -12,11 +12,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""The game environment system manages what variables and functions are 
-available to scripts.
+"""The game variables system manages game variables.
 
 .. module:: game_variables
-    :synopsis: Manages the game environment
+    :synopsis: Manages game variables.
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
