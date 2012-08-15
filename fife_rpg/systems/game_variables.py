@@ -62,6 +62,55 @@ class GameVariables(Base):
         vals.update(self.__dynamic)
         return vals
     
+    def set_variable(self, name, value, allow_static_hide=False):
+        """Sets a dynamic variable to the specified value
+        
+        Args:
+            name: The name of the variable
+            
+            value: The value the variables should be set to
+            
+            allow_static_hide: If set to True the function will allow setting
+            the value even if there is already a static variable with this
+            name. The static value will then be hidden, but not deleted.
+            
+        Returns:
+            The (new) value of the variable or an error string.
+        """
+        if not allow_static_hide:
+            if not name in self.__dynamic and name in self.__static:
+                return "There is already a %s static variable" % (name)
+        self.__dynamic[name] = value
+        return self.__dynamic[name]
+    
+    def delete_variable(self, name):
+        """Deletes a dynamic variable
+        
+        Args:
+            name: The name of the varriable
+            
+        Returns: None or an error message
+        """ 
+        if name in self.__dynamic:
+            del self.__dynamic[name]
+        else:
+            return "There was no %s dynamic variable" % name
+    
+    def get_variable(self, name):
+        """Returns the value of a variable
+        
+        Args:
+            name: The name of the variable
+            
+        Raises:
+            NameError: If there is no variable with that name
+        """
+        variables = self.get_variables()
+        if not name in variables:
+            raise NameError("Name '%s' is not defined" % name)
+        return variables[name]
+            
+    
     def step(self, time_delta): #pylint: disable= W0613
         """Execute a time step for the system. Must be defined
         by all system classes.
@@ -71,3 +120,42 @@ class GameVariables(Base):
         """
         for callback in self.__callbacks:
             callback(self.__static)
+            
+#register console commmands
+def __set_variable_console(application, *args):
+    if not GameVariables.registered_as:
+        return "The GameVariables system is not active."
+    game_variables = getattr(application.world.systems, 
+                             GameVariables.registered_as)
+    try:
+        return game_variables.set_variable(*args)
+    except TypeError as error:
+        return str(error).replace("set_variable()", "SetVariable")
+    
+register_command("SetVariable", __set_variable_console)
+
+def __delete_variable_console(application, *args):
+    if not GameVariables.registered_as:
+        return "The GameVariables system is not active."
+    game_variables = getattr(application.world.systems, 
+                             GameVariables.registered_as)
+    try:
+        return game_variables.delete_variable(*args)
+    except TypeError as error:
+        return str(error).replace("delete_variable()", "DeleteVariable")
+    
+register_command("DeleteVariable", __delete_variable_console)
+
+def __get_variable_console(application, *args):
+    if not GameVariables.registered_as:
+        return "The GameVariables system is not active."
+    game_variables = getattr(application.world.systems, 
+                             GameVariables.registered_as)
+    try:
+        return str(game_variables.get_variable(*args))
+    except TypeError as error:
+        return str(error).replace("get_variable()", "GetVariable")
+    except NameError as error:
+        return str(error)
+    
+register_command("GetVariable", __get_variable_console)
