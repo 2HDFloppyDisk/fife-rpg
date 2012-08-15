@@ -114,14 +114,14 @@ class CalculatedStatistic(Statistic):
         
         view_name: The displayed name of the statistic
         
-        formula: How the statistic is calculated
+        influences: The other statistics that influence this
         
         description: The description of the statistic
     """
     
-    def __init__(self, name, view_name, description, formula):
+    def __init__(self, name, view_name, description, influences):
         Statistic.__init__(self, name, view_name, description)
-        self.formula = formula
+        self.influences = influences
 
 class CharacterStatisticSystem(Base):
     """The game environment system manages what variables and functions are 
@@ -180,7 +180,7 @@ class CharacterStatisticSystem(Base):
         statistic = Statistic(name, view_name, description)
         self.primary_statistics[name] = statistic
     
-    def add_secondary_statistic(self, name, view_name, description, formula):
+    def add_secondary_statistic(self, name, view_name, description, influences):
         """Adds a secondary statistic to the system
         
         Args:
@@ -190,11 +190,11 @@ class CharacterStatisticSystem(Base):
             
             description: Text that describes the statistic
             
-            formula: How the statistic is calculated
+            influences: The other statistics that influence this
         """
         if self.secondary_statistics.has_key(name):
             raise AlreadyRegisteredError(name, "Statistic")
-        statistic = CalculatedStatistic(name, view_name, description, formula)
+        statistic = CalculatedStatistic(name, view_name, description, influences)
         self.secondary_statistics[name] = statistic
     
     def load_statistics_from_file(self, filename):
@@ -214,11 +214,11 @@ class CharacterStatisticSystem(Base):
         for name, secondary_data in statistics_data["secondary"].iteritems():
             view_name = secondary_data["name"]
             desc = secondary_data["description"]
-            formula = secondary_data["formula"]
+            influences = secondary_data["influences"]
             self.add_secondary_statistic(name,
                                          view_name,
                                          desc,
-                                         formula)        
+                                         influences)        
     
     def get_statistic_value(self, entity, statistic):
         """Get the entities value of the given statistic
@@ -447,13 +447,12 @@ class CharacterStatisticSystem(Base):
         """
         comp_name = CharacterStatistics.registered_as
         entity_extent = getattr(self.world[RPGEntity], comp_name)
-        safe_functions = {"math": math}
         for entity in entity_extent:
             stats_component = getattr(entity, comp_name) 
-            values = self.get_statistic_values(entity)
-            safe_dict = copy(safe_functions)
-            safe_dict.update(values)
             comp_secondary_stats = stats_component.secondary_stats                   
             for statistic_name, statistic in self.secondary_statistics.iteritems():
-                value = eval(statistic.formula, {"__builtins__":None}, safe_dict)
-                comp_secondary_stats[statistic_name] = value
+                total = 0
+                for name, influence in statistic.influences.iteritems():
+                    value = self.get_statistic_value(entity, name)
+                    total += value * influence
+                comp_secondary_stats[statistic_name] = total
