@@ -176,11 +176,6 @@ class ApplicationListener(
                 "RPG", "HelpText", "misc/help.txt")
             get_manager().getConsole().println(open(helptextfile, 'r').read())
             result = "--OK--"
-        elif cmd[0].lower() in ('eval'):
-            try:
-                result = str(eval(command.lstrip(cmd[0])))
-            except: # pylint: disable-msg=W0702
-                result = "Invalid eval statement..."
         elif cmd[0] in get_commands():
             result = get_commands()[cmd[0]](self._application, *cmd[1:])
         else:
