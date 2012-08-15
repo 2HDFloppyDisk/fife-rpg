@@ -15,21 +15,23 @@
 """The game environment system manages what variables and functions are 
 available to scripts.
 
-.. module:: game_environment
+.. module:: game_variables
     :synopsis: Manages the game environment
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from copy import copy
+
 from fife_rpg.systems import Base
+from fife_rpg.console_commands import register_command
 
-
-class GameEnvironment(Base):
+class GameVariables(Base):
     """The game environment system manages what variables and functions are 
     available to scripts.    
     """
 
     @classmethod
-    def register(cls, name="game_environment"):
+    def register(cls, name="game_variables"):
         """Registers the class as a system
 
         Args:
@@ -38,26 +40,28 @@ class GameEnvironment(Base):
         Returns:
             True if the system was registered, False if not.
         """
-        return (super(GameEnvironment, cls).register(name))
+        return (super(GameVariables, cls).register(name))
         
     def __init__(self):
         Base.__init__(self)
-        self.__locals = {}
+        self.__dynamic = {}
+        self.__static = {}
         self.__callbacks = []
-        self.__globals = {}
         
     def add_callback(self, callback):
-        """Adds a callback function to the GameEnvironment
+        """Adds a callback function to the GameVariables
         
         Args:
             callback: The function to add
         """
         self.__callbacks.append(callback)
         
-    def get_environement(self):
-        """Returns the environment as a 2 dictionaries"""
-        return self.__globals, self.__locals
-        
+    def get_variables(self):
+        """Returns the the variables as a dictionary"""
+        vals = copy(self.__static)
+        vals.update(self.__dynamic)
+        return vals
+    
     def step(self, time_delta): #pylint: disable= W0613
         """Execute a time step for the system. Must be defined
         by all system classes.
@@ -66,4 +70,4 @@ class GameEnvironment(Base):
             time_delta: Time since last step invocation
         """
         for callback in self.__callbacks:
-            callback(self.__globals)
+            callback(self.__static)

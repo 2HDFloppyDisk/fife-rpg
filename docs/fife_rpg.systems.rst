@@ -25,10 +25,10 @@ systems Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`game_environment` Module
-------------------------------
+:mod:`game_variables` Module
+----------------------------
 
-.. automodule:: fife_rpg.systems.game_environment
+.. automodule:: fife_rpg.systems.game_variables
     :members:
     :undoc-members:
     :show-inheritance:

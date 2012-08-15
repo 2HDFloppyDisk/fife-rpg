@@ -31,7 +31,7 @@ from copy import copy
 from fife_rpg.components import ComponentManager
 from fife_rpg.systems import SystemManager
 from fife_rpg.entities.rpg_entity import RPGEntity
-from fife_rpg.systems import GameEnvironment
+from fife_rpg.systems import GameVariables
 from fife_rpg.components.agent import Agent
 from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.components.general import General
@@ -54,10 +54,10 @@ class RPGWorld(World):
         World.__init__(self, application.engine)
         self.application = application
         self.object_db = {}
-        registered_as = GameEnvironment.registered_as
+        registered_as = GameVariables.registered_as
         if registered_as and hasattr(self.systems, registered_as):
             environment = getattr(self.systems, registered_as) 
-            environment.add_callback(self.update_environment)
+            environment.add_callback(self.update_game_variables)
         if not Agent.registered_as:
             Agent.register()
         if not FifeAgent.registered_as:
@@ -158,14 +158,16 @@ class RPGWorld(World):
         else:
             return None
         
-    def update_environment(self, environment_globals):
+    def update_game_variables(self, variables):
         """Called by the game environment when it wants to update its globals
         
         Args:
-            globals: The globals dictionary of the GameEnvironment that is 
+            variables: The globals dictionary of the GameEnvironment that is 
             filled by the GameScene
         """
-        environment_globals["get_entity"] = self.get_entity
+        extent = getattr(self[RPGEntity], General.registered_as)
+        for entity in extent:            
+            variables[entity.identifier] = entity
         
     def import_agent_objects(self, object_path=None):
         """Import the objects used by agents from the given path

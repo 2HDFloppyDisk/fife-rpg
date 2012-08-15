@@ -38,7 +38,7 @@ from fife_rpg.components.agent import Agent
 from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
 from fife_rpg.components.general import General
 from fife_rpg.behaviours import BehaviourManager
-from fife_rpg.systems import GameEnvironment
+from fife_rpg.systems import GameVariables
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
 from fife_rpg.console_commands import get_commands
 
@@ -296,16 +296,15 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.__languages[language].install()
             self.__current_language = language
 
-    def update_environment(self, environment_globals):
+    def update_game_variables(self, variables):
         """Called by the game environment when it wants to update its globals
         
         Args:
             globals: The globals dictionary of the GameEnvironment that is 
             filled by the GameScene
         """
-        environment_globals.update(self.maps)
-        environment_globals["current_map"] = self.current_map
-        environment_globals["_"] = _ #pylint: disable=E0602
+        variables.update(self.maps)
+        variables["CurrentMap"] = self.current_map
 
     def add_map(self, name, filename_or_map):
         """Adds a map to the maps dictionary.
@@ -536,10 +535,10 @@ class RPGApplication(FifeManager, ApplicationBase):
     def create_world(self):
         """Creates the world used by this application"""
         self.world = RPGWorld(self)
-        registered_as = GameEnvironment.registered_as            
+        registered_as = GameVariables.registered_as            
         if registered_as and hasattr(self.world.systems, registered_as):
             environment = getattr(self.world.systems, registered_as) 
-            environment.add_callback(self.update_environment)
+            environment.add_callback(self.update_game_variables)
 
     def request_quit(self):
         """Sends the quit command to the application's listener.

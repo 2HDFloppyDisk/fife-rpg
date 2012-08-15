@@ -22,7 +22,7 @@
 """
 import yaml
 
-from fife_rpg.systems import GameEnvironment
+from fife_rpg.systems import GameVariables
 from fife_rpg import ControllerBase
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
 
@@ -75,26 +75,25 @@ class Dialogue(object):
         greetings_data = dialogue_data["Greetings"]
         self.select_greeting(greetings_data)
         
-    def get_game_environment(self, section):
-        """Checks if the GameEnvironment system is registered and returns 
-        its current values and additional values used by the dialogues.
+    def get_dialogue_variables(self, section):
+        """Returns the game variables combined with dialogue specific
+        varialbes.
         
         Args:
-            section: A :class:`fife_rpg.dialogue.DialogueSection`. This will be 
-            used to get the additional values
+            section: A :class:`fife_rpg.dialogue.DialogueSection`. This will be
+            used to get dialogue variables
         """
-        game_environment = GameEnvironment.registered_as
-        if game_environment:
-            game_environment = getattr(self.world.systems, 
-                                       game_environment)
-            env_globals, env_locals = game_environment.get_environement()
+        game_variables = GameVariables.registered_as
+        if game_variables:
+            game_variables = getattr(self.world.systems, 
+                                       game_variables)
+            variables = game_variables.get_variables()
         else:
-            env_globals, env_locals = {}
-            env_globals["__builtins__"] = None
-            print ("The dialogue controller needs the GameEnvironment system "
+            variables = {}
+            print ("The dialogue controller needs the GameVariables system "
                    "to function properly.")
-        env_globals["dialogue_talker"] = self.world.get_entity(section.talker)
-        return env_globals, env_locals
+        variables["DialogueTalker"] = self.world.get_entity(section.talker)
+        return variables
     
     @property
     def possible_responses(self):
@@ -121,14 +120,12 @@ class Dialogue(object):
         Args:
             section: A :class:`fife_rpg.dialogue.DialogueSection`
         """
-        env_globals, env_locals = self.get_game_environment(section)
-        vals = env_globals.copy()
-        vals.update(env_locals)
+        variables = self.get_dialogue_variables(section)
         for command in section.commands:
             name = command["Name"]
             args = []
             for arg in command["Args"]:
-                value = arg.format(**vals)
+                value = arg.format(**variables)
                 args.append(value)
             arg_string = " ".join(args)
             command_string = "%s %s" % (name, arg_string)
@@ -169,10 +166,10 @@ class Dialogue(object):
         else:
             responses = None
         section = DialogueSection(talker, text, condition, commands, responses)
-        env_globals, env_locals = self.get_game_environment(section)
-        text_vals = env_globals.copy()
-        text_vals.update(env_locals)
-        section.text = _(section.text).format(**text_vals) #pylint: disable=E0602        
+        variables = self.get_dialogue_variables(section)
+        #pylint: disable=E0602
+        section.text = _(section.text).format(**variables)
+        #pylint: enable=E0602       
         return section
 
     def create_sections(self, sections_data):

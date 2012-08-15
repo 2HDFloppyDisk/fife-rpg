@@ -27,7 +27,6 @@ from copy import copy
 import yaml
 
 from fife_rpg.systems import Base
-from fife_rpg.systems import GameEnvironment
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.helpers import ClassProperty
 
@@ -133,7 +132,7 @@ class ScriptingSystem(Base):
         conditions: List of the registered conditions
     """
 
-    dependencies = [GameEnvironment]
+    dependencies = []
     
     __condition_dictionary = {}
     
