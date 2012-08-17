@@ -554,8 +554,9 @@ class RPGApplication(FifeManager, ApplicationBase):
         """
         if self._listener.quit:
             self.quit()
-        self.current_map.update_entities(self.world)
-        self.current_map.update_entitities_agent()
+        if self.current_map:
+            self.current_map.update_entities(self.world)
+            self.current_map.update_entitities_agent()
         if self.world:
             self.world.pump(dt)
         FifeManager.pump(self, dt)
