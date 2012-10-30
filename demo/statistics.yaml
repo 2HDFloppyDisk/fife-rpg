@@ -1,0 +1,16 @@
+primary:
+  ST:
+    name: Strength
+    description:
+  VT:
+    name: Vitality
+    description:
+secondary:
+  MD:
+    name: Melee Damage
+    description:
+    influences: 
+      ST: 0.75
+      VT: 0.25
+     
+       

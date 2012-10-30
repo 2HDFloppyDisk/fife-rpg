@@ -1,0 +1,19 @@
+---
+  Goldstack:
+    description:
+      real_name: Goldstack
+      desc: A stack of gold
+    agent:
+      gfx: goldstack
+    containable:
+      bulk: 10
+      weight: 10
+      item_type: Goldstack
+      image: Null       
+---
+  TempleEntrance:
+    description:
+      real_name: Temple Entrance
+      desc: This looks like stairs going deeper into the temple
+    agent:
+       gfx: temple_entrance
