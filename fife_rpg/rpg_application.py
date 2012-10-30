@@ -228,14 +228,14 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.__components = {}
         self.__actions = {}
         self.__systems = {}
-        default_language = self.settings.get("i18n", "DefaultLanguage", "")
+        default_language = self.settings.get("i18n", "DefaultLanguage", "en")
         languages_dir = self.settings.get("i18n", "Directory", "__languages")
         for language in self.settings.get("i18n", "Languages", ("en", )):
             fallback = (language == default_language)
             self.__languages[language] = gettext.translation(self.name, 
-                                                           languages_dir, 
-                                                           [language],
-                                                           fallback=fallback)
+                                                            languages_dir,
+                                                            [language],
+                                                            fallback=fallback)
         language = self.settings.get("i18n", "Language", default_language)
         self.switch_language(language)
     
@@ -462,10 +462,13 @@ class RPGApplication(FifeManager, ApplicationBase):
         Args:
             name: The name of the map
         """
+        if self.__current_map:
+            self.__current_map.deactivate()
+            self.__current_map = None
+        if name is None:
+            return
         if name in self.__maps:
             self.load_map(name)
-            if self.__current_map:
-                self.__current_map.deactivate()
             self.__current_map = self.maps[name]
             self.__current_map.activate()
         else:
