@@ -37,6 +37,7 @@ class Listener(ApplicationListener, fife.IMouseListener, fife.PercentDoneListene
                 self._application.language = "en"                
             controller = self._application.current_mode
             world = self._application.world
+            player_inst = player.fifeagent.behaviour.agent
             if isinstance(controller, GameSceneController):
                 game_map = self._application.current_map
                 if game_map:
@@ -59,9 +60,9 @@ class Listener(ApplicationListener, fife.IMouseListener, fife.PercentDoneListene
                                 print actions[name].menu_text
                             
                                 if actions.has_key("Look"):
-                                    actions["Look"].execute()
+                                    player_inst.say(actions["Look"].execute(), 2000)
                                 if actions.has_key("Read"):
-                                    actions["Read"].execute()
+                                    player_inst.say(actions["Read"].execute(), 2000)
                                                       
                     item_instances = game_map.get_instances_at(
                                                         pt, 
@@ -78,7 +79,7 @@ class Listener(ApplicationListener, fife.IMouseListener, fife.PercentDoneListene
                                 actions[name] = action(self._application, player, entity)
                                 print actions[name].menu_text
                                 if actions.has_key("Look"):
-                                    actions["Look"].execute()
+                                    player_inst.say(actions["Look"].execute(), 2000)
 
                     ground_instances = game_map.get_instances_at(
                                                         pt, 
@@ -159,6 +160,7 @@ class Application(RPGApplication):
     
     def __init__(self, TDS):
         RPGApplication.__init__(self, TDS)
+        self.floating_text_renderer = None
         self.map_region_nodes = {} 
         
     def createListener(self):
@@ -170,7 +172,15 @@ class Application(RPGApplication):
         if not self.map_region_nodes.has_key(name):
             self.map_region_nodes[name] = {}
         map_dict = self.map_region_nodes[name]        
-        renderer = fife.GenericRenderer.getInstance(self.current_map.camera)
+	renderer = fife.FloatingTextRenderer.getInstance(self.current_map.camera)
+	font = get_manager().getDefaultFont()
+	renderer.setFont(font)
+	renderer.addActiveLayer(self.current_map.actor_layer)
+	renderer.setBackground(100, 255, 100, 165)
+	renderer.setBorder(50, 255, 50)
+	renderer.setEnabled(True)
+	
+	renderer = fife.GenericRenderer.getInstance(self.current_map.camera)
         renderer.addActiveLayer(self.current_map.ground_object_layer)
         renderer.setEnabled(True)
         renderer.removeAll("region")
