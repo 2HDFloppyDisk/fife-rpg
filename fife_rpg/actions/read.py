@@ -35,10 +35,14 @@ class ReadAction(Base):
         Raises:
             :class:`fife_rpg.exceptions.NoSuchCommandError`
             if a command is detected that is not registered.
+
+        Returns:
+            The text of the readable
         """
         readable = getattr(self.target, Readable.registered_as)
-        print _(readable.text) #pylint: disable=E0602
+        text = _(readable.text) #pylint: disable=E0602
         Base.execute(self)
+        return text
         
     @classmethod
     def check_agent(cls, entity): #pylint: disable-msg=W0613

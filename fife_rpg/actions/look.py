@@ -35,13 +35,16 @@ class LookAction(Base):
         Raises:
             :class:`fife_rpg.exceptions.NoSuchCommandError`
             if a command is detected that is not registered.
+
+        Returns: A text describing the target.
         """
         description = getattr(self.target, Description.registered_as)
         #pylint: disable=E0602
-        print _("You see %s. \n%s") %  (_(description.view_name), 
+        text = _("You see %s. \n%s") %  (_(description.view_name), 
                                         _(description.desc))
         #pylint: enable=E0602
         Base.execute(self)
+        return text
 
     @classmethod
     def check_agent(cls, entity): #pylint: disable-msg=W0613
