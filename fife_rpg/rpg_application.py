@@ -219,6 +219,9 @@ class RPGApplication(FifeManager, ApplicationBase):
         ApplicationBase.__init__(self, TDS)
         FifeManager.__init__(self)
         self.name = self.settings.get("fife-rpg", "ProjectName")
+        if self.name is None:
+            raise AttributeError("The application name is not specified in" 
+            "the settings file")
         self._listener = None
         self.world = None
         self.__maps = {}
