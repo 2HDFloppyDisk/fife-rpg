@@ -436,14 +436,18 @@ class RPGApplication(FifeManager, ApplicationBase):
                     
                 regions_filename = "%s_regions.yaml" % os.path.splitext(filename)[0]
                 regions = {}
-                regions_file = self.engine.getVFS().open(regions_filename)
-                regions_data = yaml.load(regions_file)
-                for region_name,  region_data in regions_data.iteritems():
-                    region = fife.DoubleRect(x=region_data[0],
-                                             y=region_data[1],
-                                             width=region_data[2],
-                                             height=region_data[3])
-                    regions[region_name] = region
+                try:
+                    regions_file = self.engine.getVFS().open(regions_filename)
+                except RuntimeError:
+                    regions_file = None
+                if regions_file is not None:
+                    regions_data = yaml.load(regions_file)
+                    for region_name,  region_data in regions_data.iteritems():
+                        region = fife.DoubleRect(x=region_data[0],
+                                                 y=region_data[1],
+                                                 width=region_data[2],
+                                                 height=region_data[3])
+                        regions[region_name] = region
                 game_map = Map(fife_map, name, camera, actor_layer,            
                                ground_object_layer, item_layer, regions)
                 renderer = fife.InstanceRenderer.getInstance(game_map.camera)
