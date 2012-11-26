@@ -11,6 +11,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from fife_rpg.exceptions import AlreadyRegisteredError
 
 """The Agent component and functions
 
@@ -103,15 +104,19 @@ def add_knowledge(agent, knowledge):
     agent_data.knows.add(knowledge)
     
 #Register conditions
-ScriptingSystem.register_condition("Knows", 
-                                   lambda application, agent_name, knowledge:
-                                   knows(application.world.get_entity(
-                                                agent_name), 
-                                         knowledge))
-
+try:
+    ScriptingSystem.register_condition("Knows", 
+                                       lambda application, agent_name, knowledge:
+                                       knows(application.world.get_entity(
+                                                    agent_name), 
+                                             knowledge))
+except AlreadyRegisteredError:
+    pass
 #Register console commands
-
-from fife_rpg.console_commands import register_command
-register_command("AddKnowledge", lambda application, agent_name, knowledge:
-                 add_knowledge(application.world.get_entity(agent_name), 
-                               knowledge))
+try:
+    from fife_rpg.console_commands import register_command
+    register_command("AddKnowledge", lambda application, agent_name, knowledge:
+                     add_knowledge(application.world.get_entity(agent_name), 
+                                   knowledge))
+except AlreadyRegisteredError:
+    pass

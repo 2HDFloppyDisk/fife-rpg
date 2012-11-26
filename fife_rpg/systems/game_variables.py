@@ -11,6 +11,7 @@
 #   
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from fife_rpg.exceptions import AlreadyRegisteredError
 
 """The game variables system manages game variables.
 
@@ -130,8 +131,11 @@ def __set_variable_console(application, *args):
         return game_variables.set_variable(*args)
     except TypeError as error:
         return str(error).replace("set_variable()", "SetVariable")
-    
-register_command("SetVariable", __set_variable_console)
+
+try:
+    register_command("SetVariable", __set_variable_console)
+except AlreadyRegisteredError:
+    pass
 
 def __delete_variable_console(application, *args):
     if not GameVariables.registered_as:
@@ -142,8 +146,11 @@ def __delete_variable_console(application, *args):
         return game_variables.delete_variable(*args)
     except TypeError as error:
         return str(error).replace("delete_variable()", "DeleteVariable")
-    
-register_command("DeleteVariable", __delete_variable_console)
+
+try:
+    register_command("DeleteVariable", __delete_variable_console)
+except AlreadyRegisteredError:
+    pass
 
 def __get_variable_console(application, *args):
     if not GameVariables.registered_as:
@@ -157,4 +164,7 @@ def __get_variable_console(application, *args):
     except NameError as error:
         return str(error)
     
-register_command("GetVariable", __get_variable_console)
+try:    
+    register_command("GetVariable", __get_variable_console)
+except AlreadyRegisteredError:
+    pass
