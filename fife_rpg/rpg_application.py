@@ -231,6 +231,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.__components = {}
         self.__actions = {}
         self.__systems = {}
+        self.__behaviours = {}
         default_language = self.settings.get("i18n", "DefaultLanguage", "en")
         languages_dir = self.settings.get("i18n", "Directory", "__languages")
         for language in self.settings.get("i18n", "Languages", ("en", )):
@@ -647,7 +648,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                 self.register_component(
                             component, 
                             register_checkers=register_checkers,
-                            register_script_commands=register_script_commands)
+                            register_script_commands=register_script_commands)                
                 
     def load_actions(self, filename=None):
         """Load the action definitions from a file
@@ -754,6 +755,59 @@ class RPGApplication(FifeManager, ApplicationBase):
                 self.register_system(*system)
             else:
                 self.register_system(system)
+
+    def load_behaviours(self, filename=None):
+        """Load the behaviour definitions from a file
+        
+        Args:
+            filename: The path to the behaviours file. If this is set to None the
+            BehavioursFile setting will be used.
+        """
+        if filename is None:
+            filename = self.settings.get("fife-rpg", "BehavioursFile", 
+                                         "behaviours.yaml")
+        self.__behaviours = {}        
+        behaviours_file = self.engine.getVFS().open(filename)
+        for name, path in yaml.load(behaviours_file)["Behaviours"].iteritems():
+            self.__behaviours[name] = path 
+
+    def register_behaviour(self, behaviour_name, registered_name=None):
+        """Calls the behaviours register method.
+        
+        Args:
+            behaviour_name: Name of the behaviour
+            
+            registered_name: Name under which the behaviour should be registered            
+        """
+        behaviour_path = self.__behaviours[behaviour_name]
+        module = __import__(behaviour_path, fromlist=[behaviour_path])
+        behaviour = getattr(module, behaviour_name)
+        if not registered_name is None:
+            behaviour.register(registered_name)
+        else:
+            behaviour.register()
+
+    def register_behaviours(self, behaviour_list=None):
+        """Calls the register method of the behaviours in the behaviour list
+        
+        Args:
+            behaviour_list: A list of behaviours if an item is not a string
+            it will be interpreted as a tuple or list with the second item
+            as the name to use when registering. If this is None the Behaviours
+            settings will be used.
+        """
+        if behaviour_list is None:
+            behaviour_list = self.settings.get("fife-rpg", "Behaviours")
+        
+        if behaviour_list is None:
+            raise ValueError("No behaviour list supplied and no \"Behaviours\" "
+                             "Setting found")
+           
+        for behaviour in behaviour_list:
+            if not isinstance(behaviour, str):
+                self.register_behaviour(*behaviour)
+            else:
+                self.register_behaviour(behaviour)
 
     def is_location_in_region(self, map_name, location, region_name):
         """Checks whether the location is in the region of the map
