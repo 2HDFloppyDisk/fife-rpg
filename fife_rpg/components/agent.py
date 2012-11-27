@@ -42,9 +42,7 @@ class Agent(Base):
         
         behaviour_type: The behaviour of the agent
         
-        walk_speed: How fast the agent walks
-        
-        run_speed: How fast the agent runs
+        behaviour_args: Args to pass to the behaviour constructor
         
         knows: What the agent knows about
     """
@@ -52,10 +50,9 @@ class Agent(Base):
     def __init__(self):
         Base.__init__(self, gfx=str, map=str, type=str, position=list,
                       rotation=int, stack_position=int, behaviour_type=str, 
-                      walk_speed=float, run_speed=float, knows=set)
+                      behaviour_args=dict, knows=set)
         self.fields["type"].default = lambda: "actor"
-        self.fields["walk_speed"].default = lambda: 0.0
-        self.fields["run_speed"].default = lambda: 0.0
+        self.fields["behaviour_args"].default = dict
 
     @classmethod
     def register(cls, name="agent", auto_register=True):

@@ -350,8 +350,8 @@ class RPGApplication(FifeManager, ApplicationBase):
                     fife_instance.act('default', target, True)
                 fifeagent = getattr(entity, FifeAgent.registered_as)
                 behaviour_class = BehaviourManager.get_behaviour(
-                                                            agent.behaviour_type)
-                behaviour = behaviour_class(agent.walk_speed, agent.run_speed)
+                                                        agent.behaviour_type)
+                behaviour = behaviour_class(**agent.behaviour_args)
                 behaviour.agent = fife_instance
                 fifeagent.behaviour = behaviour
                 fifeagent.layer = layer
