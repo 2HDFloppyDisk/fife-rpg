@@ -34,7 +34,7 @@ from fife_rpg.behaviours import BehaviourManager
 _AGENT_STATE_WANDER, _AGENT_STATE_TALK)= xrange(6)
 
 class Base (fife.InstanceActionListener):
-    """Behaviour that contains the basic methods for agents
+    """Behaviour that contains the basic methods for actors
     
     Properties:
         agent: A :class:`fife.Instance` that represents the agent
@@ -43,28 +43,23 @@ class Base (fife.InstanceActionListener):
         
         animation_queue: A deque that contains the queued animations
         
-        next_action: The :class:`fife_rpg.actions.base.Base` that will be executed
-        after the current animation is finished
-        
-        walk_speed: How fast the agent will move when walking
-        
-        run_speed: How fast the agent will move when running
+        next_action: The :class:`fife_rpg.actions.base.Base` that will be 
+        executed after the current animation is finished
 
         registered_as: Class property that sets under what name the class is
         registered
         
-        dependencies: Class property that sets the classes this System depends on
+        dependencies: Class property that sets the classes this System depends
+        on
     """
     __registered_as = None
 
-    def __init__(self, walk_speed, run_speed):
+    def __init__(self):
         fife.InstanceActionListener.__init__(self)
         self.agent = None
         self.state = None
         self.animation_queue = deque()
         self.next_action = None
-        self.walk_speed = walk_speed
-        self.run_speed = run_speed
 
     @property
     def location(self):
@@ -174,58 +169,13 @@ class Base (fife.InstanceActionListener):
             
             repeating: Whether to repeat the animation or not
         """
-        self.animation_queue.append({"animation": animation, "direction": direction,
+        self.animation_queue.append({"animation": animation, 
+                                     "direction": direction,
                                   "repeating": repeating})
         
     def clear_animations(self):
         """Remove all actions from the queue"""
         self.animation_queue.clear()
-
-    def approach(self, location_or_agent, action=None):
-        """Approaches a location or another agent and then perform an animation 
-        (if set).
-        
-        Args:
-            loc: The location, as a tuple, or agent, as a 
-            :class:`fife.Instance` to approach
-            
-            action: The :class:`fife_rpg.actions.base.Base` to schedule for 
-            execution after the approach.
-        """
-            
-        self.state = _AGENT_STATE_APPROACH
-        self.next_action = action
-        if  isinstance(location_or_agent, fife.Instance):
-            agent = location_or_agent
-            self.agent.follow('run', agent, self.run_speed)
-        else:
-            location = location_or_agent
-            boxLocation = tuple([int(float(i)) for i in location])
-            location = fife.Location(self.getLocation())
-            location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
-            self.agent.move('run', location, self.run_speed)   
-
-    def run(self, location):
-        """Makes the agent run to a certain location
-        
-        Args:
-            location: Screen position to run to.
-        """
-        self.state = _AGENT_STATE_RUN
-        self.clear_animations()
-        self.next_action = None
-        self.agent.move('run', location, self.run_speed)
-
-    def walk(self, location):
-        """Makes the agent walk to a certain location.
-        
-        Args:
-            location: Screen position to walk to.
-        """
-        self.state = _AGENT_STATE_RUN
-        self.clear_animations()
-        self.next_action = None
-        self.agent.move('walk', location, self.walk_speed)
 
     @classmethod
     def register(cls, name="Base"):
