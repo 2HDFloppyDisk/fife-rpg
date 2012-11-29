@@ -89,7 +89,7 @@ class Moving(Base):
             execution after the approach.
         """
             
-        self.state = base._AGENT_STATE_APPROACH
+        self.state = base.AGENT_STATES.APPROACH
         self.next_action = action
         if  isinstance(location_or_agent, fife.Instance):
             agent = location_or_agent
@@ -107,7 +107,7 @@ class Moving(Base):
         Args:
             location: Screen position to run to.
         """
-        self.state = base._AGENT_STATE_RUN
+        self.state = base.AGENT_STATES.RUN
         self.clear_animations()
         self.next_action = None
         self.agent.move(self.run_action, location, self.run_speed)
@@ -118,7 +118,7 @@ class Moving(Base):
         Args:
             location: Screen position to walk to.
         """
-        self.state = base._AGENT_STATE_RUN
+        self.state = base.AGENT_STATES.RUN
         self.clear_animations()
         self.next_action = None
         self.agent.move(self.walk_action, location, self.walk_speed)       

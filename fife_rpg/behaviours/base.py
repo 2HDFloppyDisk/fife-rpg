@@ -26,12 +26,12 @@ from collections import deque
 
 from fife import fife
 
+from fife_rpg.helpers import Enum
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.components.general import General
 from fife_rpg.behaviours import BehaviourManager
 
-(_AGENT_STATE_NONE, _AGENT_STATE_IDLE, _AGENT_STATE_APPROACH, _AGENT_STATE_RUN,
-_AGENT_STATE_WANDER, _AGENT_STATE_TALK)= xrange(6)
+AGENT_STATES = Enum(["NONE", "IDLE", "APPROACH", "RUN", "WANDER", "TALK"])
 
 class Base (fife.InstanceActionListener):
     """Behaviour that contains the basic methods for actors
@@ -86,7 +86,7 @@ class Base (fife.InstanceActionListener):
         """
         self.agent = layer.getInstance(agent_id)
         self.agent.addActionListener(self)
-        self.state = _AGENT_STATE_NONE
+        self.state = AGENT_STATES.TALK
 
     def on_new_map(self, layer):
         """Called when the agent is moved to a different map
@@ -99,11 +99,11 @@ class Base (fife.InstanceActionListener):
         general = getattr(self.parent, General.registered_as)
         self.agent = layer.getInstance(general.identifier)
         self.agent.addActionListener(self)
-        self.state = _AGENT_STATE_NONE
+        self.state = AGENT_STATES.NONE
 
     def idle(self):
         """Set the state to idle"""
-        self.state = _AGENT_STATE_IDLE
+        self.state = AGENT_STATES.IDLE
 
     def onInstanceActionFinished(self, instance, animation):
         #pylint: disable=C0103,W0613,W0221
@@ -142,7 +142,7 @@ class Base (fife.InstanceActionListener):
 
     def talk(self):
         """Set the agent to their talking animation"""
-        self.state = _AGENT_STATE_TALK
+        self.state = AGENT_STATES.TALK
         self.clear_animations()
         self.idle()
 
