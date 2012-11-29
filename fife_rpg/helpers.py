@@ -24,3 +24,9 @@ class ClassProperty(property):
     """Class to make class properties"""
     def __get__(self, cls, owner):
         return self.fget.__get__(None, owner)() # pylint: disable=E1101
+    
+class Enum(set):
+    def __getattr__(self, name):
+        if name in self:
+            return name
+        raise AttributeError    
