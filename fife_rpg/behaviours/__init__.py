@@ -6,6 +6,5 @@ AGENT_STATES = Enum(["NONE",
                      "APPROACH",
                      "RUN",
                      "WALK",
-                     "WANDER",
                      "TALK"
                      ])
