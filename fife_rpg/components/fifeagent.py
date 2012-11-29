@@ -33,10 +33,12 @@ class FifeAgent(Base):
         layer: The layer the agent is on
         
         behaviour: The behaviour object of this agent
+        
+        instance: The FIFE instance of this agent. 
     """
 
     def __init__(self):
-        Base.__init__(self, layer=object, behaviour=object)
+        Base.__init__(self, layer=object, behaviour=object, instance=object)
 
     @property
     def saveable_fields(self):
@@ -44,6 +46,7 @@ class FifeAgent(Base):
         fields = self.fields.keys()
         fields.remove("layer")
         fields.remove("behaviour")
+        fields.remove("instance")
         return fields
 
     @classmethod
@@ -98,17 +101,17 @@ def approach(entity, target_or_location, run_agent=True, next_action=None):
     speed = moving.run_speed if run_agent else moving.run_speed
     if isinstance(target_or_location, fife.Instance):
         agent = target_or_location
-        fifeagent.behaviour.agent.follow(action, 
-                                         agent, 
-                                         speed)
+        fifeagent.instance.follow(action, 
+                                  agent, 
+                                  speed)
     else:
         location = target_or_location
         boxLocation = tuple([int(float(i)) for i in location])
         location = fife.Location(fifeagent.behaviour.getLocation())
         location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
-        fifeagent.behaviour.agent.move(action, 
-                                       location, 
-                                       speed)
+        fifeagent.instance.move(action, 
+                                location, 
+                                speed)
 
 def run(entity, location):
     """Makes the entity run to a certain location
@@ -128,9 +131,9 @@ def run(entity, location):
     moving = getattr(entity, moving_name)
     fifeagent.behaviour.clear_animations()
     fifeagent.behaviour.next_action = None
-    fifeagent.behaviour.agent.move(moving.run_action, 
-                                   location, 
-                                   moving.run_speed)
+    fifeagent.instance.move(moving.run_action, 
+                            location, 
+                            moving.run_speed)
 
 def walk(entity, location):
     """Makes the entity walk to a certain location
@@ -150,9 +153,9 @@ def walk(entity, location):
     moving = getattr(entity, moving_name)
     fifeagent.behaviour.clear_animations()
     fifeagent.behaviour.next_action = None
-    fifeagent.behaviour.agent.move(moving.walk_action, 
-                                   location, 
-                                   moving.walk_speed)  
+    fifeagent.instance.move(moving.walk_action, 
+                            location, 
+                            moving.walk_speed)  
     
 def register_script_commands():
     """Register commands for this module"""

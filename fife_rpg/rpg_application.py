@@ -355,6 +355,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                 behaviour.agent = fife_instance
                 fifeagent.behaviour = behaviour
                 fifeagent.layer = layer
+                fifeagent.instance = fife_instance
                 setup_behaviour(fifeagent)
                 fifeagent.behaviour.idle()
             else:
