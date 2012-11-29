@@ -11,7 +11,6 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from fife_rpg.exceptions import AlreadyRegisteredError
 
 """The moving component and functions
 
@@ -24,7 +23,8 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.components.base import Base
 
 class Moving(Base):
-    """Component that stores the general values of an agent
+    """Component that stores the values for agents that can move around
+    the map by using pathfinding.
     
     Fields:
         walk_speed: The walking speed
