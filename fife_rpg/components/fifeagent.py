@@ -19,9 +19,12 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from fife import fife
 
 from fife_rpg.components.base import Base
+from fife_rpg.components.moving import Moving
 from fife_rpg.components import ComponentManager
+from fife_rpg.behaviours import AGENT_STATES
 
 class FifeAgent(Base):
     """Component that stores the values for a fife agent
@@ -68,20 +71,92 @@ def setup_behaviour(agent):
     if agent.behaviour:   
         agent.behaviour.attach_to_layer(agent.entity.identifier, agent.layer)
         
-def approach(agent, target_or_location, action):
-    """Move the agent to the given location, or follow the given target while
-    performing the given action
+def approach(entity, target_or_location, run_agent=True, next_action=None):
+    """Move the entity to the given location, or follow the given target
 
     Args:
-        agent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
+        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        fifeagent and a moving component
         
-        target_or_location: A location to move to or another agent to follow
+        target_or_location: A location to move to or another entity to follow
         
-        action: The name of the action to perform
+        run_agent: If true the run_action will be performed otherwise
+        the walk_action. 
+        
+        next_action: The action the agent will perform when it reached
+        its target.
+    """    
+    fifeagent_name = FifeAgent.registered_as
+    moving_name = Moving.registered_as
+    if fifeagent_name is None or moving_name is None:
+        return
+    fifeagent = getattr(entity, fifeagent_name)
+    fifeagent.behaviour.state = AGENT_STATES.APPROACH
+    moving = getattr(entity, moving_name)
+
+    action = moving.run_action if run_agent else moving.walk_action
+    speed = moving.run_speed if run_agent else moving.run_speed
+    if isinstance(target_or_location, fife.Instance):
+        agent = target_or_location
+        fifeagent.behaviour.agent.follow(action, 
+                                         agent, 
+                                         speed)
+    else:
+        location = target_or_location
+        boxLocation = tuple([int(float(i)) for i in location])
+        location = fife.Location(fifeagent.behaviour.getLocation())
+        location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
+        fifeagent.behaviour.agent.move(action, 
+                                       location, 
+                                       speed)
+
+def run(entity, location):
+    """Makes the entity run to a certain location
+    
+    Args:
+        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        fifeagent and a moving component
+        
+        location: Screen position to run to.
     """
-    if agent.behaviour: 
-        agent.behaviour.approach(target_or_location, action)
+    fifeagent_name = FifeAgent.registered_as
+    moving_name = Moving.registered_as
+    if fifeagent_name is None or moving_name is None:
+        return
+    fifeagent = getattr(entity, fifeagent_name)
+    fifeagent.behaviour.state = AGENT_STATES.RUN
+    moving = getattr(entity, moving_name)
+    fifeagent.behaviour.clear_animations()
+    fifeagent.behaviour.next_action = None
+    fifeagent.behaviour.agent.move(moving.run_action, 
+                                   location, 
+                                   moving.run_speed)
+
+def walk(entity, location):
+    """Makes the entity walk to a certain location
+    
+    Args:
+        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        fifeagent and a moving component
         
+        location: Screen position to run to.
+    """
+    fifeagent_name = FifeAgent.registered_as
+    moving_name = Moving.registered_as
+    if fifeagent_name is None or moving_name is None:
+        return
+    fifeagent = getattr(entity, fifeagent_name)
+    fifeagent.behaviour.state = AGENT_STATES.WALK
+    moving = getattr(entity, moving_name)
+    fifeagent.behaviour.clear_animations()
+    fifeagent.behaviour.next_action = None
+    fifeagent.behaviour.agent.move(moving.walk_action, 
+                                   location, 
+                                   moving.walk_speed)  
+    
 def register_script_commands():
     """Register commands for this module"""
     ComponentManager.register_script_command("approach", approach)
+    ComponentManager.register_script_command("walk", walk)
+    ComponentManager.register_script_command("run", run)
+    
