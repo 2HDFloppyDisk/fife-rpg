@@ -26,12 +26,10 @@ from collections import deque
 
 from fife import fife
 
-from fife_rpg.helpers import Enum
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.components.general import General
 from fife_rpg.behaviours import BehaviourManager
-
-AGENT_STATES = Enum(["NONE", "IDLE", "APPROACH", "RUN", "WANDER", "TALK"])
+from fife_rpg.behaviours import AGENT_STATES
 
 class Base (fife.InstanceActionListener):
     """Behaviour that contains the basic methods for actors
