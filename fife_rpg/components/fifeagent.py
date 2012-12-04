@@ -71,8 +71,8 @@ def setup_behaviour(agent):
     Args:
         agent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
     """
-    if agent.behaviour:   
-        agent.behaviour.attach_to_layer(agent.entity.identifier, agent.layer)
+    if agent.behaviour:
+        agent.behaviour.attach_to_agent(agent)
         
 def approach(entity, target_or_location, run_agent=True, next_action=None):
     """Move the entity to the given location, or follow the given target
@@ -153,10 +153,10 @@ def walk(entity, location):
     moving = getattr(entity, moving_name)
     fifeagent.behaviour.clear_animations()
     fifeagent.behaviour.next_action = None
-    fifeagent.instance.move(moving.walk_action, 
-                            location, 
-                            moving.walk_speed)  
-    
+    fifeagent.instance.move(moving.walk_action,
+                            location,
+                            moving.walk_speed)
+
 def register_script_commands():
     """Register commands for this module"""
     ComponentManager.register_script_command("approach", approach)

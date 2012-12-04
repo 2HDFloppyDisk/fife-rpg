@@ -26,8 +26,8 @@ from collections import deque
 
 from fife import fife
 
-from fife_rpg.exceptions import AlreadyRegisteredError
-from fife_rpg.components.general import General
+from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
+from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.behaviours import AGENT_STATES
 
@@ -35,7 +35,7 @@ class Base (fife.InstanceActionListener):
     """Behaviour that contains the basic methods for actors
     
     Properties:
-        agent: A :class:`fife.Instance` that represents the agent
+        agent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
         
         state: The current state of the behaviour
         
@@ -62,41 +62,31 @@ class Base (fife.InstanceActionListener):
     @property
     def location(self):
         """Returns the location of the agent"""
-        return self.agent.getLocation().getLayerCoordinates()
+        return self.agent.instance.getLocation().getLayerCoordinates()
     
     @property
     def rotation(self):
         """Returns the rotation of the agent"""
-        return self.agent.getRotation()
+        return self.agent.instance.getRotation()
     
     @rotation.setter
     def rotation(self, rotation):
         """Sets the rotation of the agent"""
-        self.agent.setRotation(rotation)
+        self.agent.instance.setRotation(rotation)
     
-    def attach_to_layer(self, agent_id, layer):
-        """Attaches to a certain layer
+    def attach_to_agent(self, agent):
+        """Attaches to a certain agent
 
         Args:
-           agent_id: ID of the layer to attach to.
+           agent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
            
            layer: :class:`fife.Layer` of the agent to attach the behaviour to
         """
-        self.agent = layer.getInstance(agent_id)
-        self.agent.addActionListener(self)
-        self.state = AGENT_STATES.TALK
-
-    def on_new_map(self, layer):
-        """Called when the agent is moved to a different map
-
-        Args:
-            layer: The :class:`fife.Layer` that the agent was moved to
-        """
-        if self.agent is not None:
-            self.agent.removeActionListener(self)
-        general = getattr(self.parent, General.registered_as)
-        self.agent = layer.getInstance(general.identifier)
-        self.agent.addActionListener(self)
+        fifeagent_name = FifeAgent.registered_as
+        if fifeagent_name is None:
+            raise NotRegisteredError("Component")
+        self.agent = agent
+        self.agent.instance.addActionListener(self)
         self.state = AGENT_STATES.NONE
 
     def idle(self):
@@ -154,8 +144,8 @@ class Base (fife.InstanceActionListener):
             
             repeating: Whether to repeat the animation or not
         """
-        direction = direction or self.agent.getFacingLocation()
-        self.agent.act(animation, direction, repeating)
+        direction = direction or self.agent.instance.getFacingLocation()
+        self.agent.instance.act(animation, direction, repeating)
 
     def queue_animation(self, animation, direction = None, repeating = False):
         """Add an animation to the queue
