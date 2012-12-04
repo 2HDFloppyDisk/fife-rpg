@@ -47,7 +47,7 @@ class Equipable(Base):
         return fields
 
     @classmethod
-    def register(cls, name="equipable", auto_register=True):
+    def register(cls, name="Equipable", auto_register=True):
         """Registers the class as a component
 
         Args:

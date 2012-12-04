@@ -33,7 +33,7 @@ class Readable(Base):
         Base.__init__(self, text=str)
 
     @classmethod
-    def register(cls, name="readable", auto_register=True):
+    def register(cls, name="Readable", auto_register=True):
         """Registers the class as a component
 
         Args:

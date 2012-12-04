@@ -50,7 +50,7 @@ class FifeAgent(Base):
         return fields
 
     @classmethod
-    def register(cls, name="fifeagent", auto_register=True):
+    def register(cls, name="FifeAgent", auto_register=True):
         """Registers the class as a component
 
         Args:

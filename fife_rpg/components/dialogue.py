@@ -32,7 +32,7 @@ class Dialogue(Base):
         Base.__init__(self, dialogue=object)
 
     @classmethod
-    def register(cls, name="dialogue", auto_register=True):
+    def register(cls, name="Dialogue", auto_register=True):
         """Registers the class as a component
 
         Args:

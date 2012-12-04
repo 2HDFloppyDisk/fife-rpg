@@ -56,7 +56,7 @@ class Lockable(Base):
         self.fields["closed_animation"].default = lambda: "closed"
 
     @classmethod
-    def register(cls, name="lockable", auto_register=True):
+    def register(cls, name="Lockable", auto_register=True):
         """Registers the class as a component
 
         Args:

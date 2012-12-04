@@ -45,7 +45,7 @@ class Container(Base):
         return fields
 
     @classmethod
-    def register(cls, name="container", auto_register=True):
+    def register(cls, name="Container", auto_register=True):
         """Registers the class as a component
 
         Args:

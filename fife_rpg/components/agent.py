@@ -55,7 +55,7 @@ class Agent(Base):
         self.fields["behaviour_args"].default = dict
 
     @classmethod
-    def register(cls, name="agent", auto_register=True):
+    def register(cls, name="Agent", auto_register=True):
         """Registers the class as a component
 
         Args:

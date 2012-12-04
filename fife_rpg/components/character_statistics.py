@@ -56,7 +56,7 @@ class CharacterStatistics(Base):
         return fields
 
     @classmethod
-    def register(cls, name="char_stats", auto_register=True):
+    def register(cls, name="CharacterStatistics", auto_register=True):
         """Registers the class as a component
 
         Args:

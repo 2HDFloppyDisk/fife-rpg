@@ -40,7 +40,7 @@ class Equip(Base):
         Base.__init__(self, **fields)
     
     @classmethod
-    def register(cls, name="equip", auto_register=True):
+    def register(cls, name="Equip", auto_register=True):
         """Registers the class as a component
 
         Args:

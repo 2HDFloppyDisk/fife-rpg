@@ -32,7 +32,7 @@ class General(Base):
         Base.__init__(self, identifier=str)
 
     @classmethod
-    def register(cls, name="general", auto_register=True):
+    def register(cls, name="General", auto_register=True):
         """Registers the class as a component
 
         Args:

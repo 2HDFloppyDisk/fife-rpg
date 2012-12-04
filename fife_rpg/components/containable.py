@@ -50,7 +50,7 @@ class Containable(Base):
         return fields
 
     @classmethod
-    def register(cls, name="containable", auto_register=True):
+    def register(cls, name="Containable", auto_register=True):
         """Registers the class as a component
 
         Args:

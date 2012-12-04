@@ -34,7 +34,7 @@ class ChangeMap(Base):
         Base.__init__(self, target_map=str, target_position=list)
 
     @classmethod
-    def register(cls, name="change_map", auto_register=True):
+    def register(cls, name="ChangeMap", auto_register=True):
         """Registers the class as a component
 
         Args:

@@ -37,7 +37,7 @@ class Description(Base):
         Base.__init__(self, view_name=str, real_name=str, desc=str)
 
     @classmethod
-    def register(cls, name="description", auto_register=True):
+    def register(cls, name="Description", auto_register=True):
         """Registers the class as a component
 
         Args:

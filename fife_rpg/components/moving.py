@@ -45,7 +45,7 @@ class Moving(Base):
         self.fields["run_action"].default = lambda: "run"
 
     @classmethod
-    def register(cls, name="moving", auto_register=True):
+    def register(cls, name="Moving", auto_register=True):
         """Registers the class as a component
 
         Args:
