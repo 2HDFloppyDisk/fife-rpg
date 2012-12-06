@@ -557,6 +557,22 @@ class RPGApplication(FifeManager, ApplicationBase):
         cmd.setSource(None)
         cmd.setCommandType(fife.CMD_QUIT_GAME)
         self.engine.getEventManager().dispatchCommand(cmd)
+
+    def screen_coords_to_map_cootds(self, click):
+        """Converts the screen coordinates to coordinates on the active map
+        
+        Args:
+
+           click: Screen coordinates as fife.ScreenPoint
+        
+        Returns: Converted coordinates as fife.Location
+        """
+        active_map = self.current_map
+        coord = active_map.camera.toMapCoordinates(click, False)
+        coord.z = 0
+        location = fife.Location(active_map.actor_layer)
+        location.setMapCoordinates(coord)
+        return location
         
     def pump(self, dt):
         """Performs actions every frame.        
