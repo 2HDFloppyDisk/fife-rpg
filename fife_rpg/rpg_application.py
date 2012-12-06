@@ -558,7 +558,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         cmd.setCommandType(fife.CMD_QUIT_GAME)
         self.engine.getEventManager().dispatchCommand(cmd)
 
-    def screen_coords_to_map_cootds(self, click):
+    def screen_coords_to_map_coords(self, click):
         """Converts the screen coordinates to coordinates on the active map
         
         Args:
