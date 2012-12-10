@@ -94,8 +94,10 @@ def approach(entity, target_or_location, run_agent=True, next_action=None):
     if fifeagent_name is None or moving_name is None:
         return
     fifeagent = getattr(entity, fifeagent_name)
-    fifeagent.behaviour.state = AGENT_STATES.APPROACH
     moving = getattr(entity, moving_name)
+    if not fifeagent or not moving:
+        return
+    fifeagent.behaviour.state = AGENT_STATES.APPROACH
 
     action = moving.run_action if run_agent else moving.walk_action
     speed = moving.run_speed if run_agent else moving.run_speed
@@ -127,8 +129,10 @@ def run(entity, location):
     if fifeagent_name is None or moving_name is None:
         return
     fifeagent = getattr(entity, fifeagent_name)
-    fifeagent.behaviour.state = AGENT_STATES.RUN
     moving = getattr(entity, moving_name)
+    if not fifeagent or not moving:
+        return
+    fifeagent.behaviour.state = AGENT_STATES.RUN
     fifeagent.behaviour.clear_animations()
     fifeagent.behaviour.next_action = None
     fifeagent.instance.move(moving.run_action, 
@@ -149,8 +153,10 @@ def walk(entity, location):
     if fifeagent_name is None or moving_name is None:
         return
     fifeagent = getattr(entity, fifeagent_name)
-    fifeagent.behaviour.state = AGENT_STATES.WALK
     moving = getattr(entity, moving_name)
+    if not fifeagent or not moving:
+        return
+    fifeagent.behaviour.state = AGENT_STATES.WALK
     fifeagent.behaviour.clear_animations()
     fifeagent.behaviour.next_action = None
     fifeagent.instance.move(moving.walk_action,
