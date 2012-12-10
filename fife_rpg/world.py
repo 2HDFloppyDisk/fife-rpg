@@ -27,6 +27,7 @@ from fife.extensions.serializers.xmlobject import XMLObjectLoader
 from fife.extensions.serializers.xml_loader_tools import loadImportDirRec
 import yaml
 from copy import copy
+import sys
 
 from fife_rpg.components import ComponentManager
 from fife_rpg.systems import SystemManager
@@ -48,7 +49,7 @@ class RPGWorld(World):
         object_db: Stores the template data        
     """
     
-    MAX_ID_NUMBER = 1000
+    MAX_ID_NUMBER = sys.maxint
     
     def __init__(self, application):
         World.__init__(self, application.engine)
