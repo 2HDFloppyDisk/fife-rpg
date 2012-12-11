@@ -3,6 +3,7 @@
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
+from entities.rpg_entity import RPGEntity
 
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -81,7 +82,8 @@ def approach(entity, target_or_location, run_agent=True, next_action=None):
         entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
         fifeagent and a moving component
         
-        target_or_location: A location to move to or another entity to follow
+        target_or_location: A fife.Location to move to or another entity 
+        to follow
         
         run_agent: If true the run_action will be performed otherwise
         the walk_action. 
@@ -101,6 +103,12 @@ def approach(entity, target_or_location, run_agent=True, next_action=None):
 
     action = moving.run_action if run_agent else moving.walk_action
     speed = moving.run_speed if run_agent else moving.run_speed
+    if isinstance(target_or_location, RPGEntity):
+        target_agent = getattr(RPGEntity, fifeagent_name) 
+        if(target_agent):
+            target_or_location = target_agent.instance
+        else:
+            return
     if isinstance(target_or_location, fife.Instance):
         agent = target_or_location
         fifeagent.instance.follow(action, 
@@ -122,7 +130,7 @@ def run(entity, location):
         entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
         fifeagent and a moving component
         
-        location: Screen position to run to.
+        location: A fife.Location. The position to run to.
     """
     fifeagent_name = FifeAgent.registered_as
     moving_name = Moving.registered_as
@@ -146,7 +154,7 @@ def walk(entity, location):
         entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
         fifeagent and a moving component
         
-        location: Screen position to run to.
+        location: A fife.Location. The position to walk to.
     """
     fifeagent_name = FifeAgent.registered_as
     moving_name = Moving.registered_as
