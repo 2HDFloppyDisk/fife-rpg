@@ -86,8 +86,8 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
         target_or_location: A fife.Location or position tuple 
         to move to or another entity  to follow
         
-        run_agent: If true the run_action will be performed otherwise
-        the walk_action. 
+        run_agent: If true the run_animation will be performed otherwise
+        the walk_animation. 
         
         next_action: A :class:`fife_rpg.actions.base.Base` instance.
         The action the agent will perform when it reached its target.
@@ -102,7 +102,7 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
         return
     fifeagent.behaviour.state = AGENT_STATES.APPROACH
 
-    action = moving.run_action if run_agent else moving.walk_action
+    action = moving.run_animation if run_agent else moving.walk_animation
     speed = moving.run_speed if run_agent else moving.run_speed
     if isinstance(target_or_location, RPGEntity):
         target_agent = getattr(RPGEntity, fifeagent_name) 
@@ -149,7 +149,7 @@ def run(entity, location):
         boxLocation = tuple([int(float(i)) for i in location])
         location = fife.Location(fifeagent.instance.getLocation())
         location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
-    fifeagent.instance.move(moving.run_action, 
+    fifeagent.instance.move(moving.run_animation, 
                             location, 
                             moving.run_speed)
 
@@ -177,7 +177,7 @@ def walk(entity, location):
         boxLocation = tuple([int(float(i)) for i in location])
         location = fife.Location(fifeagent.instance.getLocation())
         location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
-    fifeagent.instance.move(moving.walk_action,
+    fifeagent.instance.move(moving.walk_animation,
                             location,
                             moving.walk_speed)
 

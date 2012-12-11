@@ -29,20 +29,20 @@ class Moving(Base):
     Fields:
         walk_speed: The walking speed
         
-        walk_action: The animation that is played when walking
+        walk_animation: The animation that is played when walking
         
         run_speed: The Running speed
         
-        run_action: The animation that is played when running
+        run_animation: The animation that is played when running
     """
 
     def __init__(self):
-        Base.__init__(self, walk_speed=float, walk_action=str,
-                      run_speed=float, run_action=str)
+        Base.__init__(self, walk_speed=float, walk_animation=str,
+                      run_speed=float, run_animation=str)
         self.fields["walk_speed"].default = lambda: 0.0 
-        self.fields["walk_action"].default = lambda: "walk"
+        self.fields["walk_animation"].default = lambda: "walk"
         self.fields["run_speed"].default = lambda: 0.0 
-        self.fields["run_action"].default = lambda: "run"
+        self.fields["run_animation"].default = lambda: "run"
 
     @classmethod
     def register(cls, name="Moving", auto_register=True):
