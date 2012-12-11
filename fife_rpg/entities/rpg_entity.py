@@ -11,7 +11,6 @@
 #   
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 """This module contains the RPGEntity entity class.
 
 .. module:: general
@@ -23,6 +22,7 @@
 from bGrease import Entity
 
 from fife_rpg.components.general import General
+from fife_rpg.exceptions import AlreadyRegisteredError
 
 class RPGEntity(Entity):
     """The Base for all fife-rpg entities
@@ -61,10 +61,10 @@ def set_component_value(entity, component, field, value):
     component_data = getattr(entity, component)
     setattr(component_data, field, value)
     
-
-from fife_rpg.console_commands import register_command
-register_command("SetComponentValue", lambda application, entity_name, *args:
-                 set_component_value(application.world.get_entity(entity_name),
-                                     *args))
-    
-#__register_commands()
+try:
+    from fife_rpg.console_commands import register_command
+    register_command("SetComponentValue", lambda application, entity_name, *args:
+                     set_component_value(application.world.get_entity(entity_name),
+                                         *args))
+except AlreadyRegisteredError:
+    pass    

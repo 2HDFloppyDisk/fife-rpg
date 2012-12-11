@@ -3,16 +3,14 @@
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-from entities.rpg_entity import RPGEntity
-
+#
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
-
+#
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 """The FifeAgent component and functions
 
 .. module:: fifeagent
@@ -26,6 +24,7 @@ from fife_rpg.components.base import Base
 from fife_rpg.components.moving import Moving
 from fife_rpg.components import ComponentManager
 from fife_rpg.behaviours import AGENT_STATES
+from fife_rpg.entities.rpg_entity import RPGEntity
 
 class FifeAgent(Base):
     """Component that stores the values for a fife agent
