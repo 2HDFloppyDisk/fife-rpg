@@ -117,7 +117,7 @@ def approach(entity, target_or_location, run_agent=True, next_action=None):
         location = target_or_location
         if not isinstance(location, fife.Location):
             boxLocation = tuple([int(float(i)) for i in location])
-            location = fife.Location(fifeagent.behaviour.getLocation())
+            location = fife.Location(fifeagent.instance.getLocation())
             location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
         fifeagent.instance.move(action, 
                                 location, 
