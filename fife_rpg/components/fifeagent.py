@@ -74,8 +74,10 @@ def setup_behaviour(agent):
     if agent.behaviour:
         agent.behaviour.attach_to_agent(agent)
         
-def approach(entity, target_or_location, run_agent=True, next_action=None):
-    """Move the entity to the given location, or follow the given target
+def approach_and_execute(entity, target_or_location, run_agent=True, 
+                    next_action=None):
+    """Move the entity to the given location, or follow the given target and
+    execute an action when reaching the target.
 
     Args:
         entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
@@ -87,8 +89,8 @@ def approach(entity, target_or_location, run_agent=True, next_action=None):
         run_agent: If true the run_action will be performed otherwise
         the walk_action. 
         
-        next_action: The action the agent will perform when it reached
-        its target.
+        next_action: A :class:`fife_rpg.actions.base.Base` instance.
+        The action the agent will perform when it reached its target.
     """    
     fifeagent_name = FifeAgent.registered_as
     moving_name = Moving.registered_as
@@ -181,7 +183,8 @@ def walk(entity, location):
 
 def register_script_commands():
     """Register commands for this module"""
-    ComponentManager.register_script_command("approach", approach)
+    ComponentManager.register_script_command("approach_and_execute", 
+                                             approach_and_execute)
     ComponentManager.register_script_command("walk", walk)
     ComponentManager.register_script_command("run", run)
     
