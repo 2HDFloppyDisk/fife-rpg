@@ -81,8 +81,8 @@ def approach(entity, target_or_location, run_agent=True, next_action=None):
         entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
         fifeagent and a moving component
         
-        target_or_location: A fife.Location to move to or another entity 
-        to follow
+        target_or_location: A fife.Location or position tuple 
+        to move to or another entity  to follow
         
         run_agent: If true the run_action will be performed otherwise
         the walk_action. 
@@ -115,9 +115,10 @@ def approach(entity, target_or_location, run_agent=True, next_action=None):
                                   speed)
     else:
         location = target_or_location
-        boxLocation = tuple([int(float(i)) for i in location])
-        location = fife.Location(fifeagent.behaviour.getLocation())
-        location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
+        if not isinstance(location, fife.Location):
+            boxLocation = tuple([int(float(i)) for i in location])
+            location = fife.Location(fifeagent.behaviour.getLocation())
+            location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
         fifeagent.instance.move(action, 
                                 location, 
                                 speed)
@@ -129,7 +130,7 @@ def run(entity, location):
         entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
         fifeagent and a moving component
         
-        location: A fife.Location. The position to run to.
+        location: A fife.Location or position tuple to run to.
     """
     fifeagent_name = FifeAgent.registered_as
     moving_name = Moving.registered_as
@@ -142,6 +143,10 @@ def run(entity, location):
     fifeagent.behaviour.state = AGENT_STATES.RUN
     fifeagent.behaviour.clear_animations()
     fifeagent.behaviour.next_action = None
+    if not isinstance(location, fife.Location):
+        boxLocation = tuple([int(float(i)) for i in location])
+        location = fife.Location(fifeagent.instance.getLocation())
+        location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
     fifeagent.instance.move(moving.run_action, 
                             location, 
                             moving.run_speed)
@@ -153,7 +158,7 @@ def walk(entity, location):
         entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
         fifeagent and a moving component
         
-        location: A fife.Location. The position to walk to.
+        location: A fife.Location or position tuple to walk to.
     """
     fifeagent_name = FifeAgent.registered_as
     moving_name = Moving.registered_as
@@ -166,6 +171,10 @@ def walk(entity, location):
     fifeagent.behaviour.state = AGENT_STATES.WALK
     fifeagent.behaviour.clear_animations()
     fifeagent.behaviour.next_action = None
+    if not isinstance(location, fife.Location):
+        boxLocation = tuple([int(float(i)) for i in location])
+        location = fife.Location(fifeagent.instance.getLocation())
+        location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
     fifeagent.instance.move(moving.walk_action,
                             location,
                             moving.walk_speed)
