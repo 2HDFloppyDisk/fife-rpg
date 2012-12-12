@@ -563,11 +563,13 @@ class RPGApplication(FifeManager, ApplicationBase):
         
         Args:
 
-           click: Screen coordinates as fife.ScreenPoint
+           click: Screen coordinates as fife.ScreenPoint or position tuple
         
         Returns: Converted coordinates as fife.Location
         """
         active_map = self.current_map
+        if not isinstance(click, fife.ScreenPoint):
+            click = fife.ScreenPoint(click[0], click[1])
         coord = active_map.camera.toMapCoordinates(click, False)
         coord.z = 0
         location = fife.Location(active_map.actor_layer)
