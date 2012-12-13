@@ -66,13 +66,13 @@ class TestStatistics(unittest.TestCase):
                 "CO", "Coordination", "Coordination of the character")
         self.world.systems.char_stats.add_secondary_statistic(
                 "LC", "Lifting capacity", "How much the character can lift",
-                "0.7 * ST + 0.3 * FT")
+                {"ST":0.7, "FT":0.3})
         self.world.systems.char_stats.add_secondary_statistic(
                 "MD", "Melee Damage", "How much damage is done in melee",
-                "0.7 * ST + 0.3 * CO")
+                {"ST":0.7, "CO":0.3})
         self.world.systems.char_stats.add_secondary_statistic(
                 "SPD", "Sprint Speed", "How fast the character can run",
-                "0.7 * FT + 0.3 * ST")
+                {"FT":0.7, "ST":0.3})
         self.character = self.Character(self.world, "Character") 
         self.character.char_stats.primary_stats["ST"] = 99
         self.character.char_stats.primary_stats["FT"] = 84
