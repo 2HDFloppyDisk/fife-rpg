@@ -105,7 +105,7 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
     action = moving.run_animation if run_agent else moving.walk_animation
     speed = moving.run_speed if run_agent else moving.run_speed
     if isinstance(target_or_location, RPGEntity):
-        target_agent = getattr(RPGEntity, fifeagent_name) 
+        target_agent = getattr(target_or_location, fifeagent_name) 
         if(target_agent):
             target_or_location = target_agent.instance
         else:
