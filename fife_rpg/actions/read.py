@@ -21,27 +21,18 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.actions.base import Base
+from fife_rpg.actions.base_return import BaseReturn
 from fife_rpg.components.readable import Readable
 
-class ReadAction(Base):
+class ReadAction(BaseReturn):
     """Prints the text of a readable"""
-
-    dependencies = [Readable]
-        
-    def execute(self):
-        """Execute the action
-        
-        Raises:
-            :class:`fife_rpg.exceptions.NoSuchCommandError`
-            if a command is detected that is not registered.
-
-        Returns:
-            The text of the readable
-        """
+    
+    dependencies = [Readable]   
+         
+    def get_values(self):
+        """Returns the values of the action"""
         readable = getattr(self.target, Readable.registered_as)
         text = _(readable.text) #pylint: disable=E0602
-        Base.execute(self)
         return text
         
     @classmethod

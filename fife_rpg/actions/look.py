@@ -21,29 +21,20 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.actions.base import Base
+from fife_rpg.actions.base_return import BaseReturn
 from fife_rpg.components.description import Description
 
-class LookAction(Base):
-    """Action for unlocking lockables"""
-
+class LookAction(BaseReturn):
+    """Action for viewing the description of an entity"""
     dependencies = [Description]
 
-    def execute(self):
-        """Execute the action
-        
-        Raises:
-            :class:`fife_rpg.exceptions.NoSuchCommandError`
-            if a command is detected that is not registered.
-
-        Returns: A text describing the target.
-        """
+    
+    def get_values(self):
+        """Returns the values of the action"""
         description = getattr(self.target, Description.registered_as)
         #pylint: disable=E0602
         text = _("You see %s. \n%s") %  (_(description.view_name), 
                                         _(description.desc))
-        #pylint: enable=E0602
-        Base.execute(self)
         return text
 
     @classmethod
