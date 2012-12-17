@@ -284,8 +284,10 @@ class ScriptingSystem(Base):
             scripts_data["Conditions"] if 
             scripts_data.has_key("Conditions") else ()
         )
-        for name, actions in scripts.iteritems():
-            self.set_script(name, actions)
-        for condition in conditions:
-            self.add_condition(condition)           
+        if scripts is not None:
+            for name, actions in scripts.iteritems():
+                self.set_script(name, actions)
+        if conditions is not None:
+            for condition in conditions:
+                self.add_condition(condition)           
         
