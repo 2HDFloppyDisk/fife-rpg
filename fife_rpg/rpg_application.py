@@ -34,7 +34,7 @@ from fife.extensions.pychan.internal import get_manager
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg import Map
 from fife_rpg.world import RPGWorld
-from fife_rpg.components.agent import Agent
+from fife_rpg.components.agent import Agent, STACK_POSITION
 from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
 from fife_rpg.components.general import General
 from fife_rpg.behaviours import BehaviourManager
@@ -337,7 +337,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             map_object = fife_model.getObject(agent.gfx, 
                 object_namespace)
             general = getattr(entity, General.registered_as)
-            layer = getattr(game_map, "%s_layer" % agent.type)
+            layer = game_map.get_layer(agent.layer)
             fife_instance = layer.getInstance(general.identifier)
             if not fife_instance:                 
                 fife_instance = layer.createInstance(
@@ -365,7 +365,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                                     *agent.position))
                 fife_instance.setLocation(location)
             fife_instance.setRotation(agent.rotation)
-            visual.setStackPosition(agent.stack_position)
+            visual.setStackPosition(STACK_POSITION[agent.type])
             
     def load_map(self, name):
         """Load the map with the given name
@@ -385,14 +385,6 @@ class RPGApplication(FifeManager, ApplicationBase):
                              )
                 camera = self.settings.get(
                     "fife-rpg", "Camera", "main")
-                ground_layer = self.settings.get(
-                "fife-rpg", "GroundLayer", "ground_layer")
-                actor_layer = self.settings.get(
-                "fife-rpg", "ActorLayer", "actors")
-                ground_object_layer = self.settings.get(
-                "fife-rpg", "GroundObjectLayer", "objects")
-                item_layer = self.settings.get(
-                "fife-rpg", "ItemLayer", "items")
                 
                 loader = fife.MapLoader(self.engine.getModel(), 
                                         self.engine.getVFS(), 
@@ -401,40 +393,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                 
                 filename = os.path.join(maps_path, game_map + '.xml')
                 if loader.isLoadable(filename):               
-                    fife_map = loader.load(filename)
-                
-                found_layer = False
-                for layer in fife_map.getLayers():
-                    if layer.getId() == item_layer:
-                        found_layer = True
-                        break                
-                    
-                if not found_layer:
-                    fife_map.createLayer(item_layer, grid_type)
-
-                found_layer = False
-                for layer in fife_map.getLayers():
-                    if layer.getId() == ground_object_layer:
-                        found_layer = True
-                        break                
-                    
-                if not found_layer:
-                    fife_map.createLayer(ground_object_layer, grid_type)
-                    
-                found_layer = False
-                for layer in fife_map.getLayers():
-                    if layer.getId() == actor_layer:
-                        found_layer = True
-                        break                
-                
-                if not found_layer:
-                    layer = fife_map.createLayer(actor_layer, grid_type)                    
-                    layer.setWalkable(True)
-                    layer.createCellCache()
-                    layer.addInteractLayer(fife_map.getLayer(ground_layer))
-                    cache = layer.getCellCache()
-                    cache.createCells()
-                    cache.forceUpdate()
+                    fife_map = loader.load(filename)               
                     
                 regions_filename = "%s_regions.yaml" % os.path.splitext(filename)[0]
                 regions = {}
@@ -450,12 +409,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                                  width=region_data[2],
                                                  height=region_data[3])
                         regions[region_name] = region
-                game_map = Map(fife_map, name, camera, actor_layer,            
-                               ground_object_layer, item_layer, regions)
-                renderer = fife.InstanceRenderer.getInstance(game_map.camera)
-                renderer.addActiveLayer(game_map.item_layer)
-                renderer.addActiveLayer(game_map.ground_object_layer)
-                renderer.addActiveLayer(game_map.actor_layer)
+                game_map = Map(fife_map, name, camera, regions)
                 
                 game_map.update_entities(self.world)
                 self.__maps[name] = game_map
@@ -496,7 +450,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.add_map(name, filename)
             
     def move_agent(self, entity, position=None, rotation=None, 
-                   stack_position=None, new_map=None):
+                   new_map=None, new_layer=None):
         """Instantly moves an agent on the current map, or to a new map
         
         Args:
@@ -506,9 +460,9 @@ class RPGApplication(FifeManager, ApplicationBase):
             
             rotation: The new rotation of the agent
             
-            stack_postition: The new stack position of the agent
-            
             new_map: The new map to move the agent to.
+            
+            new_layer: The new layer to move the agent to
         """
         if isinstance(entity, str):
             entity = self.world.get_entity(entity)
@@ -531,7 +485,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.update_agents(current_game_map)
         agent.position = position or agent.position
         agent.rotation = rotation or agent.rotation
-        agent.stack_position = stack_position or agent.stack_position        
+        agent.layer = new_layer or agent.layer        
         self.update_agents(agent.map)
             
     def createListener(self):# pylint: disable-msg=C0103
@@ -558,12 +512,14 @@ class RPGApplication(FifeManager, ApplicationBase):
         cmd.setCommandType(fife.CMD_QUIT_GAME)
         self.engine.getEventManager().dispatchCommand(cmd)
 
-    def screen_coords_to_map_coords(self, click):
+    def screen_coords_to_map_coords(self, click, layer):
         """Converts the screen coordinates to coordinates on the active map
         
         Args:
 
            click: Screen coordinates as fife.ScreenPoint or position tuple
+           
+           layer: The name of the layer the converted position should be on
         
         Returns: Converted coordinates as fife.Location
         """
@@ -572,7 +528,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             click = fife.ScreenPoint(click[0], click[1])
         coord = active_map.camera.toMapCoordinates(click, False)
         coord.z = 0
-        location = fife.Location(active_map.actor_layer)
+        location = fife.Location(active_map.get_layer(layer))
         location.setMapCoordinates(coord)
         return location
         

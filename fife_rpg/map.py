@@ -56,28 +56,18 @@ class Map(object):
 
         camera: The name of the default camera
 
-        actor_layer: The name of the actor layer
-
-        ground_object_layer: The name of the ground object layer
-
-        item_layer: The name of the item layer
-
         regions: A dictionary that defines specific regions on the fife_map, as
         :class:`fife.DoubleRect` instances.
         
         is_active: Whether the map is currently active or nor
     """
         
-    def __init__(self, fife_map, name, camera, actor_layer, 
-                 ground_object_layer, item_layer, regions):
+    def __init__(self, fife_map, name, camera, regions):
         self.__map = fife_map
         self.__name = name
         self.__regions = regions
         self.__entities = {}
         self.__camera = fife_map.getCamera(camera)
-        self.__actor_layer = fife_map.getLayer(actor_layer)
-        self.__ground_object_layer = fife_map.getLayer(ground_object_layer)
-        self.__item_layer = fife_map.getLayer(item_layer)
         self.__last_world = None
         if not FifeAgent.registered_as:
             FifeAgent.register()
@@ -110,21 +100,6 @@ class Map(object):
     def camera(self):
         """Returns the camera of the map"""
         return self.__camera
-
-    @property
-    def actor_layer(self):
-        """Returns the agent layer of the map"""
-        return self.__actor_layer
-
-    @property
-    def ground_object_layer(self):
-        """Returns the ground object layer of the map"""
-        return self.__ground_object_layer
-
-    @property
-    def item_layer(self):
-        """Returns the item layer of the map"""
-        return self.__item_layer
 
     @property
     def is_active(self):
@@ -236,3 +211,11 @@ class Map(object):
             raise error
         except TypeError as error:
             raise TypeError("Expected identifier to be a string")
+        
+    def get_layer(self, layer):
+        """Returns the layer with the given name
+        
+        Args:
+            layer: The name of the layer
+        """
+        return self.fife_map.getLayer(layer)

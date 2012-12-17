@@ -24,6 +24,8 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.components.base import Base
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
 
+STACK_POSITION = {"actor":2, "item":1, "ground_object":0}
+
 class Agent(Base):
     """Component that stores the general values of an agent
     
@@ -32,13 +34,13 @@ class Agent(Base):
         
         map: On what map the agent is
         
+        layer: The layer the agent is on
+        
         type: The type of the agent. actor, ground_object or item
         
         position: The position of the agent as a 2 or 3 item list or tuple
         
         rotation: The rotation of the agent in degrees
-        
-        stack_position: The stackposition of the agent
         
         behaviour_type: The behaviour of the agent
         
@@ -48,8 +50,8 @@ class Agent(Base):
     """
 
     def __init__(self):
-        Base.__init__(self, gfx=str, map=str, type=str, position=list,
-                      rotation=int, stack_position=int, behaviour_type=str, 
+        Base.__init__(self, gfx=str, map=str, layer=str, type=str,
+                      position=list, rotation=int, behaviour_type=str,
                       behaviour_args=dict, knows=set)
         self.fields["type"].default = lambda: "actor"
         self.fields["behaviour_args"].default = dict
