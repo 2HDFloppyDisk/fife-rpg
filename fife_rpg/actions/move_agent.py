@@ -14,21 +14,21 @@
 
 #  This module is based on the scriptingsystem module from PARPG
 
-"""The change_map action switches to a different map
+"""The move_agent action switches to a different map
 
-.. module:: change_map
+.. module:: move_agent
     :synopsis: Switches to a different map
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
 from fife_rpg.actions.base import Base
-from fife_rpg.components.change_map import ChangeMap
+from fife_rpg.components.move_agent import MoveAgent
 from fife_rpg.components.agent import Agent
 
-class ChangeMapAction(Base):
-    """Switches to a different map and places the agent on the location"""
+class MoveAgentAction(Base):
+    """Positions the agent on a new map, layer and/or position"""
 
-    dependencies = [ChangeMap, Agent]
+    dependencies = [MoveAgent, Agent]
         
     def execute(self):
         """Execute the action
@@ -37,16 +37,11 @@ class ChangeMapAction(Base):
             :class:`fife_rpg.exceptions.NoSuchCommandError`
             if a command is detected that is not registered.
         """
-        change_map = getattr(self.target, ChangeMap.registered_as)
+        move_agent = getattr(self.target, MoveAgent.registered_as)
         agent = getattr(self.agent, Agent.registered_as)
-        self.application.move_agent(self.agent, 
-                                    position=change_map.target_position,
-                                    new_map=change_map.target_map,
-                                    new_layer=change_map.target_layer)
-        try:            
-            self.application.switch_map(agent.map)
-        except AttributeError:
-            pass
+        agent.new_map = move_agent.target_map
+        agent.new_position = move_agent.target_position
+        agent.new_layer = move_agent.target_layer
         Base.execute(self)
     
     @property
@@ -79,13 +74,13 @@ class ChangeMapAction(Base):
 
         Returns: True if the entity qualifes. False otherwise
         """
-        change_map = getattr(entity, ChangeMap.registered_as) 
-        if change_map:
+        move_agent = getattr(entity, MoveAgent.registered_as) 
+        if move_agent:
             return True
         return False
 
     @classmethod
-    def register(cls, name="ChangeMap"):
+    def register(cls, name="MoveAgent"):
         """Registers the class as an action
 
         Args:
@@ -94,4 +89,4 @@ class ChangeMapAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        return super(ChangeMapAction, cls).register(name)
+        return super(MoveAgentAction, cls).register(name)

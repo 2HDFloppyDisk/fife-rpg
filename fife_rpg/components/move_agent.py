@@ -12,17 +12,18 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""The ChangeMap component and functions
+"""The MoveAgent component and functions
 
-.. module:: change_map
-    :synopsis: The ChangeMap component and functions
+.. module:: move_agent
+    :synopsis: The MoveAgent component and functions
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 from fife_rpg.components.base import Base
 
-class ChangeMap(Base):
-    """Component that stores the values of a entity that can change the map.
+class MoveAgent(Base):
+    """Component that stores the values of an entity that leads to another
+    position on the same map, or another map..
     
     Fields:
         target_map: The map to change to
@@ -37,7 +38,7 @@ class ChangeMap(Base):
                       target_layer=str)
 
     @classmethod
-    def register(cls, name="ChangeMap", auto_register=True):
+    def register(cls, name="MoveAgent", auto_register=True):
         """Registers the class as a component
 
         Args:
@@ -50,4 +51,4 @@ class ChangeMap(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(ChangeMap, cls).register(name, auto_register))
+        return (super(MoveAgent, cls).register(name, auto_register))
