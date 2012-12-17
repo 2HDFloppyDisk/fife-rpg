@@ -174,7 +174,32 @@ class Map(object):
         extent = world[...]
         self.__entities = getattr(extent, 
                                   Agent.registered_as).map == self.name
-        
+    
+    def update_entities_fife(self):
+        """Updates the fife instances to the values of the agent"""
+        old_entities = self.entities.copy()
+        for entity in old_entities:
+            if hasattr(entity, FifeAgent.registered_as):
+                fifeagent = getattr(entity, FifeAgent.registered_as)
+                agent = getattr(entity, Agent.registered_as)
+                if agent.new_map  is not None and agent.new_map != self.name:
+                    self.remove_entity(entity.identifier)
+                    continue                
+                location = fifeagent.instance.getLocation()
+                if agent.new_layer is not None:
+                    location.setLayer(self.get_layer(agent.layer))
+                if agent.new_position is not None:
+                    location.setExactLayerCoordinates(
+                                                    fife.ExactModelCoordinate(
+                                                        *agent.new_position))
+                fifeagent.instance.setLocation(location)
+                if agent.new_rotation is not None:
+                    fifeagent.instance.setRotation(agent.rotation)
+                agent.new_map = None
+                agent.new_layer = None
+                agent.new_position = None
+                agent.new_rotation = None
+    
     def update_entitities_agent(self):
         """Update the values of the agent component of the maps entities"""
         for entity in self.entities:
@@ -205,7 +230,7 @@ class Map(object):
             fifeagent.layer = None
             fifeagent.behaviour = None
             agent = getattr(entity, Agent.registered_as)
-            agent.map = None
+            agent.map = ""
             self.update_entities(self.__last_world)
         except KeyError as error:
             raise error

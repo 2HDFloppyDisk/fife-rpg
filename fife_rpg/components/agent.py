@@ -34,14 +34,23 @@ class Agent(Base):
         
         map: On what map the agent is
         
+        new_map: To what map the player should be moved to.
+
         layer: The layer the agent is on
         
+        new_layer: The new layer the agent should be move to
+
         type: The type of the agent. actor, ground_object or item
         
         position: The position of the agent as a 2 or 3 item list or tuple
         
+        new_position: The position the agent should be moved to 
+        as a 2 or 3 item list or  tuple
+
         rotation: The rotation of the agent in degrees
         
+        new_rotation: The new rotation of the agent in degrees
+
         behaviour_type: The behaviour of the agent
         
         behaviour_args: Args to pass to the behaviour constructor
@@ -50,11 +59,17 @@ class Agent(Base):
     """
 
     def __init__(self):
-        Base.__init__(self, gfx=str, map=str, layer=str, type=str,
-                      position=list, rotation=int, behaviour_type=str,
+        Base.__init__(self, gfx=str, map=str, new_map=object, 
+                      layer=str, new_layer=object, type=str,
+                      position=list, new_position=object, rotation=int, 
+                      new_rotation=object, behaviour_type=str,
                       behaviour_args=dict, knows=set)
         self.fields["type"].default = lambda: "actor"
         self.fields["behaviour_args"].default = dict
+        self.fields["new_map"].default = lambda: None
+        self.fields["new_layer"].default = lambda: None
+        self.fields["new_position"].default = lambda: None
+        self.fields["new_rotation"].default = lambda: None
 
     @classmethod
     def register(cls, name="Agent", auto_register=True):

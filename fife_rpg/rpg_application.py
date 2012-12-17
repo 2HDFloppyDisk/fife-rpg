@@ -534,21 +534,6 @@ class RPGApplication(FifeManager, ApplicationBase):
         location.setMapCoordinates(coord)
         return location
         
-    def pump(self, dt):
-        """Performs actions every frame.        
-        
-        Args:
-            dt: Time elapsed since last call to pump
-        """
-        if self._listener.quit:
-            self.quit()
-        if self.current_map:
-            self.current_map.update_entities(self.world)
-            self.current_map.update_entitities_agent()
-        if self.world:
-            self.world.pump(dt)
-        FifeManager.pump(self, dt)
-    
     def load_components(self, filename=None):
         """Load the component definitions from a file
         
@@ -825,6 +810,41 @@ class RPGApplication(FifeManager, ApplicationBase):
         Returns: The result of the command
         """
         return self._listener.onConsoleCommand(command)
+    
+    def check_agent_changes(self):
+        """Checks all agents for changes"""        
+        for agent in self.world.components.join(Agent.registered_as):
+            agent = agent[0] 
+            if agent.map == self.current_map.name:
+                continue       
+            agent.map = agent.new_map or agent.map
+            agent.layer = agent.new_layer or agent.layer
+            agent.position = agent.new_position or agent.position 
+            agent.rotation = agent.new_rotation or agent.rotation
+            agent.new_map = None
+            agent.new_layer = None
+            agent.new_position = None
+            agent.new_rotation = None    
+            game_map = self.maps[agent.map]
+            if not isinstance(game_map, str):
+                game_map.update_entities(self.world)
+                    
+    def pump(self, dt):
+        """Performs actions every frame.        
+        
+        Args:
+            dt: Time elapsed since last call to pump
+        """
+        if self._listener.quit:
+            self.quit()
+        if self.current_map:
+            self.check_agent_changes()
+            self.current_map.update_entities_fife()
+            self.current_map.update_entities(self.world)
+            self.current_map.update_entitities_agent()
+        if self.world:
+            self.world.pump(dt)
+        FifeManager.pump(self, dt)
     
 #Register conditions
 ScriptingSystem.register_condition("IsLocationInRegion", 
