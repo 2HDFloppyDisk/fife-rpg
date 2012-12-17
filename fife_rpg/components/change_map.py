@@ -28,10 +28,13 @@ class ChangeMap(Base):
         target_map: The map to change to
         
         target_position: Where the entity appears on the map
+        
+        target_layer: The layer the agent should be moved to
     """
 
     def __init__(self):
-        Base.__init__(self, target_map=str, target_position=list)
+        Base.__init__(self, target_map=str, target_position=list, 
+                      target_layer=str)
 
     @classmethod
     def register(cls, name="ChangeMap", auto_register=True):

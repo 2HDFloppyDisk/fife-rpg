@@ -41,7 +41,8 @@ class ChangeMapAction(Base):
         agent = getattr(self.agent, Agent.registered_as)
         self.application.move_agent(self.agent, 
                                     position=change_map.target_position,
-                                    new_map=change_map.target_map)
+                                    new_map=change_map.target_map,
+                                    new_layer=change_map.target_layer)
         try:            
             self.application.switch_map(agent.map)
         except AttributeError:
