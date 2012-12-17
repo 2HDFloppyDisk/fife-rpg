@@ -41,8 +41,8 @@ class Base (fife.InstanceActionListener):
         
         animation_queue: A deque that contains the queued animations
         
-        next_action: The :class:`fife_rpg.actions.base.Base` that will be 
-        executed after the current animation is finished
+        callback: The function that will be called after the current animation
+        is finished
 
         registered_as: Class property that sets under what name the class is
         registered
@@ -57,7 +57,7 @@ class Base (fife.InstanceActionListener):
         self.agent = None
         self.state = None
         self.animation_queue = deque()
-        self.next_action = None
+        self.callback = None
 
     @property
     def location(self):
@@ -103,12 +103,12 @@ class Base (fife.InstanceActionListener):
             animation: The animation that the agent was doing
         """
         # First we reset the next behavior 
-        act = self.next_action
-        self.next_action = None 
+        callback = self.callback
+        self.callback = None 
         self.idle()
 
-        if act:
-            act.execute()
+        if callback:
+            callback()
         try:
             animtion = self.animation_queue.popleft()
             self.animate(**animtion)

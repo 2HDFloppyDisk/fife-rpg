@@ -75,7 +75,7 @@ def setup_behaviour(agent):
         agent.behaviour.attach_to_agent(agent)
         
 def approach_and_execute(entity, target_or_location, run_agent=True, 
-                    next_action=None):
+                    callback=None):
     """Move the entity to the given location, or follow the given target and
     execute an action when reaching the target.
 
@@ -89,8 +89,8 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
         run_agent: If true the run_animation will be performed otherwise
         the walk_animation. 
         
-        next_action: A :class:`fife_rpg.actions.base.Base` instance.
-        The action the agent will perform when it reached its target.
+        callback: A function, that will be called after the agent has reached
+        its taeget.
     """    
     fifeagent_name = FifeAgent.registered_as
     moving_name = Moving.registered_as
@@ -101,6 +101,7 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
     if not fifeagent or not moving:
         return
     fifeagent.behaviour.state = AGENT_STATES.APPROACH
+    fifeagent.behaviour.callback = callback
 
     action = moving.run_animation if run_agent else moving.walk_animation
     speed = moving.run_speed if run_agent else moving.run_speed
@@ -144,7 +145,7 @@ def run(entity, location):
         return
     fifeagent.behaviour.state = AGENT_STATES.RUN
     fifeagent.behaviour.clear_animations()
-    fifeagent.behaviour.next_action = None
+    fifeagent.behaviour.callback = None
     if not isinstance(location, fife.Location):
         boxLocation = tuple([int(float(i)) for i in location])
         location = fife.Location(fifeagent.instance.getLocation())
@@ -172,7 +173,7 @@ def walk(entity, location):
         return
     fifeagent.behaviour.state = AGENT_STATES.WALK
     fifeagent.behaviour.clear_animations()
-    fifeagent.behaviour.next_action = None
+    fifeagent.behaviour.callback = None
     if not isinstance(location, fife.Location):
         boxLocation = tuple([int(float(i)) for i in location])
         location = fife.Location(fifeagent.instance.getLocation())
