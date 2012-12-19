@@ -48,6 +48,15 @@ class GameSceneListener(fife.IMouseListener):
 
         self.eventmanager = self.engine.getEventManager()
         fife.IMouseListener.__init__(self)
+        
+    def activate(self):
+        """Makes the listener receive events"""
+        self.eventmanager.addMouseListener(self)
+
+    def deactivate(self):
+        """Makes the listener receive events"""
+        self.eventmanager.removeMouseListener(self)
+
 
     def mousePressed(self, event): # pylint: disable-msg=C0103,W0221
         """Called when a mouse button was pressed.
@@ -98,10 +107,22 @@ class GameSceneController(ControllerBase):
         view: A :class:`fife_rpg.game_scene.GameSceneView`
         
         application: A :class:`fife_rpg.rpg_application.RPGApplication`
+        
+        listener: The listener used by the game scene
     """
 
-    def __init__(self, view, application):
+    def __init__(self, view, application, listener=None):
         ControllerBase.__init__(self, view, application)
+        self.listener = listener or GameSceneListener(application.engine,
+                                                      self)
+
+    def on_activate(self):
+        """Being called when the Mode is activated"""
+        self.listener.activate()
+
+    def on_deactivate(self):
+        """Being called when the Mode is deactivated"""
+        self.listener.deactivate()
 
     def pump(self, time_delta):
         """Performs actions every frame
