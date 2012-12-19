@@ -22,12 +22,69 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from abc import ABCMeta, abstractmethod
 
 from fife import fife
+from fife.fife import InstanceRenderer
 
 from fife_rpg import ViewBase
 from fife_rpg import ControllerBase
 
+class BaseOutliner(object):
+    """Determines the outline of an instance"""
+    
+    __metaclass__ = ABCMeta
+    
+    @abstractmethod
+    def get_data(self, world, identifier):
+        """Determines whether an instance should be outline and the data
+        used for the outline.
+        
+        Args:
+            world: The world
+
+            identifier: The name of the instance            
+        
+        Returns: The data as a list, if the instance should be
+        outlined. None, if it should not.
+        """
+        
+class SimpleOutliner(BaseOutliner):
+    """Outliner that determines the outline based on a list of identifiers
+    to ignore and a single data element for instances that should be outlined.
+    
+    Properties:
+        outline_data: A tuple of values for the outlines. It is in the order:
+        (Red, Green, Blue, Width, Threshold)       
+       
+        outline_ignore: A list of identifiers to ignore when drawing outlines
+    """
+    
+    def __init__(self, outline_data=None, outline_ignore=None):
+        self.outline_data = outline_data or (255, 255, 255, 1)
+        self.__outline_ignore = outline_ignore or []
+
+    @property
+    def outline_ignore(self):
+        """Returns outline_ignore"""
+        return self.__outline_ignore
+
+    def get_data(self, world, identifier):
+        """Determines whether an instance should be outline and the data
+        used for the outline.
+        
+        Args:                
+            world: The world
+        
+            identifier: The name of the instance            
+        
+        Returns: The data as a list, if the instance should be
+        outlined. None, if it should not.
+        """        
+        if identifier in self.outline_ignore:
+            return None
+        return self.outline_data
+            
 class GameSceneListener(fife.IMouseListener):
     """The game listener.
 
@@ -39,7 +96,9 @@ class GameSceneListener(fife.IMouseListener):
 
         gamecontroller: A :class:`fife_rpg.game_scene.GameSceneController`
         
-        eventmanager: The engines eventmanager. A :class:`fife.EventManager`
+        eventmanager: The engines eventmanager. A :class:`fife.EventManager`       
+        
+        is_outlined: If true then outlines for instances will be drawn.
     """
 
     def __init__(self, engine, gamecontroller):
@@ -48,7 +107,14 @@ class GameSceneListener(fife.IMouseListener):
 
         self.eventmanager = self.engine.getEventManager()
         fife.IMouseListener.__init__(self)
+        self.is_outlined = False
+   
         
+    @property
+    def outline_ignore(self):
+        """Returns outline_ignore"""
+        return self.__outline_ignore
+    
     def activate(self):
         """Makes the listener receive events"""
         self.eventmanager.addMouseListener(self)
@@ -72,7 +138,26 @@ class GameSceneListener(fife.IMouseListener):
         Args:
             event: The mouse event
         """
-        pass
+        if self.is_outlined:
+            controller = self.gamecontroller
+            game_map = controller.application.current_map
+            if game_map:
+                renderer = InstanceRenderer.getInstance(game_map.camera)
+                
+                renderer.removeAllOutlines()
+    
+                point = fife.ScreenPoint(event.getX(), event.getY())
+                actor_instances = game_map.get_instances_at(
+                                                point, 
+                                                game_map.get_layer("actors"))
+      
+                for instance in actor_instances:
+                    data = controller.outliner.get_data(
+                                                controller.application.world,
+                                                instance.getId()
+                                            )
+                    if data is not None:
+                        renderer.addOutlined(instance, *data)
 
     def mouseReleased(self, event): # pylint: disable-msg=C0103,W0221
         """Called when a mouse button was released.
@@ -109,10 +194,13 @@ class GameSceneController(ControllerBase):
         application: A :class:`fife_rpg.rpg_application.RPGApplication`
         
         listener: The listener used by the game scene
+        
+        outliner: The outliner that will be used to determine outlines
     """
 
-    def __init__(self, view, application, listener=None):
+    def __init__(self, view, application, outliner=None, listener=None):
         ControllerBase.__init__(self, view, application)
+        self.outliner = outliner or SimpleOutliner()
         self.listener = listener or GameSceneListener(application.engine,
                                                       self)
 
