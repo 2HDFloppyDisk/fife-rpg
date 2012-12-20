@@ -232,6 +232,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.__actions = {}
         self.__systems = {}
         self.__behaviours = {}
+        self.__map_switched_callbacks = []
         default_language = self.settings.get("i18n", "DefaultLanguage", "en")
         languages_dir = self.settings.get("i18n", "Directory", "__languages")
         for language in self.settings.get("i18n", "Languages", ("en", )):
@@ -436,10 +437,33 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.load_map(name)
             self.__current_map = self.maps[name]
             self.__current_map.activate()
+            for callback in self.__map_switched_callbacks:
+                callback()
         else:
             raise LookupError("The map with the name '%s' cannot be found" 
                         %(name))
     
+    def add_map_switch_callback(self, callback):
+        """Adds a callback function which gets called after 
+        the map switched
+        
+        Args:
+            callback: The function to add
+        """
+        if callback not in self.__map_switched_callbacks:
+            self.__map_switched_callbacks.append(callback)
+
+    def remove_map_switch_callback(self, callback):
+        """Removes a callback function that got called after the map
+        switched.
+        
+        Args:
+            callback: The function to remove
+        """
+        if callback in self.__map_switched_callbacks:
+            index = self.__map_switched_callbacks.index(callback)
+            del self.__map_switched_callbacks[index]
+        
     def load_maps(self):
         """Load the names of the available maps from a map file."""
         self.__maps = {}
