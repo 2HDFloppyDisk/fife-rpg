@@ -101,7 +101,7 @@ class GameSceneListener(fife.IMouseListener):
         is_outlined: If true then outlines for instances will be drawn.
     """
 
-    def __init__(self, engine, gamecontroller):
+    def __init__(self, engine, gamecontroller=None):
         self.engine = engine
         self.gamecontroller = gamecontroller
 
@@ -140,6 +140,8 @@ class GameSceneListener(fife.IMouseListener):
         """
         if self.is_outlined:
             controller = self.gamecontroller
+            if controller is None:
+                return
             game_map = controller.application.current_map
             if game_map:
                 renderer = InstanceRenderer.getInstance(game_map.camera)
@@ -206,6 +208,7 @@ class GameSceneController(ControllerBase):
 
     def on_activate(self):
         """Being called when the Mode is activated"""
+        self.listener.gamecontroller = self
         self.listener.activate()
 
     def on_deactivate(self):
