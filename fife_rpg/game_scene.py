@@ -177,6 +177,22 @@ class GameSceneListener(fife.IMouseListener):
         """
         pass
 
+    def mouseWheelMovedUp(self, event):
+        """Called when the mouse wheel is moved upwards
+
+        Args:
+            event: The mouse event
+        """
+        pass
+
+    def mouseWheelMovedDown(self, event):
+        """Called when the mouse wheel is moved downwards
+
+        Args:
+            event: The mouse event
+        """
+        pass
+
 class GameSceneView(ViewBase):
     """The view responsible for showing the in-game gui
 
