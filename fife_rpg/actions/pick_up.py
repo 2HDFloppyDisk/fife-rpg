@@ -28,7 +28,7 @@ from fife_rpg.components.containable import Containable
 from fife_rpg.components.container import Container
 from fife_rpg.components.container import put_item
 
-class PickUpAction(Base):
+class PickUp(Base):
     """Action for picking up items from a map"""
 
     dependencies = [General, Agent, Containable, Container]
@@ -46,7 +46,7 @@ class PickUpAction(Base):
         game_map.remove_entity(general.identifier)
         
         put_item(self.agent, self.target)
-        super(PickUpAction, self).execute()
+        super(PickUp, self).execute()
         
     @property
     def menu_text(self):
@@ -87,4 +87,4 @@ class PickUpAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        return super(PickUpAction, cls).register(name)
+        return super(PickUp, cls).register(name)

@@ -26,7 +26,7 @@ from fife_rpg.components.lockable import Lockable
 from fife_rpg.components.lockable import open_lock
 from fife_rpg.components.fifeagent import FifeAgent
 
-class OpenAction(Base):
+class Open(Base):
     """Action for opening unlocked lockables"""
 
     dependencies = [Lockable]
@@ -87,4 +87,4 @@ class OpenAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        return super(OpenAction, cls).register(name)
+        return super(Open, cls).register(name)

@@ -24,7 +24,7 @@
 from fife_rpg.actions.base import Base
 from fife_rpg.components.description import Description
 
-class LookAction(Base):
+class Look(Base):
     """Action for unlocking lockables"""
 
     dependencies = [Description]
@@ -83,4 +83,4 @@ class LookAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        return super(LookAction, cls).register(name)
+        return super(Look, cls).register(name)

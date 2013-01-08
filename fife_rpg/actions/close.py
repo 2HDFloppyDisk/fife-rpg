@@ -26,7 +26,7 @@ from fife_rpg.components.lockable import Lockable
 from fife_rpg.components.lockable import close_lock
 from fife_rpg.components.fifeagent import FifeAgent
 
-class CloseAction(Base):
+class Close(Base):
     """Action for closing lockables"""
 
     dependencies = [Lockable]
@@ -87,4 +87,4 @@ class CloseAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        return super(CloseAction, cls).register(name)
+        return super(Close, cls).register(name)

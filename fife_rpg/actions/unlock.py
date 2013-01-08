@@ -25,7 +25,7 @@ from fife_rpg.actions.base import Base
 from fife_rpg.components.lockable import Lockable
 from fife_rpg.components.lockable import unlock_lock
 
-class UnlockAction(Base):
+class Unlock(Base):
     """Action for unlocking lockables"""
 
     dependencies = [Lockable]
@@ -78,4 +78,4 @@ class UnlockAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        return super(UnlockAction, cls).register(name)
+        return super(Unlock, cls).register(name)

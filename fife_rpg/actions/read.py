@@ -24,7 +24,7 @@
 from fife_rpg.actions.base import Base
 from fife_rpg.components.readable import Readable
 
-class ReadAction(Base):
+class Read(Base):
     """Prints the text of a readable"""
 
     dependencies = [Readable]
@@ -81,4 +81,4 @@ class ReadAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        return super(ReadAction, cls).register(name)
+        return super(Read, cls).register(name)

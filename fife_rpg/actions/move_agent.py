@@ -25,7 +25,7 @@ from fife_rpg.actions.base import Base
 from fife_rpg.components.move_agent import MoveAgent
 from fife_rpg.components.agent import Agent
 
-class MoveAgentAction(Base):
+class MoveAgent(Base):
     """Positions the agent on a new map, layer and/or position"""
 
     dependencies = [MoveAgent, Agent]
@@ -89,4 +89,4 @@ class MoveAgentAction(Base):
         Returns:
             True if the action was registered, False if not.
         """
-        return super(MoveAgentAction, cls).register(name)
+        return super(MoveAgent, cls).register(name)
