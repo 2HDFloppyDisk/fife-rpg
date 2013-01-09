@@ -30,7 +30,7 @@ class Base(object):
     Properties:
         application: A :class:`fife_rpg.rpg_application.RPGApplication`
         
-        agent: The agent initiating the action
+        performer: The performer initiating the action
         
         target: The target of the action
         
@@ -44,10 +44,10 @@ class Base(object):
     __registered_as = None
     dependencies = []
 
-    def __init__(self, application, agent, target, commands = None):
+    def __init__(self, application, performer, target, commands = None):
         self.commands = commands or ()
         self.application = application
-        self.agent = agent
+        self.performer = performer
         self.target = target
         self.executed = False
         
@@ -74,8 +74,8 @@ class Base(object):
         self.executed = True
 
     @classmethod
-    def check_agent(cls, entity): #pylint: disable-msg=W0613
-        """Checks whether the entity qualifies as an agent for this action
+    def check_performer(cls, entity): #pylint: disable-msg=W0613
+        """Checks whether the entity qualifies as an performer for this action
         
         Args:
             entity: The entity to ceck. 

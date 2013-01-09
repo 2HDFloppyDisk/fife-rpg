@@ -42,12 +42,12 @@ class Lock(Base):
         Base.execute(self)
 
     @classmethod
-    def check_agent(cls, entity): #pylint: disable-msg=W0613
-        """Checks whether the entity qualifies as an agent for this action
+    def check_performer(cls, entity): #pylint: disable-msg=W0613
+        """Checks whether the entity qualifies as an performer for this action
         
         Args:
             entity: The entity to ceck. 
-            A :class:`fife_rpg.rpg_application.RPGApplication` instance.
+            A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """

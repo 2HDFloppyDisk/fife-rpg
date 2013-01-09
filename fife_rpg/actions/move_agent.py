@@ -50,8 +50,8 @@ class MoveAgent(Base):
         return "Change Map"
         
     @classmethod
-    def check_agent(cls, entity): #pylint: disable-msg=W0613
-        """Checks whether the entity qualifies as an agent for this action
+    def check_performer(cls, entity): #pylint: disable-msg=W0613
+        """Checks whether the entity qualifies as an performer for this action
         
         Args:
             entity: The entity to ceck. 

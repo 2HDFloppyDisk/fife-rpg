@@ -36,22 +36,22 @@ def get_actions():
     """Returns the registered actions"""
     return copy(_ACTIONS)
 
-def get_possible_actions(agent, target):
-    """Get the actions that can be performed with the agent and the target
+def get_possible_actions(performer, target):
+    """Get the actions that can be performed with the performer and the target
     
     Args:
-        agent: The agent initiating the action
+        performer: The performer initiating the action
                 
         target: The target of the action
     
     Returns:
-        A dictionary with the actions that can be performed using the agent 
+        A dictionary with the actions that can be performed using the performer 
         and the target
     """
     actions = get_actions()
     possible_actions = {}
     for name, action in actions.iteritems():
-        if action.check_agent(agent) and action.check_target(target):
+        if action.check_performer(performer) and action.check_target(target):
             possible_actions[name] = action
     return possible_actions
 
