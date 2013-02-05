@@ -91,7 +91,7 @@ class Dialogue(object):
             used to get dialogue variables
         """
         game_variables = getattr(self.world.systems, 
-                                   game_variables)
+                                   "game_variables")
         variables = game_variables.get_variables()
         variables["DialogueTalker"] = self.world.get_entity(section.talker)
         return variables
@@ -204,44 +204,26 @@ class DialogueController(ControllerBase):
         application: The application that created this controller
 
         view: The view that is used by this controller
+        
+        dialogue: The active dialogue
     """
     
-    def __init__(self, view, application):
+    def __init__(self, view, application, dialogue):
+        """Args:
+        
+            dialogue: A dictionary with the dialogue data, or a string
+            with the name of the file to load, or a Dialogue instance.
+        """
         ControllerBase.__init__(self, view, application)
-        self.dialogues = {}
-        self.current_dialogue = None
-        
-    def add_dialogue(self, identifier, dialogue_data):
-        """Add a dialogue to the controller
-        
-        Args:
-            identifier: The name of the dialogue
-            
-            dialogue_data: The data of the dialogue
-        """
-        self.dialogues[identifier] = dialogue_data
-    
-    def add_dialogue_from_file(self, filename):
-        """Loads a dialogue from a file and adds it to the controller
-        
-        Args:
-            filename: The path to the file
-        """
-        dialogue_file = self.application.engine.getVFS().open(filename)
-        dialogue_data = yaml.load(dialogue_file)
-        self.add_dialogue(dialogue_data["Identifier"], dialogue_data)
-        
-    def start_dialogue(self, identifier):
-        """Starts a dialogue
-        
-        Args:
-            identifier: The name of the dialogue to start
-        """
-        if not self.dialogues.has_key(identifier):
-            raise KeyError("Dialogue '%s' not found" % identifier)
-        dialogue_data = self.dialogues[identifier]
-        self.current_dialogue = Dialogue(self.application.world, dialogue_data)
+        if(isinstance(dialogue, str)):
+            dialogue_file = self.application.engine.getVFS().open(dialogue)
+            dialogue = yaml.load(dialogue_file)
+        if(isinstance(dialogue, dict)):
+            self.dialogue = Dialogue(self.application.world, dialogue)
+        else:
+            self.dialogue = dialogue        
+
         
     def end_dialogue(self):
         """Ends the current dialogue"""
-        self.current_dialogue = None
+        self.dialogue = None
