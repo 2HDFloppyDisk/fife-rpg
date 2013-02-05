@@ -223,6 +223,29 @@ class DialogueController(ControllerBase):
         else:
             self.dialogue = dialogue        
 
+    @property
+    def possible_responses(self):
+        """Returns a dictionary of the possible responses of the active
+        dialogue"""
+        return self.dialogue.possible_responses
+
+    @property
+    def is_dialogue_finished(self):
+        """Returns whether the active dialogue is finished or not"""
+        return self.dialogue.is_dialogue_finished
+    
+    @property
+    def current_section(self):
+        """Returns the current section of the active dialogue"""
+        return self.dialogue.current_section
+
+    def select_response(self, response_name):
+        """Selects the given response and performs its actions
+        
+        Args:
+            response_name: The name of the response
+        """
+        return self.dialogue.select_response(response_name)
         
     def end_dialogue(self):
         """Ends the current dialogue"""
