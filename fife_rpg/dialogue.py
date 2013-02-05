@@ -25,6 +25,7 @@ import yaml
 from fife_rpg.systems import GameVariables
 from fife_rpg import ControllerBase
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
+from fife_rpg.exceptions import NotRegisteredError
 
 class DialogueSection(object):
     """Represents a section of a dialogue
@@ -67,6 +68,12 @@ class Dialogue(object):
         Args:
             dialogue_data: A dictionary containing the dialogue data
         """
+        game_variables = GameVariables.registered_as
+        if not game_variables:
+            raise NotRegisteredError("GameVariables")
+        scripting = ScriptingSystem.registered_as
+        if not scripting:
+            raise NotRegisteredError("ScriptingSystem")
         self.world = world
         self.current_section = None
         self.sections = {}
@@ -77,21 +84,15 @@ class Dialogue(object):
         
     def get_dialogue_variables(self, section):
         """Returns the game variables combined with dialogue specific
-        varialbes.
+        variables.
         
         Args:
             section: A :class:`fife_rpg.dialogue.DialogueSection`. This will be
             used to get dialogue variables
         """
-        game_variables = GameVariables.registered_as
-        if game_variables:
-            game_variables = getattr(self.world.systems, 
-                                       game_variables)
-            variables = game_variables.get_variables()
-        else:
-            variables = {}
-            print ("The dialogue controller needs the GameVariables system "
-                   "to function properly.")
+        game_variables = getattr(self.world.systems, 
+                                   game_variables)
+        variables = game_variables.get_variables()
         variables["DialogueTalker"] = self.world.get_entity(section.talker)
         return variables
     
