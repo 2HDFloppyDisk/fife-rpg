@@ -55,11 +55,11 @@ class Dialogue(object):
     """Represents a single dialogue
 
     Properties:
-        world: RPGWorld that the dialogue is run on
+        world: |RPGWorld| that the dialogue is run on
 
-        sections: The sections of the dialogue
+        sections: A list of |DialogueSection|
         
-        current_section: The section that is currently active
+        current_section: The |DialogueSection| that is currently active
     """
 
     def __init__(self, world, dialogue_data):
@@ -87,7 +87,7 @@ class Dialogue(object):
         variables.
         
         Args:
-            section: A :class:`fife_rpg.dialogue.DialogueSection`. This will be
+            section: A |DialogueSection|. This will be
             used to get dialogue variables
         """
         game_variables = getattr(self.world.systems, 
@@ -119,7 +119,7 @@ class Dialogue(object):
         """Runs the commands of the section
         
         Args:
-            section: A :class:`fife_rpg.dialogue.DialogueSection`
+            section: A |DialogueSection|
         """
         variables = self.get_dialogue_variables(section)
         for command in section.commands:
@@ -201,18 +201,18 @@ class DialogueController(ControllerBase):
     """Controller that handles Dialogues
 
     Properties:
-        application: The application that created this controller
+        application: The |Application| that created this controller
 
-        view: The view that is used by this controller
+        view: The |View| that is used by this controller
         
-        dialogue: The active dialogue
+        dialogue: The active |Dialogue|
     """
     
     def __init__(self, view, application, dialogue):
         """Args:
         
             dialogue: A dictionary with the dialogue data, or a string
-            with the name of the file to load, or a Dialogue instance.
+            with the name of a file to load, or a |Dialogue| instance.
         """
         ControllerBase.__init__(self, view, application)
         if(isinstance(dialogue, str)):
