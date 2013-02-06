@@ -245,8 +245,14 @@ class DialogueController(ControllerBase):
         Args:
             response_name: The name of the response
         """
-        return self.dialogue.select_response(response_name)
-        
-    def end_dialogue(self):
-        """Ends the current dialogue"""
-        self.dialogue = None
+        return self.dialogue.select_response(response_name)        
+
+    def pump(self, time_delta):
+        """Performs actions every frame
+
+        Args:
+            time_delta: Time that passed since the last call
+        """
+        ControllerBase.pump(self, time_delta)
+        if self.is_dialogue_finished:
+            self.manager.remove_mode(self)
