@@ -25,7 +25,8 @@ class Dialogue(Base):
     """Component that stores the dialogue
     
     Fields:
-        dialogue: A string
+        dialogue: Either a |Dialogue| object, or a dictionary containing the
+        data for a |Dialogue| or a string that points to a dialogue file.
     """
 
     def __init__(self):
