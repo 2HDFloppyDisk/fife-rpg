@@ -113,7 +113,7 @@ class Dialogue(object):
     @property
     def is_dialogue_finished(self):
         """Returns whether the dialogue is finished or not"""
-        return bool(self.possible_responses)
+        return not bool(self.possible_responses)
     
     def run_section(self, section):
         """Runs the commands of the section
