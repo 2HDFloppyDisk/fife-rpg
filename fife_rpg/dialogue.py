@@ -196,6 +196,7 @@ class Dialogue(object):
                                                 greeting.conditions)): 
                 self.current_section = greeting
                 self.run_section(greeting)
+                break
 
 class DialogueController(ControllerBase):
     """Controller that handles Dialogues
