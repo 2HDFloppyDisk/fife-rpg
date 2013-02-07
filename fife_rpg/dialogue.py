@@ -189,7 +189,7 @@ class Dialogue(object):
         Args:
             greetings_data: A dictionary containing the data of the greetings
         """
-        for greeting_data in greetings_data.itervalues():
+        for greeting_data in greetings_data:
             greeting = self.create_section(greeting_data)
             if (greeting.conditions is None or
                 ScriptingSystem.check_condition(self.world.application,
