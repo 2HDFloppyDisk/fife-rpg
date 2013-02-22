@@ -45,7 +45,7 @@ class PickUp(Base):
         general = getattr(self.target, General.registered_as)
         game_map.remove_entity(general.identifier)
         
-        put_item(self.agent, self.target)
+        put_item(self.performer, self.target)
         super(PickUp, self).execute()
         
     @property

@@ -38,7 +38,7 @@ class MoveAgent(Base):
             if a command is detected that is not registered.
         """
         move_agent = getattr(self.target, MoveAgent.registered_as)
-        agent = getattr(self.agent, Agent.registered_as)
+        agent = getattr(self.performer, Agent.registered_as)
         agent.new_map = move_agent.target_map
         agent.new_position = move_agent.target_position
         agent.new_layer = move_agent.target_layer
