@@ -36,7 +36,7 @@ class Script(object):
     Properties:
         actions: The actions that the script will run
         
-        system: The Scriptsystem that this script will run on
+        system: The ScriptingSystem that this script will run on
         
         running_actions: The actions that are currently running
         
