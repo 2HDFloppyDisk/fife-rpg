@@ -101,7 +101,7 @@ class Script(object):
                     vals = []
                     types = {}
                     types["String"] = str
-                    types["Entity"] = self.system.world.getEntity
+                    types["Entity"] = self.system.world.get_entity
                     
                     for val in action_data["Command"]["Variables"]:
                         val_type = val["Type"]
@@ -110,7 +110,7 @@ class Script(object):
                     command = action_data["Command"]["Name"]
                     self.system.commands[command](
                         *vals, 
-                        action=self.cur_action
+                        callback=self.cur_action.execute
                     )
                 else:
                     self.cur_action.execute()
