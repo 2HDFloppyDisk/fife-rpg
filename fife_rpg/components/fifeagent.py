@@ -90,7 +90,7 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
         the walk_animation. 
         
         callback: A function, that will be called after the agent has reached
-        its taeget.
+        its target.
     """    
     fifeagent_name = FifeAgent.registered_as
     moving_name = Moving.registered_as
@@ -184,8 +184,6 @@ def walk(entity, location):
 
 def register_script_commands():
     """Register commands for this module"""
-    ComponentManager.register_script_command("approach_and_execute", 
+    ComponentManager.register_script_command("move", 
                                              approach_and_execute)
-    ComponentManager.register_script_command("walk", walk)
-    ComponentManager.register_script_command("run", run)
     
