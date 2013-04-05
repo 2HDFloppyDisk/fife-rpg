@@ -100,12 +100,14 @@ class Script(object):
                 if action_data.has_key("Command"):
                     vals = []
                     types = {}
-                    types["String"] = str
                     types["Entity"] = self.system.world.get_entity
                     
                     for val in action_data["Command"]["Variables"]:
-                        val_type = val["Type"]
-                        value = types[val_type](val["Value"])
+                        if val.has_key("Type"):
+                            val_type = val["Type"]
+                            value = types[val_type](val["Value"])
+                        else:
+                            value = val["Value"]
                         vals.append(value)
                     command = action_data["Command"]["Name"]
                     self.system.commands[command](
