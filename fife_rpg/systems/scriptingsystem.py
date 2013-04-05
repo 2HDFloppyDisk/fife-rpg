@@ -113,7 +113,7 @@ class Script(object):
                     self.system.commands[command](
                         *vals, 
                         callback=self.cur_action.execute
-                    )
+                        )
                 else:
                     self.cur_action.execute()
             except IndexError:
