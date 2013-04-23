@@ -25,7 +25,6 @@ from bGrease.component import Component
 
 from fife_rpg.components import ComponentManager
 from fife_rpg.exceptions import AlreadyRegisteredError
-from fife_rpg.exceptions import NotRegisteredError
 from fife_rpg.helpers import ClassProperty
 
 class Base(Component):

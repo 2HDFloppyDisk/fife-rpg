@@ -20,9 +20,6 @@
     :synopsis: Manages the character statistics
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
-import math
-from copy import copy
-
 import yaml
 
 from fife_rpg.systems import Base

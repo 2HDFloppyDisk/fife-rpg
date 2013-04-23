@@ -21,13 +21,13 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from copy import copy
+import sys
 
 from bGrease.grease_fife.world import World
 from fife.extensions.serializers.xmlobject import XMLObjectLoader
 from fife.extensions.serializers.xml_loader_tools import loadImportDirRec
 import yaml
-from copy import copy
-import sys
 
 from fife_rpg.components import ComponentManager
 from fife_rpg.systems import SystemManager
