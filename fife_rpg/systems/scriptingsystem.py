@@ -85,27 +85,47 @@ class Script(object):
         if self.wait <= self._time:
             self._time = 0
             try:
+                arg_types = {}
+                arg_types["Entity"] = self.system.world.get_entity
+
                 action_data = self.running_actions.popleft()
                 action = self.system.actions[action_data["Action"]]
-                agent = self.system.world.get_entity(action_data["Agent"])
-                target = self.system.world.get_entity(action_data["Target"])
-                action_commands = (action_data["ActionCommands"] if
-                                   action_data.has_key("ActionCommands") else
-                                   {}
-                                   )
-                    
-                self.cur_action = action(self.system.world.application,
-                                         agent, target, action_commands)
+                action_type = (action_data["Type"] if action_data.has_key("Type")
+                                else "")
+                if action_type == "Entity":
+                    agent = self.system.world.get_entity(action_data["Agent"])
+                    target = self.system.world.get_entity(action_data["Target"])
+                    action_commands = (action_data["ActionCommands"] if
+                                       action_data.has_key("ActionCommands") else
+                                       {}
+                                       )
+                        
+                    self.cur_action = action(self.system.world.application,
+                                             agent, target, action_commands)
+                else:
+                    kwargs = {}
+                    for arg, data in action_data["Args"].iteritems():
+                        if data.has_key("Type"):
+                            arg_type = data["Type"]
+                            kwargs[arg] = arg_types[arg_type](data["Value"])
+                        else:
+                            kwargs[arg] = data["Value"]
+                    kwargs["commands"] = (action_data["ActionCommands"] if
+                                       action_data.has_key("ActionCommands") else
+                                       {}
+                                       )
+                        
+                    self.cur_action = action(self.system.world.application,
+                                             **kwargs)
+                                        
                 self.wait = action_data["Time"]
                 if action_data.has_key("Command"):
                     vals = []
-                    types = {}
-                    types["Entity"] = self.system.world.get_entity
                     
                     for val in action_data["Command"]["Variables"]:
                         if val.has_key("Type"):
                             val_type = val["Type"]
-                            value = types[val_type](val["Value"])
+                            value = arg_types[val_type](val["Value"])
                         else:
                             value = val["Value"]
                         vals.append(value)
