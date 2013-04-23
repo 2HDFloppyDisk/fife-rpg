@@ -21,11 +21,11 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.actions.base import Base
+from fife_rpg.actions.entity_action import EntityAction
 from fife_rpg.components.move_agent import MoveAgent
 from fife_rpg.components.agent import Agent
 
-class MoveAgent(Base):
+class MoveAgent(EntityAction):
     """Positions the agent on a new map, layer and/or position"""
 
     dependencies = [MoveAgent, Agent]
@@ -42,7 +42,7 @@ class MoveAgent(Base):
         agent.new_map = move_agent.target_map
         agent.new_position = move_agent.target_position
         agent.new_layer = move_agent.target_layer
-        Base.execute(self)
+        EntityAction.execute(self)
     
     @property
     def menu_text(self):

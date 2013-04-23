@@ -37,7 +37,8 @@ def get_actions():
     return copy(_ACTIONS)
 
 def get_possible_actions(performer, target):
-    """Get the actions that can be performed with the performer and the target
+    """Get the entity actions that can be performed with the performer and the 
+    target
     
     Args:
         performer: The performer initiating the action
@@ -48,9 +49,12 @@ def get_possible_actions(performer, target):
         A dictionary with the actions that can be performed using the performer 
         and the target
     """
+    from fife_rpg.actions.entity_action import EntityAction
     actions = get_actions()
     possible_actions = {}
     for name, action in actions.iteritems():
+        if not issubclass(action, EntityAction):
+            continue
         if action.check_performer(performer) and action.check_target(target):
             possible_actions[name] = action
     return possible_actions

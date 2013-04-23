@@ -21,12 +21,12 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.actions.base import Base
+from fife_rpg.actions.entity_action import EntityAction
 from fife_rpg.components.lockable import Lockable
 from fife_rpg.components.lockable import close_lock
 from fife_rpg.components.fifeagent import FifeAgent
 
-class Close(Base):
+class Close(EntityAction):
     """Action for closing lockables"""
 
     dependencies = [Lockable]
@@ -48,7 +48,7 @@ class Close(Base):
                 behaviour.queue_animation(lockable.closed_animation, 
                                           repeating=True)                
                       
-        Base.execute(self)
+        EntityAction.execute(self)
         
     @classmethod
     def check_performer(cls, entity): #pylint: disable-msg=W0613

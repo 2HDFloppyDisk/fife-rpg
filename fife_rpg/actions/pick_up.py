@@ -21,14 +21,14 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.actions.base import Base
+from fife_rpg.actions.entity_action import EntityAction
 from fife_rpg.components.general import General
 from fife_rpg.components.agent import Agent
 from fife_rpg.components.containable import Containable
 from fife_rpg.components.container import Container
 from fife_rpg.components.container import put_item
 
-class PickUp(Base):
+class PickUp(EntityAction):
     """Action for picking up items from a map"""
 
     dependencies = [General, Agent, Containable, Container]

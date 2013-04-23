@@ -21,10 +21,10 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.actions.base import Base
+from fife_rpg.actions.entity_action import EntityAction
 from fife_rpg.components.description import Description
 
-class Look(Base):
+class Look(EntityAction):
     """Action for unlocking lockables"""
 
     dependencies = [Description]
@@ -43,7 +43,7 @@ class Look(Base):
         text = _("You see %s. \n%s") %  (_(description.view_name), 
                                         _(description.desc))
         #pylint: enable=E0602
-        Base.execute(self)
+        EntityAction.execute(self)
         return text
 
     @classmethod

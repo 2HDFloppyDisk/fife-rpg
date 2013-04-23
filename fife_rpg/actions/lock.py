@@ -21,11 +21,11 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.actions.base import Base
+from fife_rpg.actions.entity_action import EntityAction
 from fife_rpg.components.lockable import Lockable
 from fife_rpg.components.lockable import lock_lock
 
-class Lock(Base):
+class Lock(EntityAction):
     """Action for locking lockables"""
 
     dependencies = [Lockable]
@@ -39,7 +39,7 @@ class Lock(Base):
         """
         lockable = getattr(self.target, Lockable.registered_as)
         lock_lock(lockable)
-        Base.execute(self)
+        EntityAction.execute(self)
 
     @classmethod
     def check_performer(cls, entity): #pylint: disable-msg=W0613

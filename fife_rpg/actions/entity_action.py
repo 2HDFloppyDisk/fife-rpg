@@ -3,47 +3,58 @@
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-#   
+
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
-#   
+
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#  This module is based on the scriptingsystem module from PARPG
+"""Base class for actions that an entity can perform on other entities.
 
-"""The read action prints the text of a readable
+.. module:: entity_action
+    :synopsis: Base class for actions that an entity can perform on other entities.
 
-.. module:: read
-    :synopsis: Prints the text of a readable
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.actions.entity_action import EntityAction
-from fife_rpg.components.readable import Readable
+from fife_rpg.actions.base import BaseAction
 
-class Read(EntityAction):
-    """Prints the text of a readable"""
+class EntityAction(BaseAction):
+    """Base class for actions that an entity can perform on other entities.
+    
+    Properties:
+        application: A :class:`fife_rpg.rpg_application.RPGApplication`
+        
+        performer: The performer initiating the action
+        
+        target: The target of the action
+        
+        commands: List of additional commands to execute
 
-    dependencies = [Readable]
+        registered_as: Class property that sets under what name the class is
+        registered
         
-    def execute(self):
-        """Execute the action
-        
-        Raises:
-            :class:`fife_rpg.exceptions.NoSuchCommandError`
-            if a command is detected that is not registered.
+        dependencies: Class property that sets the classes this System depends on
+    """
+    __registered_as = None
+    dependencies = []
 
-        Returns:
-            The text of the readable
-        """
-        readable = getattr(self.target, Readable.registered_as)
-        text = _(readable.text) #pylint: disable=E0602
-        EntityAction.execute(self)
-        return text
+    def __init__(self, application, performer, target, commands = None):
+        BaseAction.__init__(self, application, commands)
+        self.commands = commands or ()
+        self.application = application
+        self.performer = performer
+        self.target = target
+        self.executed = False
         
+    @property
+    def menu_text(self):
+        """Returns the text that is to be displayed in menus"""
+        return self.registered_as
+
     @classmethod
     def check_performer(cls, entity): #pylint: disable-msg=W0613
         """Checks whether the entity qualifies as an performer for this action
@@ -54,31 +65,16 @@ class Read(EntityAction):
 
         Returns: True if the entity qualifes. False otherwise
         """
-        return True
+        return False
     
     @classmethod
     def check_target(cls, entity): #pylint: disable-msg=W0613
         """Checks whether the entity qualifies as a target for this action
         
         Args:
-            entity: The entity to ceck. 
+            entity: The entity to check. 
             A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """
-        readable = getattr(entity, Readable.registered_as)
-        if readable:
-            return True
         return False
-
-    @classmethod
-    def register(cls, name="Read"):
-        """Registers the class as an action
-
-        Args:
-            name: The name under which the class should be registered
-
-        Returns:
-            True if the action was registered, False if not.
-        """
-        return super(Read, cls).register(name)

@@ -12,7 +12,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""The base action
+"""Base class for actions
 
 .. module:: base
     :synopsis: The base action
@@ -24,15 +24,11 @@ from fife_rpg.exceptions import NoSuchCommandError, AlreadyRegisteredError
 from fife_rpg.actions import ActionManager
 from fife_rpg.helpers import ClassProperty
 
-class Base(object):
-    """Base Action class, to define the structure
+class BaseAction(object):
+    """Base class for actions
     
     Properties:
         application: A :class:`fife_rpg.rpg_application.RPGApplication`
-        
-        performer: The performer initiating the action
-        
-        target: The target of the action
         
         commands: List of additional commands to execute
 
@@ -44,17 +40,10 @@ class Base(object):
     __registered_as = None
     dependencies = []
 
-    def __init__(self, application, performer, target, commands = None):
+    def __init__(self, application, commands = None):
         self.commands = commands or ()
         self.application = application
-        self.performer = performer
-        self.target = target
         self.executed = False
-        
-    @property
-    def menu_text(self):
-        """Returns the text that is to be displayed in menus"""
-        return self.registered_as
     
     def execute(self):
         """Execute the action
@@ -72,30 +61,6 @@ class Base(object):
             else:
                 raise NoSuchCommandError(command)
         self.executed = True
-
-    @classmethod
-    def check_performer(cls, entity): #pylint: disable-msg=W0613
-        """Checks whether the entity qualifies as an performer for this action
-        
-        Args:
-            entity: The entity to ceck. 
-            A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
-
-        Returns: True if the entity qualifes. False otherwise
-        """
-        return False
-    
-    @classmethod
-    def check_target(cls, entity): #pylint: disable-msg=W0613
-        """Checks whether the entity qualifies as a target for this action
-        
-        Args:
-            entity: The entity to check. 
-            A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
-
-        Returns: True if the entity qualifes. False otherwise
-        """
-        return False
 
     @classmethod
     def register(cls, name):
