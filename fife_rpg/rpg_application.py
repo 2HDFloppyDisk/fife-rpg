@@ -797,22 +797,26 @@ class RPGApplication(FifeManager, ApplicationBase):
         return self._listener.onConsoleCommand(command)
     
     def check_agent_changes(self):
-        """Checks all agents for changes"""        
+        """Checks all agents for changes"""
         for agent in self.world.components.join(Agent.registered_as):
-            agent = agent[0] 
+            agent = agent[0]
             if agent.map == self.current_map.name:
-                continue       
+                continue
             agent.map = agent.new_map or agent.map
             agent.layer = agent.new_layer or agent.layer
-            agent.position = agent.new_position or agent.position 
+            agent.position = agent.new_position or agent.position
             agent.rotation = agent.new_rotation or agent.rotation
             agent.new_map = None
             agent.new_layer = None
             agent.new_position = None
-            agent.new_rotation = None    
-            game_map = self.maps[agent.map]
-            if not isinstance(game_map, str):
-                game_map.update_entities(self.world)
+            agent.new_rotation = None
+            if agent.map:
+                if self.maps.has_key(agent.map):
+                    game_map = self.maps[agent.map]
+                    if not isinstance(game_map, str):
+                        game_map.update_entities(self.world)
+                else:
+                    raise KeyError("Tried to access map `%s`, which does not exist" % (agent.map))
                     
     def pump(self, dt):
         """Performs actions every frame.        
