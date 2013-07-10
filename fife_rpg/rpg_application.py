@@ -815,6 +815,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                     game_map = self.maps[agent.map]
                     if not isinstance(game_map, str):
                         game_map.update_entities(self.world)
+                        self.update_agents(game_map)
                 else:
                     raise KeyError("Tried to access map `%s`, which does not exist" % (agent.map))
                     
