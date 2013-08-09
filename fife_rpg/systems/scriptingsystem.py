@@ -27,8 +27,10 @@ from copy import copy
 import yaml
 
 from fife_rpg.systems import Base
+from fife_rpg.systems import GameVariables
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.helpers import ClassProperty
+
 
 class Script(object):
     """Script object
@@ -87,7 +89,11 @@ class Script(object):
             try:
                 arg_types = {}
                 arg_types["Entity"] = self.system.world.get_entity
-
+                registered_as = GameVariables.registered_as
+                if registered_as:
+                    environment = getattr(self.system.world.systems,
+                                          registered_as)
+                    arg_types["Variable"] = environment.get_variable
                 action_data = self.running_actions.popleft()
                 action = self.system.actions[action_data["Action"]]
                 action_type = (action_data["Type"] if action_data.has_key("Type")
