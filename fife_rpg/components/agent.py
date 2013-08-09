@@ -119,11 +119,7 @@ def add_knowledge(agent, knowledge):
     
 #Register conditions
 try:
-    ScriptingSystem.register_condition("Knows", 
-                                       lambda application, agent_name, knowledge:
-                                       knows(application.world.get_entity(
-                                                    agent_name), 
-                                             knowledge))
+    ScriptingSystem.register_command("knows", knows)
 except AlreadyRegisteredError:
     pass
 #Register console commands

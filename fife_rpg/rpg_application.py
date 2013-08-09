@@ -834,11 +834,8 @@ class RPGApplication(FifeManager, ApplicationBase):
         FifeManager.pump(self, dt)
     
 #Register conditions
-ScriptingSystem.register_condition("IsLocationInRegion", 
+ScriptingSystem.register_command("is_location_in_region", 
                                    RPGApplication.is_location_in_region)
-ScriptingSystem.register_condition("IsAgentInRegion", 
+ScriptingSystem.register_command("is_agent_in_region", 
                                    RPGApplication.is_agent_in_region)
-ScriptingSystem.register_condition("CurrentMap", 
-                                   lambda application, map_name: 
-                                    application.current_map.name == map_name)
 

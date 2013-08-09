@@ -74,6 +74,7 @@ class Dialogue(object):
         scripting = ScriptingSystem.registered_as
         if not scripting:
             raise NotRegisteredError("ScriptingSystem")
+        self.__scripting = getattr(world.systems, scripting)
         self.world = world
         self.current_section = None
         self.sections = {}
@@ -105,8 +106,7 @@ class Dialogue(object):
         for response_name in self.current_section.responses:
             response = self.sections[response_name]
             if (response.conditions is None or
-                ScriptingSystem.check_condition(self.world.application,
-                                                response.conditions)): 
+                ScriptingSystem.eval(response.conditions)): 
                 possible_responses[response_name] = response
         return possible_responses
     
@@ -192,8 +192,7 @@ class Dialogue(object):
         for greeting_data in greetings_data:
             greeting = self.create_section(greeting_data)
             if (greeting.conditions is None or
-                ScriptingSystem.check_condition(self.world.application,
-                                                greeting.conditions)): 
+                self.__scripting.eval(greeting.conditions)): 
                 self.current_section = greeting
                 self.run_section(greeting)
                 break
