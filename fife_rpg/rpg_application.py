@@ -305,6 +305,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         """
         variables.update(self.maps)
         variables["CurrentMap"] = self.current_map
+        variables["GlobalLighting"] = self.get_global_lighting()
 
     def add_map(self, name, filename_or_map):
         """Adds a map to the maps dictionary.
@@ -815,7 +816,26 @@ class RPGApplication(FifeManager, ApplicationBase):
                         self.update_agents(game_map)
                 else:
                     raise KeyError("Tried to access map `%s`, which does not exist" % (agent.map))
-                    
+
+    def set_global_lighting(self, red, green, blue):
+        """Sets the color of the current maps lighting
+
+        Args:
+            red: The red value of the light as a float between 0.0 and 1.0
+
+            green: The green value of the light as a float between 0.0 and 1.0
+
+            blue: The blue value of the light as a float between 0.0 and 1.0
+        """
+        if self.current_map:
+            self.current_map.camera.setLightingColor(red, green, blue)
+
+    def get_global_lighting(self):
+        """Returns the values of the current maps lighting"""
+        if self.current_map:
+            self.current_map.camera.getLightingColor()
+        return (1.0, 1.0, 1.0)
+
     def pump(self, dt):
         """Performs actions every frame.        
         
@@ -838,4 +858,3 @@ ScriptingSystem.register_command("is_location_in_region",
                                    RPGApplication.is_location_in_region)
 ScriptingSystem.register_command("is_agent_in_region", 
                                    RPGApplication.is_agent_in_region)
-
