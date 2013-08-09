@@ -485,6 +485,8 @@ class RPGApplication(FifeManager, ApplicationBase):
         """Creates the world used by this application"""
         self.world = RPGWorld(self)
         GameVariables.add_callback(self.update_game_variables)
+        ScriptingSystem.register_command("set_global_lighting",
+                                         self.set_global_lighting)
 
     def request_quit(self):
         """Sends the quit command to the application's listener.
