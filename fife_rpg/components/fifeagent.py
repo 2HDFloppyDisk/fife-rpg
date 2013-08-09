@@ -22,7 +22,6 @@ from fife import fife
 
 from fife_rpg.components.base import Base
 from fife_rpg.components.moving import Moving
-from fife_rpg.components import ComponentManager
 from fife_rpg.behaviours import AGENT_STATES
 from fife_rpg.entities.rpg_entity import RPGEntity
 
@@ -184,6 +183,7 @@ def walk(entity, location):
 
 def register_script_commands():
     """Register commands for this module"""
-    ComponentManager.register_script_command("move", 
-                                             approach_and_execute)
+    from fife_rpg.systems.scriptingsystem import ScriptingSystem
+    ScriptingSystem.register_command("move",
+                                     approach_and_execute)
     

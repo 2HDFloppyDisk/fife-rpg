@@ -145,8 +145,6 @@ class ScriptingSystem(Base):
     """System responsible for managing scripts.
     
     Properties:
-        commands: The commands available to scripts
-        
         actions: Actions that the scripts can do
         
         scripts: Dictionary of the registered scripts
@@ -157,6 +155,7 @@ class ScriptingSystem(Base):
     dependencies = []
     
     __condition_dictionary = {}
+    __commands = {}
     
     @classmethod
     def register(cls, name="scripting"):
@@ -187,10 +186,36 @@ class ScriptingSystem(Base):
     @classmethod
     def condition_dictionary(cls):
         return copy(cls.__condition_dictionary)
+
+    @classmethod
+    def register_command(cls, name, command_function):
+        """Register a command to the command dictionary.
+        
+        Args:
+            name: The name of the command
+            command_function: The command function.
+        """
+        if name in cls.__commands:
+            raise AlreadyRegisteredError(name, "command")
+        cls.__commands[name] = command_function
+
+    @classmethod
+    def register_commands(cls, command_dict):
+        """Register a command to the command dictionary.
+        
+        Args:
+            command_dict: A dictionary with commands.
+        """
+        for name, command_function in command_dict.iter_items():
+            cls.register_command(name, command_function)
+        
+    @ClassProperty
+    @classmethod
+    def commands(cls):
+        return copy(cls.__commands)
     
     def __init__(self):
         Base.__init__(self)
-        self.commands = {}
         self.actions = {}
         self.scripts = {}
         self.conditions = []
