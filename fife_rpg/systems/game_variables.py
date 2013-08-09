@@ -30,6 +30,8 @@ class GameVariables(Base):
     available to scripts.    
     """
 
+    __callbacks = []
+
     @classmethod
     def register(cls, name="game_variables"):
         """Registers the class as a system
@@ -41,20 +43,20 @@ class GameVariables(Base):
             True if the system was registered, False if not.
         """
         return (super(GameVariables, cls).register(name))
-        
-    def __init__(self):
-        Base.__init__(self)
-        self.__dynamic = {}
-        self.__static = {}
-        self.__callbacks = []
-        
-    def add_callback(self, callback):
+
+    @classmethod        
+    def add_callback(cls, callback):
         """Adds a callback function to the GameVariables
         
         Args:
             callback: The function to add
         """
-        self.__callbacks.append(callback)
+        cls.__callbacks.append(callback)
+        
+    def __init__(self):
+        Base.__init__(self)
+        self.__dynamic = {}
+        self.__static = {}
         
     def get_variables(self):
         """Returns the the variables as a dictionary"""

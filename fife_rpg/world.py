@@ -55,10 +55,7 @@ class RPGWorld(World):
         World.__init__(self, application.engine)
         self.application = application
         self.object_db = {}
-        registered_as = GameVariables.registered_as
-        if registered_as and hasattr(self.systems, registered_as):
-            environment = getattr(self.systems, registered_as) 
-            environment.add_callback(self.update_game_variables)
+        GameVariables.add_callback(self.update_game_variables)
         if not Agent.registered_as:
             Agent.register()
         if not FifeAgent.registered_as:

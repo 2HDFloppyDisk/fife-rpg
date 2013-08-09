@@ -483,10 +483,7 @@ class RPGApplication(FifeManager, ApplicationBase):
     def create_world(self):
         """Creates the world used by this application"""
         self.world = RPGWorld(self)
-        registered_as = GameVariables.registered_as            
-        if registered_as and hasattr(self.world.systems, registered_as):
-            environment = getattr(self.world.systems, registered_as) 
-            environment.add_callback(self.update_game_variables)
+        GameVariables.add_callback(self.update_game_variables)
 
     def request_quit(self):
         """Sends the quit command to the application's listener.
