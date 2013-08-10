@@ -181,9 +181,10 @@ def walk(entity, location):
                             location,
                             moving.walk_speed)
 
-def register_script_commands():
+def register_script_commands(module=""):
     """Register commands for this module"""
     from fife_rpg.systems.scriptingsystem import ScriptingSystem
     ScriptingSystem.register_command("move",
-                                     approach_and_execute)
+                                     approach_and_execute,
+                                     module)
     
