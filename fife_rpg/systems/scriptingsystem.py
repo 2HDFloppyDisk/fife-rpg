@@ -37,14 +37,11 @@ class ScriptingSystem(Base):
     Properties:
 
         globals: The globals available to scripts
-
-        __scripts: Dictionary of the registered scripts
-
     """
 
     dependencies = []
 
-    __commands = {}
+    __commands = {"" : {}}
 
     @classmethod
     def register(cls, name="scripting"):
@@ -59,23 +56,30 @@ class ScriptingSystem(Base):
         return (super(ScriptingSystem, cls).register(name))
 
     @classmethod
-    def register_command(cls, name, command_function):
+    def register_command(cls, name, command_function, module=""):
         """Register a command to the command dictionary.
         
         Args:
             name: The name of the command
+            
             command_function: The command function.
+            
+            module: The name of the module the command will be available at
         """
         if name in cls.__commands:
             raise AlreadyRegisteredError(name, "command")
-        cls.__commands[name] = command_function
+        if not cls.__commands.has_key(module):
+            cls.__commands[module] = {}
+        cls.__commands[module][name] = command_function
 
     @classmethod
-    def register_commands(cls, command_dict):
+    def register_commands(cls, command_dict, module=""):
         """Register a command to the command dictionary.
         
         Args:
             command_dict: A dictionary with commands.
+
+            module: The name of the module the commands will be available at
         """
         for name, command_function in command_dict.iter_items():
             cls.register_command(name, command_function)
@@ -94,7 +98,7 @@ class ScriptingSystem(Base):
         self.globals = {}
         self.__scripts = []
     
-    def prepare_globsl(self):
+    def prepare_globals(self):
         """Builds the actual globals passed to scripts and returns them
         as a dictionary"""
         script_globals = {}
@@ -103,7 +107,15 @@ class ScriptingSystem(Base):
                                      GameVariables.registered_as)
             script_globals.update(game_variables.get_variables())
         script_globals.update(self.globals)
-        script_globals.update(self.commands)
+        script_globals.update(self.commands[""])
+        for name, module_commands in self.commands.iteritems():
+            if name == "":
+                continue
+            if not script_globals.has_key(name):
+                script_globals[name] = imp.new_module(name)
+            module = script_globals[name]
+            module.__dict__.update(module_commands)
+             
         return script_globals
     
     def step(self, time_delta):
@@ -114,12 +126,12 @@ class ScriptingSystem(Base):
             time_delta: Time since last step invocation
         """
         for script in self.__scripts:
-            script_globals = self.prepare_globsl()
+            script_globals = self.prepare_globals()
             script.__dict__.update(script_globals)
             script.step(time_delta)
 
     def eval(self, string):
-        script_globals = self.prepare_globsl()
+        script_globals = self.prepare_globals()
         return eval(string, script_globals)
     
     def add_script(self, name, filename):
@@ -134,7 +146,8 @@ class ScriptingSystem(Base):
         script_file = file(filename, "r")
         script_module = imp.new_module(name)
         exec script_file in script_module.__dict__
-        self.__scripts.append(script_module) 
+        self.__scripts.append(script_module)
+        script_file.close()
         
     def load_scripts(self, filename=None):
         """Load scripts from a file
