@@ -22,7 +22,6 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 """
 
 from fife_rpg.components.base import Base
-from fife_rpg.systems.scriptingsystem import ScriptingSystem
 
 STACK_POSITION = {"actor":2, "item":1, "ground_object":0}
 
@@ -117,11 +116,12 @@ def add_knowledge(agent, knowledge):
     agent_data = getattr(agent, Agent.registered_as)
     agent_data.knows.add(knowledge)
     
-#Register conditions
-try:
-    ScriptingSystem.register_command("knows", knows)
-except AlreadyRegisteredError:
-    pass
+def register_script_commands(module=""):
+    """Register commands for this module"""
+    from fife_rpg.systems.scriptingsystem import ScriptingSystem
+    ScriptingSystem.register_command("knows", knows, module)
+    ScriptingSystem.register_command("add_knowledge", add_knowledge, module)
+    
 #Register console commands
 try:
     from fife_rpg.console_commands import register_command
