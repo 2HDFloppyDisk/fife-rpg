@@ -120,6 +120,7 @@ def register_script_commands(module=""):
     """Register commands for this module"""
     from fife_rpg.systems.scriptingsystem import ScriptingSystem
     ScriptingSystem.register_command("knows", knows, module)
+    ScriptingSystem.register_command("add_knowledge", add_knowledge, module)
     
 #Register console commands
 try:
