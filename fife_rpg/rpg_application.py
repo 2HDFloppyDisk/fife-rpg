@@ -24,6 +24,7 @@ import time
 import os
 from copy import copy 
 import gettext
+import imp
 
 import yaml
 from bGrease.grease_fife.mode import FifeManager
@@ -41,6 +42,8 @@ from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.systems import GameVariables
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
 from fife_rpg.console_commands import get_commands
+
+_scripting_module = "application"
 
 class KeyFilter(fife.IKeyFilter):
     """This is the implementation of the fife.IKeyFilter class.
@@ -303,8 +306,10 @@ class RPGApplication(FifeManager, ApplicationBase):
             globals: The globals dictionary of the GameEnvironment that is 
             filled by the GameScene
         """
-        variables.update(self.maps)
-        variables["CurrentMap"] = self.current_map
+        app_module = imp.new_module(_scripting_module)
+        app_module.__dict__["current_map"] = self.current_map
+        app_module.__dict__["maps"] = self.maps
+        variables[_scripting_module] = app_module
 
     def add_map(self, name, filename_or_map):
         """Adds a map to the maps dictionary.
@@ -835,7 +840,9 @@ class RPGApplication(FifeManager, ApplicationBase):
     
 #Register conditions
 ScriptingSystem.register_command("is_location_in_region", 
-                                   RPGApplication.is_location_in_region)
+                                   RPGApplication.is_location_in_region,
+                                   _scripting_module)
 ScriptingSystem.register_command("is_agent_in_region", 
-                                   RPGApplication.is_agent_in_region)
+                                   RPGApplication.is_agent_in_region,
+                                   _scripting_module)
 
