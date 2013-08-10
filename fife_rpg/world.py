@@ -23,6 +23,7 @@
 """
 from copy import copy
 import sys
+import imp
 
 from bGrease.grease_fife.world import World
 from fife.extensions.serializers.xmlobject import XMLObjectLoader
@@ -163,9 +164,11 @@ class RPGWorld(World):
             variables: The globals dictionary of the GameEnvironment that is 
             filled by the GameScene
         """
+        ent_module = imp.new_module("entities")
         extent = getattr(self[RPGEntity], General.registered_as)
         for entity in extent:            
-            variables[entity.identifier] = entity
+            ent_module.__dict__[entity.identifier] = entity
+        variables["entities"] = ent_module
         
     def import_agent_objects(self, object_path=None):
         """Import the objects used by agents from the given path
