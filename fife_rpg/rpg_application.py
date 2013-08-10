@@ -489,7 +489,12 @@ class RPGApplication(FifeManager, ApplicationBase):
         """Creates the world used by this application"""
         self.world = RPGWorld(self)
         GameVariables.add_callback(self.update_game_variables)
-
+        ScriptingSystem.register_command("is_location_in_region",
+                                           self.is_location_in_region,
+                                           _scripting_module)
+        ScriptingSystem.register_command("is_agent_in_region",
+                                           self.is_agent_in_region,
+                                           _scripting_module)
     def request_quit(self):
         """Sends the quit command to the application's listener.
 
@@ -837,12 +842,4 @@ class RPGApplication(FifeManager, ApplicationBase):
         if self.world:
             self.world.pump(dt)
         FifeManager.pump(self, dt)
-    
-#Register conditions
-ScriptingSystem.register_command("is_location_in_region", 
-                                   RPGApplication.is_location_in_region,
-                                   _scripting_module)
-ScriptingSystem.register_command("is_agent_in_region", 
-                                   RPGApplication.is_agent_in_region,
-                                   _scripting_module)
 
