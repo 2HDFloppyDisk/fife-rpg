@@ -64,13 +64,13 @@ class Map(object):
         is_active: Whether the map is currently active or nor
     """
 
-    def __init__(self, fife_map, name, camera, regions):
+    def __init__(self, fife_map, name, camera, regions, application):
         self.__map = fife_map
         self.__name = name
         self.__regions = regions
         self.__entities = {}
         self.__camera = fife_map.getCamera(camera)
-        self.__last_world = None
+        self.__application = application
         if not FifeAgent.registered_as:
             FifeAgent.register()
         if not Agent.registered_as:
@@ -165,15 +165,10 @@ class Map(object):
         """Deactivates the map"""
         self.camera.setEnabled(False)
 
-    def update_entities(self, world):
+    def update_entities(self):
         """Update the maps entites from the entities of the world
-
-        Args:
-            world: The :class:`fife_rpg.world.RPGWorld` on which the map looks
-            for its entities
         """
-        self.__last_world = world
-        extent = world[...]
+        extent = self.__application.world[...]
         self.__entities = getattr(extent,
                                   Agent.registered_as).map == self.name
 
@@ -233,7 +228,7 @@ class Map(object):
             fifeagent.behaviour = None
             agent = getattr(entity, Agent.registered_as)
             agent.map = ""
-            self.update_entities(self.__last_world)
+            self.update_entities()
         except KeyError as error:
             raise error
         except TypeError as error:
@@ -295,10 +290,10 @@ class Map(object):
             will be used.
 
         Returns:
-             The light info of the added light
+            The light info of the added light
         """
         if agent is not None and agent != "":
-            agent = self.__last_world.get_entity(agent)
+            agent = self.__application.world.get_entity(agent)
             fifeagent = getattr(agent, FifeAgent.registered_as)
             agent = fifeagent.instance
         else:
