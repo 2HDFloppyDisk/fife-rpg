@@ -435,7 +435,9 @@ class RPGApplication(FifeManager, ApplicationBase):
         Args:
             name: The name of the map
         """
+        old_map = None
         if self.__current_map:
+            old_map = self.__current_map.name
             self.__current_map.deactivate()
             self.__current_map = None
         if name is None:
@@ -445,7 +447,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.__current_map = self.maps[name]
             self.__current_map.activate()
             for callback in self.__map_switched_callbacks:
-                callback()
+                callback(old_map, name)
         else:
             raise LookupError("The map with the name '%s' cannot be found"
                         % (name))
