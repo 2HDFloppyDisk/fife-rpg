@@ -133,6 +133,8 @@ class ScriptingSystem(Base):
             time_delta: Time since last step invocation
         """
         for script in self.__scripts:
+            if not "step" in script.__dict__:
+                continue
             script_globals = self.prepare_globals()
             script.__dict__.update(script_globals)
             script.step(time_delta)
