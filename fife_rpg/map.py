@@ -21,18 +21,20 @@
 """
 
 from fife import fife
+from fife.extensions.serializers import xmlanimation
 
 from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.components.agent import Agent
 from fife_rpg.components.general import General
 
+
 class NoSuchRegionError(Exception):
-    """Gets thrown when the code tried to access a region that does not exits 
+    """Gets thrown when the code tried to access a region that does not exits
     on the map.
 
     Properties:
         map_name: The name of the map_name
-        
+
         region_name: The name of the region_name
     """
 
@@ -43,8 +45,9 @@ class NoSuchRegionError(Exception):
 
     def __str__(self):
         """Returns a string representing the exception"""
-        return ("The map '%s' has no region called '%s'." % 
-                    (self.map,  self.region))
+        return ("The map '%s' has no region called '%s'." %
+                    (self.map, self.region))
+
 
 class Map(object):
     """Contains the data of a map
@@ -58,17 +61,17 @@ class Map(object):
 
         regions: A dictionary that defines specific regions on the fife_map, as
         :class:`fife.DoubleRect` instances.
-        
+
         is_active: Whether the map is currently active or nor
     """
-        
-    def __init__(self, fife_map, name, camera, regions):
+
+    def __init__(self, fife_map, name, camera, regions, application):
         self.__map = fife_map
         self.__name = name
         self.__regions = regions
         self.__entities = {}
         self.__camera = fife_map.getCamera(camera)
-        self.__last_world = None
+        self.__application = application
         if not FifeAgent.registered_as:
             FifeAgent.register()
         if not Agent.registered_as:
@@ -108,13 +111,13 @@ class Map(object):
 
     def __getitem__(self, name):
         """Returns the entity with the given name
-        
+
         Args:
             name: The name of the entity
-            
+
         Raises:
             KeyError: If the map has no entity with that name
-            
+
             TypeError: If the key is not a string
         """
         if not type(name) == str:
@@ -123,35 +126,35 @@ class Map(object):
             general = getattr(entity, General.registered_as)
             if general.identifier == name:
                 return entity
-        raise KeyError("The map %s has no entity with the name %s" % 
+        raise KeyError("The map %s has no entity with the name %s" %
                        (self.name, name))
-    
+
     def get_instances_at(self, point, layer):
         """Query the main camera for instances on the specified layer.
-        
+
         Args:
             point: A :class:`fife.ScreenPoint`
-            
-            layer: The :class:`fife.Layer` from which we want the instances 
+
+            layer: The :class:`fife.Layer` from which we want the instances
         """
         return self.camera.getMatchingInstances(point, layer)
-    
+
     def is_in_region(self, location, region):
         """Checks if a given point is inside the given region
 
         Args:
             location: A fife.DoublePoint instance or a tuple with 2 elements
-            
+
             region: The name of the region
 
         Raises:
-            :class:`fife_rpg.map.NoSuchRegionError` if the specified region does 
-            not exist.
+            :class:`fife_rpg.map.NoSuchRegionError` if the specified region
+            does not exist.
         """
         if isinstance(location, tuple) or isinstance(location, list):
             location = fife.DoublePoint(location[0], location[1])
         if not region in self.regions:
-            raise NoSuchRegionError(self.name,  region)
+            raise NoSuchRegionError(self.name, region)
         else:
             return self.regions[region].contains(location)
 
@@ -162,19 +165,14 @@ class Map(object):
     def deactivate(self):
         """Deactivates the map"""
         self.camera.setEnabled(False)
-        
-    def update_entities(self, world):
+
+    def update_entities(self):
         """Update the maps entites from the entities of the world
-        
-        Args:
-            world: The :class:`fife_rpg.world.RPGWorld` on which the map looks
-            for its entities
         """
-        self.__last_world = world
-        extent = world[...]
-        self.__entities = getattr(extent, 
+        extent = self.__application.world[...]
+        self.__entities = getattr(extent,
                                   Agent.registered_as).map == self.name
-    
+
     def update_entities_fife(self):
         """Updates the fife instances to the values of the agent"""
         old_entities = self.entities.copy()
@@ -184,7 +182,7 @@ class Map(object):
                 agent = getattr(entity, Agent.registered_as)
                 if agent.new_map  is not None and agent.new_map != self.name:
                     self.remove_entity(entity.identifier)
-                    continue                
+                    continue
                 location = fifeagent.instance.getLocation()
                 if agent.new_layer is not None:
                     location.setLayer(self.get_layer(agent.layer))
@@ -199,7 +197,7 @@ class Map(object):
                 agent.new_layer = None
                 agent.new_position = None
                 agent.new_rotation = None
-    
+
     def update_entitities_agent(self):
         """Update the values of the agent component of the maps entities"""
         for entity in self.entities:
@@ -209,16 +207,16 @@ class Map(object):
                 location = fifeagent.behaviour.location
                 agent.position = (location.x, location.y, location.z)
                 agent.rotation = fifeagent.behaviour.rotation
-                
+
     def remove_entity(self, identifier):
         """Removes an entity from the map
-        
+
         Args:
             identifier: The name of the entity
-        
+
         Raises:
             KeyError: If the map has no entity with that name
-            
+
             TypeError: If the identifier is not a string
         """
         try:
@@ -231,16 +229,244 @@ class Map(object):
             fifeagent.behaviour = None
             agent = getattr(entity, Agent.registered_as)
             agent.map = ""
-            self.update_entities(self.__last_world)
+            self.update_entities()
         except KeyError as error:
             raise error
         except TypeError as error:
             raise TypeError("Expected identifier to be a string")
-        
+
     def get_layer(self, layer):
         """Returns the layer with the given name
-        
+
         Args:
             layer: The name of the layer
         """
         return self.fife_map.getLayer(layer)
+
+    def get_light_renderer(self):
+        return fife.LightRenderer.getInstance(self.camera)
+
+    def __create_render_node(self, agent=None, layer=None, location=None,
+                             point=None):
+        """Creatss a fife.RendererNode.
+
+        Arguments:
+            agent: The name of the agent the light should be attached too. If
+            empty or None this will be ignored. Please note that the layer and
+            location have to be set if this is empty or None.
+
+            layer: The name of the layer the light originates from. Lights will
+            illuminate lower layers, but not higher ones. If empty or None this
+            will be ignored.
+
+            location: The relative or absolute location of the agent depending
+            on whether the agent was set or not. A list with two or three
+            values.
+            If None this will be ignored.
+
+            point: The relative or absolute window position of the light as
+            a list with 2 values or a fife.Point.
+            This differs from location as it is in pixels and (0, 0) is the
+            upper left position of the window.
+        """
+        if agent is not None and agent != "":
+            agent = self.__application.world.get_entity(agent)
+            fifeagent = getattr(agent, FifeAgent.registered_as)
+            agent = fifeagent.instance
+        else:
+            agent = None
+        if layer is not None and layer != "":
+            map_layer = self.get_layer(layer)
+            if map_layer is None:
+                raise TypeError("No such layer: %s" % (layer))
+            layer = map_layer
+        elif agent is not None:
+            layer = fifeagent.layer
+        else:
+            layer = None
+        if location:
+            if layer is not None:
+                coords = fife.DoublePoint3D(*location)
+                location = fife.Location()
+                location.setLayer(layer)
+                location.setMapCoordinates(coords)
+            else:
+                raise TypeError(
+                    "The location was set, but not agent or layer.")
+        else:
+            location = None
+        if point is not None and not isinstance(point, fife.Point):
+            point = fife.Point(*point)
+        arguments = []
+        if agent is not None:
+            arguments.append(agent)
+        if location is not None:
+            arguments.append(location)
+        if layer is not None:
+            arguments.append(layer)
+            self.get_light_renderer().addActiveLayer(layer)
+        if point is not None:
+            arguments.append(point)
+        if not arguments:
+            raise TypeError("A light needs either an agent"
+                ", a location and a layer"
+                ", or a point")
+        node = fife.RendererNode(*arguments)
+        return node
+
+    def add_simple_light(self, group, intensity, radius, subdivisions, color,
+                         stretch=None, agent=None, layer=None, location=None,
+                         point=None, blend_mode=(-1, -1)):
+        """Adds a simple light to the map.
+
+        Arguments:
+
+            group: The name of the group the light should be put in.
+
+            intensity: The intensity of the radius as a value between 0 and 255
+
+            radius: The radius of the light as a float
+
+            subdivisions: The number of subdivisions of the light. More
+            subdivisions mean smoother light.
+
+            color: The color of the light either as a list with with three
+            values between 0 and 255 or a fife.Color
+
+            stretch: The x and y stretch factor of the light as a list
+            with two float values. If None it will default to both 1.0.
+
+            agent: The name of the agent the light should be attached too. If
+            empty or None this will be ignored. Please note that the layer and
+            location have to be set if this is empty or None.
+
+            layer: The name of the layer the light originates from. Lights will
+            illuminate lower layers, but not higher ones. If empty or None this
+            will be ignored.
+
+            location: The relative or absolute location of the agent depending
+            on whether the agent was set or not. A list with two or three
+            values.
+            If None this will be ignored.
+
+            point: The relative or absolute window position of the light as
+            a list with 2 values or a fife.Point.
+            This differs from location as it is in pixels and (0, 0) is the
+            upper left position of the window.
+
+            blend_mode: A list with 2 values for the source and
+            destination blend modes. If not passed the default values of FIFE
+            will be used.
+
+        Returns:
+            The light info of the added light
+        """
+        node = self.__create_render_node(agent, layer, location, point)
+        if stretch is None:
+            stretch = (1.0, 1.0)
+        if isinstance(color, fife.Color):
+            color = (color.getR(), color.getG(), color.getB())
+        arguments = (group, node, intensity, radius, subdivisions)
+        arguments += tuple(stretch)
+        arguments += tuple(color)
+        arguments += tuple(blend_mode)
+        light_renderer = self.get_light_renderer()
+        light_renderer.addSimpleLight(*arguments)
+        return light_renderer.getLightInfo(group)[-1]
+
+    def add_light_from_lightmap(self, group, lightmap, size=None, agent=None,
+                                layer=None, location=None, point=None,
+                                blend_mode=(-1, -1)):
+        """Adds a light that uses a lightmap.
+
+        Arguments:
+
+            group: The name of the group the light should be put in.
+
+            lightmap: The path to the lightmap image file or a fife.Image
+
+            size: A list with 2 values that set to what size the lightmap
+            should be resized. If None this will be ignored.
+
+            agent: The name of the agent the light should be attached too. If
+            empty or None this will be ignored. Please note that the layer and
+            location have to be set if this is empty or None.
+
+            layer: The name of the layer the light originates from. Lights will
+            illuminate lower layers, but not higher ones. If empty or None this
+            will be ignored.
+
+            location: The relative or absolute location of the agent depending
+            on whether the agent was set or not. A list with two or three
+            values.
+            If None this will be ignored.
+
+            point: The relative or absolute window position of the light as
+            a list with 2 values or a fife.Point.
+            This differs from location as it is in pixels and (0, 0) is the
+            upper left position of the window.
+
+            blend_mode: A list with 2 values for the source and
+            destination blend modes. If not passed the default values of FIFE
+            will be used.
+
+        Returns:
+            The light info of the added light
+        """
+        node = self.__create_render_node(agent, layer, location, point)
+        if not isinstance(lightmap, fife.Image):
+            engine = self.__application.engine
+            lightmap = engine.getImageManager().load(lightmap)
+        light_renderer = self.get_light_renderer()
+        if size is not None:
+            light_renderer.resizeImage(group, node, lightmap,
+                                       *(size + blend_mode))
+        else:
+            light_renderer.addImage(group, node, lightmap, *blend_mode)
+        return light_renderer.getLightInfo(group)[-1]
+
+    def add_light_from_animation(self, group, animation, agent=None,
+                                layer=None, location=None, point=None,
+                                blend_mode=(-1, -1)):
+        """Adds a light that uses an animation lightmap.
+
+        Arguments:
+
+            group: The name of the group the light should be put in.
+
+            animation: The path to a xml file that contains the animation data
+            or a fife.Animation.
+
+            agent: The name of the agent the light should be attached too. If
+            empty or None this will be ignored. Please note that the layer and
+            location have to be set if this is empty or None.
+
+            layer: The name of the layer the light originates from. Lights will
+            illuminate lower layers, but not higher ones. If empty or None this
+            will be ignored.
+
+            location: The relative or absolute location of the agent depending
+            on whether the agent was set or not. A list with two or three
+            values.
+            If None this will be ignored.
+
+            point: The relative or absolute window position of the light as
+            a list with 2 values or a fife.Point.
+            This differs from location as it is in pixels and (0, 0) is the
+            upper left position of the window.
+
+            blend_mode: A list with 2 values for the source and
+            destination blend modes. If not passed the default values of FIFE
+            will be used.
+
+        Returns:
+            The light info of the added light
+        """
+        node = self.__create_render_node(agent, layer, location, point)
+        if not isinstance(animation, fife.Animation):
+            animation = xmlanimation.loadXMLAnimation(
+                                                    self.__application.engine,
+                                                    animation)
+        light_renderer = self.get_light_renderer()
+        light_renderer.addAnimation(group, node, animation, *blend_mode)
+        return light_renderer.getLightInfo(group)[-1]

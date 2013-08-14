@@ -23,37 +23,37 @@ TEST_LAYER = "TestLayer"
 
 class FifeCamera(object):
     """Dummy class that acts like a fife camera as needed"""
-    
+
     def __init__(self):
         self.enabled = False
-    
+
     def isEnabled(self):
         return self.enabled
-    
+
     def setEnabled(self, value):
         self.enabled = value
-        
+
 class FifeLayer(object):
     """Dummy class that acts like a fife layer as needed"""
-    
+
     def __init__(self, identifier):
         self.identifier = identifier
 
 class FifeMap(object):
     """Dummy class that acts like a fife map as needed"""
-    
+
     def __init__(self):
         self.camera = FifeCamera()
         self.layers = layers = {}
         layers[TEST_LAYER] = FifeLayer(TEST_LAYER)
 
 
-    def getCamera(self, name=None):#pylint: disable=W0613
-        #Being lazy here as this is not part of the actual test
+    def getCamera(self, name=None):  # pylint: disable=W0613
+        # Being lazy here as this is not part of the actual test
         return self.camera
-    
-    def getLayer(self, name):#pylint: disable=W0613
-        #Being lazy here as this is not part of the actual test
+
+    def getLayer(self, name):  # pylint: disable=W0613
+        # Being lazy here as this is not part of the actual test
         return self.layers[name]
 
 # Test cases
@@ -74,32 +74,33 @@ class Test(unittest.TestCase):
         pass
 
 
-    def test_map(self):        
-        rpg_map = Map(self.fife_map, self.map_name, "Default", self.regions)
-        self.assertEqual(self.map_name, rpg_map.name, 
+    def test_map(self):
+        rpg_map = Map(self.fife_map, self.map_name, "Default", self.regions,
+                      None)
+        self.assertEqual(self.map_name, rpg_map.name,
                          "Map.name does not return the correct value")
-        self.assertEqual(self.fife_map, rpg_map.fife_map, 
+        self.assertEqual(self.fife_map, rpg_map.fife_map,
                          "Map.map does not return the correct value")
         self.assertEqual(self.fife_camera, rpg_map.camera,
                          "Map.camera does not return the correct value")
-        self.assertEqual(self.test_layer, rpg_map.get_layer(TEST_LAYER), 
+        self.assertEqual(self.test_layer, rpg_map.get_layer(TEST_LAYER),
                          "Map.get_layer does not return the correct value")
         self.assertDictEqual(self.regions, rpg_map.regions,
                          "Map.regions does not return the correct value")
         self.assertDictEqual({}, rpg_map.entities,
                              "Entities dictionary is not empty")
-        self.assertFalse(rpg_map.is_active, 
+        self.assertFalse(rpg_map.is_active,
                          "Map should not be active")
         rpg_map.activate()
-        self.assertTrue(rpg_map.is_active, 
+        self.assertTrue(rpg_map.is_active,
                         "Map should be active")
         rpg_map.deactivate()
-        self.assertFalse(rpg_map.is_active, 
+        self.assertFalse(rpg_map.is_active,
                          "Map should not be active")
         point = DoublePoint(50, 50)
-        self.assertTrue(rpg_map.is_in_region(point, "Alpha"), 
+        self.assertTrue(rpg_map.is_in_region(point, "Alpha"),
                         "50, 50 should be in region Alpha")
-        self.assertFalse(rpg_map.is_in_region(point, "Beta"), 
+        self.assertFalse(rpg_map.is_in_region(point, "Beta"),
                         "50, 50 should not be in region Beta")
-        self.assertRaises(NoSuchRegionError, 
+        self.assertRaises(NoSuchRegionError,
                           rpg_map.is_in_region, point, "Gamma")
