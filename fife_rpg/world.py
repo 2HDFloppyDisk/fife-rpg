@@ -38,22 +38,22 @@ from fife_rpg.components.agent import Agent
 from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.components.general import General
 
+
 class RPGWorld(World):
     """The Base world for all rpgs.
-    
+
     Sets up the generic systems and components
-    
+
     Properties:
-        application: The :class:`fife_rpg.rpg_application.RPGApplication` that 
+        application: The :class:`fife_rpg.rpg_application.RPGApplication` that
         uses this engine
-        
-        object_db: Stores the template data        
+
+        object_db: Stores the template data
     """
-    
+
     MAX_ID_NUMBER = sys.maxint
-    
+
     def __init__(self, application):
-        World.__init__(self, application.engine)
         self.application = application
         self.object_db = {}
         GameVariables.add_callback(self.update_game_variables)
@@ -64,14 +64,16 @@ class RPGWorld(World):
         if not General.registered_as:
             General.register()
         yaml.add_representer(RPGEntity, self.entity_representer)
-        yaml.add_constructor('!Entity', self.entity_constructor, yaml.SafeLoader)
-                
+        yaml.add_constructor('!Entity', self.entity_constructor,
+                             yaml.SafeLoader)
+        World.__init__(self, application.engine)
+
     def get_entity(self, identifier):
         """Returns the entity with the identifier
-        
+
         Args:
             identifier: The identifier of the entity
-        
+
         Returns:
             The entity with the identifier or None
         """
@@ -83,22 +85,22 @@ class RPGWorld(World):
 
     def is_identifier_used(self, identifier):
         """Checks whether the idenfier is used
-        
+
         Args:
             identifier: The identifier to check
-        
+
         Returns:
             True if the identifier is used, false if not
         """
-        entity = self.get_entity(identifier) 
-        return not entity is None    
-    
+        entity = self.get_entity(identifier)
+        return not entity is None
+
     def create_unique_identifier(self, identifier):
         """Returns an unused identifier based on the given identifier
-        
+
         Args:
             identifier: The base identifier
-        
+
         Returns:
             A unique unused identifier based in the given identifier
         """
@@ -107,12 +109,12 @@ class RPGWorld(World):
             id_number += 1
             if id_number > self.MAX_ID_NUMBER:
                 raise ValueError(
-                    "Number exceeds MAX_ID_NUMBER:" + 
+                    "Number exceeds MAX_ID_NUMBER:" +
                     str(self.MAX_ID_NUMBER)
                 )
         identifier = identifier + "_" + str(id_number)
         return identifier
-    
+
     def configure(self):
         """Configure the worlds components and systems"""
         World.configure(self)
@@ -124,17 +126,17 @@ class RPGWorld(World):
             setattr(self.systems, name, system)
         if not General.registered_as:
             General.register()
-    
+
     def get_or_create_entity(self, identifier, info=None, extra=None):
         """Create an entity if not already present and return it.
-        
+
             Args:
                 identifier: The identifier of the new object
-                
+
                 info: Stores information about the object we want to create
-                
+
                 extra: Stores additionally required attributes
-        
+
             Returns:
                 The entity with the identifier.
                 None: If there is no info dictionary and no entity with the
@@ -144,10 +146,10 @@ class RPGWorld(World):
             return self.get_entity(identifier)
         elif info is not None:
             extra = extra or {}
-            
+
             for key, val in extra.items():
-                info[key].update(val)      
-           
+                info[key].update(val)
+
             new_ent = RPGEntity(self, identifier)
             for component, data in info.items():
                 comp_obj = getattr(new_ent, component)
@@ -156,20 +158,20 @@ class RPGWorld(World):
             return new_ent
         else:
             return None
-        
+
     def update_game_variables(self, variables):
         """Called by the game environment when it wants to update its globals
-        
+
         Args:
-            variables: The globals dictionary of the GameEnvironment that is 
+            variables: The globals dictionary of the GameEnvironment that is
             filled by the GameScene
         """
         ent_module = imp.new_module("entities")
         extent = getattr(self[RPGEntity], General.registered_as)
-        for entity in extent:            
+        for entity in extent:
             ent_module.__dict__[entity.identifier] = entity
         variables["entities"] = ent_module
-        
+
     def import_agent_objects(self, object_path=None):
         """Import the objects used by agents from the given path
 
@@ -205,26 +207,26 @@ class RPGWorld(World):
 
         Args:
             entity_data: The dictionary in which the data should be put.
-            
+
             template_name: The name of the template to use
 
         Returns:
             The modified entity dictionary
         """
-        if self.object_db.has_key(template_name):
+        if template_name in self.object_db:
             template_data = copy(self.object_db[template_name])
             for key in template_data.keys():
-                if entity_data.has_key(key):                    
+                if key in entity_data:
                     tmp_attributes = template_data[key]
                     tmp_attributes.update(entity_data[key])
                     entity_data[key] = tmp_attributes
                 else:
                     entity_data[key] = template_data[key]
         return entity_data
-    
+
     def load_and_create_entities(self, entities_file_name=None):
         """Reads the entities from a file and creates them
-        
+
         Args:
             entities_file_name: The path to the entities file. Overwrites
             the EntitiesFile setting if not set to None
@@ -240,13 +242,13 @@ class RPGWorld(World):
                 entities.next()
         except StopIteration:
             pass
-        
+
     def create_entity_dictionary(self, entity):
         """Creates a dictionary containing the values of the Entity
-        
+
         Args:
             entity: The Entity instance
-        
+
         Returns:
             The created dictionary
         """
@@ -257,63 +259,63 @@ class RPGWorld(World):
             component_values = getattr(entity, name)
             if component_values:
                 component_data = None
-                for field in component.saveable_fields:                
+                for field in component.saveable_fields:
                     if not component_data:
-                        component_data = components_data[name] = {}                
-                    component_data[field] = getattr(component_values, field)    
+                        component_data = components_data[name] = {}
+                    component_data[field] = getattr(component_values, field)
         return entity_dict
 
     def entity_representer(self, dumper, data):
         """Creates a yaml node representing an entity
-        
+
         Args:
             dumper: A yaml BaseRepresenter
-            
+
             data: The Entity
-        
+
         Returns:
             The created node
         """
         entity_dict = self.create_entity_dictionary(data)
         entity_node = dumper.represent_mapping(u"!Entity", entity_dict)
         return entity_node
-    
+
     def entity_constructor(self, loader, node):
         """Constructs an Entity from a yaml node
-        
+
         Args:
             loader: A yaml BaseConstructor
-            
+
             node: The yaml node
-            
+
         Returns:
             The created Entity
         """
         entity_dict = loader.construct_mapping(node, deep=True)
         template = None
-        if entity_dict.has_key("Template"):
+        if "Template" in entity_dict:
             template = entity_dict["Template"]
-        if entity_dict.has_key("Components"):
+        if "Components" in entity_dict:
             components_data = entity_dict["Components"]
             if template:
                 self.update_from_template(components_data, template)
             general_name = General.registered_as
             identifier = None
-            if not components_data.has_key(general_name):
+            if not general_name in components_data:
                 identifier = self.create_unique_identifier(template)
             else:
                 general_data = components_data[General.registered_as]
                 identifier = general_data["identifier"]
-            return self.get_or_create_entity(identifier, components_data)  
+            return self.get_or_create_entity(identifier, components_data)
         elif template:
             components_data = {}
             self.update_from_template(components_data, template)
             identifier = self.create_unique_identifier(template)
             return self.get_or_create_entity(identifier, components_data)
         else:
-            raise ValueError("There is no identifier and no Template set." 
+            raise ValueError("There is no identifier and no Template set."
                              "Can't create an Entity without an identifier.")
-            
+
     def pump(self, time_delta):
         """Performs actions every frame
 

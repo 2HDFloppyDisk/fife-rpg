@@ -3,12 +3,12 @@
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-#   
+#
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
-#   
+#
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -31,6 +31,7 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.helpers import ClassProperty
 import imp
 
+
 class ScriptingSystem(Base):
     """System responsible for managing scripts.
 
@@ -41,7 +42,7 @@ class ScriptingSystem(Base):
 
     dependencies = []
 
-    __commands = {"" : {}}
+    __commands = {"": {}}
 
     @classmethod
     def register(cls, name="scripting"):
@@ -58,24 +59,24 @@ class ScriptingSystem(Base):
     @classmethod
     def register_command(cls, name, command_function, module=""):
         """Register a command to the command dictionary.
-        
+
         Args:
             name: The name of the command
-            
+
             command_function: The command function.
-            
+
             module: The name of the module the command will be available at
         """
         if name in cls.__commands:
             raise AlreadyRegisteredError(name, "command")
-        if not cls.__commands.has_key(module):
+        if not module in cls.__commands:
             cls.__commands[module] = {}
         cls.__commands[module][name] = command_function
 
     @classmethod
     def register_commands(cls, command_dict, module=""):
         """Register a command to the command dictionary.
-        
+
         Args:
             command_dict: A dictionary with commands.
 
@@ -83,7 +84,7 @@ class ScriptingSystem(Base):
         """
         for name, command_function in command_dict.iter_items():
             cls.register_command(name, command_function)
-        
+
     @ClassProperty
     @classmethod
     def commands(cls):
@@ -93,11 +94,17 @@ class ScriptingSystem(Base):
         Base.__init__(self)
         self.reset()
 
+    def set_world(self, world):
+        """Bind the system to a world"""
+        Base.set_world(self, world)
+        app = world.application
+        app.add_map_switch_callback(self.on_map_switched)
+
     def reset(self):
         """Resets the scripting system"""
         self.globals = {}
         self.__scripts = []
-    
+
     def prepare_globals(self):
         """Builds the actual globals passed to scripts and returns them
         as a dictionary"""
@@ -111,13 +118,13 @@ class ScriptingSystem(Base):
         for name, module_commands in self.commands.iteritems():
             if name == "":
                 continue
-            if not script_globals.has_key(name):
+            if not name in script_globals:
                 script_globals[name] = imp.new_module(name)
             module = script_globals[name]
             module.__dict__.update(module_commands)
-             
+
         return script_globals
-    
+
     def step(self, time_delta):
         """Execute a time step for the system. Must be defined
         by all system classes.
@@ -133,14 +140,14 @@ class ScriptingSystem(Base):
     def eval(self, string):
         script_globals = self.prepare_globals()
         return eval(string, script_globals)
-    
+
     def add_script(self, name, filename):
         """Adds a script to the scripts dictionary
-        
+
             Args:
-                
+
                 name: The name of the script
-                
+
                 filename: Path to the script file
         """
         script_file = file(filename, "r")
@@ -148,12 +155,12 @@ class ScriptingSystem(Base):
         exec script_file in script_module.__dict__
         self.__scripts.append(script_module)
         script_file.close()
-        
+
     def load_scripts(self, filename=None):
         """Load scripts from a file
-        
+
         Args:
-            filename: The path to the scripts file. If set to None the 
+            filename: The path to the scripts file. If set to None the
             "ScriptsFile" setting will be used.
         """
         application = self.world.application
@@ -169,5 +176,21 @@ class ScriptingSystem(Base):
                 name = script[0]
                 filename = script[1]
                 self.add_script(name, filename)
-         
-        
+
+    def on_map_switched(self, old_map, new_map):
+        """Called when the application switches to a new map
+
+        Arguments:
+
+            old_map: The name of the old map
+
+            new_map: The name of the new map
+        """
+        if GameVariables.registered_as:
+            getattr(self.world.systems, GameVariables.registered_as).step(0)
+        for script in self.__scripts:
+            if not "map_switched" in script.__dict__:
+                continue
+            script_globals = self.prepare_globals()
+            script.__dict__.update(script_globals)
+            script.map_switched(old_map, new_map)
