@@ -39,7 +39,7 @@ from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.components.general import General
 
 
-class RPGWorld(World):
+class RPGWorld(World):  # pylint: disable=R0924
     """The Base world for all rpgs.
 
     Sets up the generic systems and components
@@ -243,7 +243,8 @@ class RPGWorld(World):
         except StopIteration:
             pass
 
-    def create_entity_dictionary(self, entity):
+    @classmethod
+    def create_entity_dictionary(cls, entity):
         """Creates a dictionary containing the values of the Entity
 
         Args:

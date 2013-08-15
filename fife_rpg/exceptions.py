@@ -24,34 +24,34 @@
 class AlreadyRegisteredError(Exception):
     """Exception that gets raised when an object with the name is already
     registered
-    
+
     Properties:
         name: The name of the action that was already registered
-        
+
         obj_type: The obj_type of the object
     """
-    
+
     def __init__(self, name, obj_type):
         Exception.__init__(self)
         self.name = name
         self.type = obj_type
-    
+
     def __str__(self):
         """Returns the message of the Exception"""
         return ("An %s with the name '%s' already exists" %
-                    (self.type,  self.name))
+                    (self.type, self.name))
 
 class NotRegisteredError(Exception):
     """Exception that gets raised when a class is not registered
-    
+
     Properties:
         obj_type: The obj_type of the object
     """
-    
+
     def __init__(self, obj_type):
         Exception.__init__(self)
         self.type = obj_type
-    
+
     def __str__(self):
         """Returns the message of the Exception"""
         return ("%s class not registered." %
@@ -59,15 +59,15 @@ class NotRegisteredError(Exception):
 
 class NoSuchCommandError(Exception):
     """Exception that gets raised when the command is not found
-    
+
     Properties:
         name: The name of the command that was being tried to execute
     """
-    
+
     def __init__(self, name):
         Exception.__init__(self)
         self.name = name
-    
+
     def __str__(self):
         """Returns the message of the Exception"""
         return "There is no '%s' command" % (self.name)

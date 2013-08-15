@@ -21,9 +21,20 @@
 """
 from fife_rpg.actions.base import BaseAction
 
+
 class SetGlobalLight(BaseAction):
-    
-    def __init__(self, application, red, green, blue, commands = None):
+    """Action that sets the values of the current maps light
+
+    Properties:
+
+        red: The red value of the light
+
+        green: The green value of the light
+
+        blue: The blue value of the light
+    """
+
+    def __init__(self, application, red, green, blue, commands=None):
         BaseAction.__init__(self, application, commands)
         self.red = red
         self.green = green
@@ -33,7 +44,7 @@ class SetGlobalLight(BaseAction):
         self.application.set_global_lighting(self.red,
                                              self.green,
                                              self.blue)
-        BaseAction.execute(self)        
+        BaseAction.execute(self)
 
     @classmethod
     def register(cls, name="SetGlobalLight"):

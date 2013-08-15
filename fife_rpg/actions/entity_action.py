@@ -15,64 +15,67 @@
 """Base class for actions that an entity can perform on other entities.
 
 .. module:: entity_action
-    :synopsis: Base class for actions that an entity can perform on other entities.
+    :synopsis: Base class for actions that an entity can perform on other
+    entities.
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
 from fife_rpg.actions.base import BaseAction
 
+
 class EntityAction(BaseAction):
     """Base class for actions that an entity can perform on other entities.
-    
+
     Properties:
         application: A :class:`fife_rpg.rpg_application.RPGApplication`
-        
+
         performer: The performer initiating the action
-        
+
         target: The target of the action
-        
+
         commands: List of additional commands to execute
 
         registered_as: Class property that sets under what name the class is
         registered
-        
-        dependencies: Class property that sets the classes this System depends on
+
+        dependencies: Class property that sets the classes this Action depends
+        on
     """
     __registered_as = None
     dependencies = []
 
-    def __init__(self, application, performer, target, commands = None):
+    def __init__(self, application, performer, target, commands=None):
         BaseAction.__init__(self, application, commands)
         self.commands = commands or ()
         self.application = application
         self.performer = performer
         self.target = target
         self.executed = False
-        
+
     @property
     def menu_text(self):
         """Returns the text that is to be displayed in menus"""
         return self.registered_as
 
     @classmethod
-    def check_performer(cls, entity): #pylint: disable-msg=W0613
+    def check_performer(cls, entity):  # pylint: disable-msg=W0613
         """Checks whether the entity qualifies as an performer for this action
-        
+
         Args:
-            entity: The entity to ceck. 
+            entity: The entity to ceck.
             A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """
         return False
-    
+
     @classmethod
-    def check_target(cls, entity): #pylint: disable-msg=W0613
+    def check_target(cls, entity):  # pylint: disable-msg=W0613
         """Checks whether the entity qualifies as a target for this action
-        
+
         Args:
-            entity: The entity to check. 
+            entity: The entity to check.
             A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise

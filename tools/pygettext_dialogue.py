@@ -33,17 +33,17 @@ if __name__ == '__main__':
                        help='The input file')
     parser.add_argument('-o', "--output", metavar="output", type=str,
                        help='The output file')
-    
+
     args = parser.parse_args()
-    
+
     try:
         dialogue_file = file(args.input, "r")
     except IOError as error:
         print "Cannot open input file '%s'" % args.input
         print error
         dialogue_file = None
-    
-    if dialogue_file:        
+
+    if dialogue_file:
         if args.output:
             messages_filename = args.output
         else:
@@ -57,10 +57,10 @@ if __name__ == '__main__':
         sections_data = dialogue_data["Sections"]
         sections_data.update(dialogue_data["Greetings"])
         for name, section in sections_data.iteritems():
-            lines = []            
+            lines = []
             lines.append("\n#%s - %s\n" % (input_filename, name))
             lines.append("msgid \"%s\"\n" % section["text"])
             lines.append("msgstr \"\"\n")
             messages_file.writelines(lines)
         print "Success"
-        
+

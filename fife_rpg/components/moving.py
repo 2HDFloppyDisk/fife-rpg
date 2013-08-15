@@ -22,26 +22,27 @@
 
 from fife_rpg.components.base import Base
 
+
 class Moving(Base):
     """Component that stores the values for agents that can move around
     the map by using pathfinding.
-    
+
     Fields:
         walk_speed: The walking speed
-        
+
         walk_animation: The animation that is played when walking
-        
+
         run_speed: The Running speed
-        
+
         run_animation: The animation that is played when running
     """
 
     def __init__(self):
         Base.__init__(self, walk_speed=float, walk_animation=str,
                       run_speed=float, run_animation=str)
-        self.fields["walk_speed"].default = lambda: 0.0 
+        self.fields["walk_speed"].default = lambda: 0.0
         self.fields["walk_animation"].default = lambda: "walk"
-        self.fields["run_speed"].default = lambda: 0.0 
+        self.fields["run_speed"].default = lambda: 0.0
         self.fields["run_animation"].default = lambda: "run"
 
     @classmethod
@@ -50,7 +51,7 @@ class Moving(Base):
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.

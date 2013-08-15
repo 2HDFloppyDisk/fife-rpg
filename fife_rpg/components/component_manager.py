@@ -27,34 +27,38 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 _COMPONENTS = {}
 _CHECKERS = []
 
+
 def get_components():
     """Returns the registered components"""
     return copy(_COMPONENTS)
 
+
 def register_component(component_name, component_object):
     """Registers an component
-    
+
     Args:
         component_name: The name of the component_object
-        
+
         component_object: A bGrease component object
     """
     if not component_name in _COMPONENTS:
         _COMPONENTS[component_name] = component_object
     else:
-        raise AlreadyRegisteredError(component_name,  "component")
-    
+        raise AlreadyRegisteredError(component_name, "component")
+
+
 def get_checkers():
     """Returns the registered checkers"""
     return copy(_CHECKERS)
 
+
 def register_checker(component_names, callback):
     """Add a checker to the checkers list
-    
+
     Args:
-        component_name: A list of the names of the components 
+        component_name: A list of the names of the components
         which the checker will check
-        
+
         callback: The checker function
     """
     _CHECKERS.append((component_names, callback))

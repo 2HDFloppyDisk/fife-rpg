@@ -12,7 +12,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#This module was originally taken from the sounds module of PARPG
+# This module was originally taken from the sounds module of PARPG
 
 """This module holds the object code to play sounds and sound effects
 
@@ -22,14 +22,14 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+
 class SoundEngine:
     """Plays sounds and __music
-    
+
     Properties:
         is_music_on: Indicates whether there is currently music playing or not
     """
-    
-    
+
     def __init__(self, fife_engine):
         """Initialise the SoundEngine instance
            @type fife_engine: fine.Engine
@@ -37,20 +37,20 @@ class SoundEngine:
            @return: None"""
         self.__engine = fife_engine
         self.__sound_manager = self.__engine.getSoundManager()
-        #self.__sound_manager.init()
+        # self.__sound_manager.init()
         # set up the sound
         self.__music = self.__sound_manager.createEmitter()
         self.__is_music_on = False
         self.__music_init = False
-    
+
     @property
     def is_music_on(self):
         """Indicates whether there is currently music playing or not"""
-        return self.__is_music_on 
-    
+        return self.__is_music_on
+
     def play_music(self, sfile=None):
         """Play music, with the given file if passed
-        
+
         Args:
             sfile: Filename to play
         """
@@ -76,11 +76,10 @@ class SoundEngine:
         else:
             self.pause_music()
 
-    def setVolume(self, volume):
+    def set_volume(self, volume):
         """Set the volume of the music
-        
+
         Args:
            volume: The volume wanted, 0 to 100
         """
         self.__sound_manager.setVolume(0.01 * volume)
-

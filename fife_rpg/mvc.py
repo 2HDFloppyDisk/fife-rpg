@@ -24,15 +24,18 @@
 
 from bGrease.grease_fife.mode import Mode
 
+
 class ViewBase(object):
     """Base class for views
 
     Properties:
-        application: A :class:`fife_rpg.rpg_application.RPGApplication` instance
+        application: A :class:`fife_rpg.rpg_application.RPGApplication`
+        instance
     """
 
     def __init__(self, application):
         self.application = application
+
 
 class ControllerBase(Mode):
     """Base of Controllers
@@ -40,11 +43,11 @@ class ControllerBase(Mode):
     Properties:
         application: The :class:`fife_rpg.rpg_application.RPGApplication` that
         created this controller
-        
+
         view: The :class:`fife_rpg.mcs.ViewBase` that is used by this
         controller
     """
-        
+
     def __init__(self, view, application):
         Mode.__init__(self, application.engine)
         self.view = view

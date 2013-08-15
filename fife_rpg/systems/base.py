@@ -25,14 +25,16 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.systems import SystemManager
 from fife_rpg.helpers import ClassProperty
 
+
 class Base(System):
     """Base system for fife-rpg.
-    
+
     Properties:
         registered_as: Class property that sets under what name the class is
         registered
-        
-        dependencies: Class property that sets the classes this System depends on
+
+        dependencies: Class property that sets the classes this System depends
+        on
     """
 
     __registered_as = None
@@ -64,4 +66,3 @@ class Base(System):
         except AlreadyRegisteredError as error:
             print error
             return False
-

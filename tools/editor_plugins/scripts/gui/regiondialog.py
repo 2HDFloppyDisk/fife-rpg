@@ -36,12 +36,12 @@ class Region(object):
         self.rect = rect
 
 def region_representer(dumper, data):
-    #dumper = yaml.Dumper()
+    # dumper = yaml.Dumper()
     region_data = (data.rect.x, data.rect.y, data.rect.w, data.rect.h)
-    return dumper.represent_list(region_data)        
-        
+    return dumper.represent_list(region_data)
+
 yaml.add_representer(Region, region_representer)
-    
+
 class RegionDialog(object):
     """
     The B{RegionDialog} provides a gui dialog for creating and editing regions.
@@ -57,14 +57,14 @@ class RegionDialog(object):
         self.onCancel = onCancel
         self._widget = pychan.loadXML('gui/regiondialog.xml')
 
-        if region:            
+        if region:
             self._widget.distributeData({
                 "regionBox" : unicode(region.name),
                 "xPosBox" : unicode(region.rect.x),
                 "yPosBox" : unicode(region.rect.y),
 				"widthBox" : unicode(region.rect.w),
 				"heightBox" : unicode(region.rect.h),
-            })           
+            })
 
         self._widget.mapEvents({
             'okButton'     : self._finished,
@@ -72,12 +72,12 @@ class RegionDialog(object):
         })
 
         self._widget.show()
-        
+
     def _cancelled(self):
         """ """
         if self.onCancel:
             self.onCancel()
-        self._widget.hide()        
+        self._widget.hide()
 
     def _finished(self):
         """ """
@@ -86,7 +86,7 @@ class RegionDialog(object):
         if regionId == '':
             dialogs.message(message=unicode("Please enter a region id."), caption=unicode("Error"))
             return
-            
+
         try:
             x_pos = float(self._widget.collectData('xPosBox'))
             y_pos = float(self._widget.collectData('yPosBox'))
@@ -95,11 +95,11 @@ class RegionDialog(object):
             rect = fife.DoubleRect(x_pos, y_pos, width, height)
         except ValueError:
             dialogs.message(message=unicode("Please enter integer or decimal values for scale."), caption=unicode("Error"))
-            return        
-       
+            return
+
         # Set up region
-        region = self.region     
-    
+        region = self.region
+
         if not self.region:
             if not self.regions.has_key(regionId):
                 region = Region(str(regionId), rect)
@@ -112,10 +112,10 @@ class RegionDialog(object):
                 region.rect = rect
             else:
                 print 'The region ' + str(regionId) + ' already exists!'
-                return     
-               
+                return
+
         # Hide dialog and call back
         self._widget.hide()
-        
+
         if self.callback:
             pychan.tools.applyOnlySuitable(self.callback, region=region)

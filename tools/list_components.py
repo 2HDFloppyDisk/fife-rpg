@@ -52,11 +52,11 @@ if __name__ == "__main__":
                        'where the components are')
     parser.add_argument('-o', "--output", metavar="output", type=str,
                        help='The output file')
-    
+
     args = parser.parse_args()
-    
+
     sub_package = args.sub_package if args.sub_package else ""
-    
+
     output = args.output if args.output else "components.yaml"
     output_file = file(output, "w")
     components = {"Components": list_components(args.base_package, sub_package)}

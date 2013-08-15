@@ -21,9 +21,17 @@
 """
 from fife_rpg.actions.base import BaseAction
 
+
 class MoveCamera(BaseAction):
-    
-    def __init__(self, application, position, commands = None):
+    """An action that moves the camera to the given location
+
+    Properties:
+
+        position: The position to move the camera to as a list with two
+        values
+    """
+
+    def __init__(self, application, position, commands=None):
         BaseAction.__init__(self, application, commands)
         self.position = position
 
@@ -35,7 +43,7 @@ class MoveCamera(BaseAction):
         coords.y = self.position[1]
         location.setMapCoordinates(coords)
         active_camera.setLocation(location)
-        BaseAction.execute(self)        
+        BaseAction.execute(self)
 
     @classmethod
     def register(cls, name="MoveCamera"):

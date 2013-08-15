@@ -49,7 +49,7 @@ class NoSuchRegionError(Exception):
                     (self.map, self.region))
 
 
-class Map(object):
+class Map(object):  # pylint: disable=R0924
     """Contains the data of a map
 
     Properties:
@@ -244,6 +244,7 @@ class Map(object):
         return self.fife_map.getLayer(layer)
 
     def get_light_renderer(self):
+        """Returns the light renderer of the current camera"""
         return fife.LightRenderer.getInstance(self.camera)
 
     def __create_render_node(self, agent=None, layer=None, location=None,

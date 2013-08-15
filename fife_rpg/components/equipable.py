@@ -23,15 +23,16 @@
 from fife_rpg.components.base import Base
 from fife_rpg.components.containable import Containable
 
+
 class Equipable(Base):
     """
     Component that stores the data for an entity that can be equipped.
-    
+
     Fields:
         possible_slots: The slots that this equipable can be equipped in
-        
+
         wearer: The name of the Entity that has this equipable equipped
-        
+
         in_slot: The slot this equipable is currently in
     """
 
@@ -39,7 +40,7 @@ class Equipable(Base):
 
     def __init__(self):
         Base.__init__(self, possible_slots=list, wearer=object, in_slot=str)
-        
+
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
@@ -52,7 +53,7 @@ class Equipable(Base):
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.

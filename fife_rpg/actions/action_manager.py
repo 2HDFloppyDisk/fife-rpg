@@ -16,7 +16,7 @@
 
 """This module manages the actions of fife-rpg.
 
-An action is a object that can be executed later. This can be used, 
+An action is a object that can be executed later. This can be used,
 for example, in menus,
 
 .. module:: action
@@ -32,21 +32,23 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 _ACTIONS = {}
 _COMMANDS = {}
 
+
 def get_actions():
     """Returns the registered actions"""
     return copy(_ACTIONS)
 
+
 def get_possible_actions(performer, target):
-    """Get the entity actions that can be performed with the performer and the 
+    """Get the entity actions that can be performed with the performer and the
     target
-    
+
     Args:
         performer: The performer initiating the action
-                
+
         target: The target of the action
-    
+
     Returns:
-        A dictionary with the actions that can be performed using the performer 
+        A dictionary with the actions that can be performed using the performer
         and the target
     """
     from fife_rpg.actions.entity_action import EntityAction
@@ -59,37 +61,41 @@ def get_possible_actions(performer, target):
             possible_actions[name] = action
     return possible_actions
 
+
 def register_action(action_name, action_class):
     """Registers an action
-    
+
     Args:
         action_name: The name of the action_class
-        
+
         action_class: The class of the action
 
     Raises:
-        :class:`fife_rpg.exceptions.AlreadyRegisteredError` 
+        :class:`fife_rpg.exceptions.AlreadyRegisteredError`
         if the action already exists.
     """
     if not action_name in _ACTIONS:
         _ACTIONS[action_name] = action_class
     else:
-        raise AlreadyRegisteredError(action_name,  "action")
+        raise AlreadyRegisteredError(action_name, "action")
+
 
 def clear_actions():
     """Removes all actions"""
     _ACTIONS.clear()
-    
+
+
 def get_commands():
     """Returns the registered commands"""
     return copy(_COMMANDS)
 
+
 def register_command(command_name, function):
     """Registers an command
-    
+
     Args:
         command_name: The name of the command_class
-        
+
         function: The function to execute
 
     Raises:
@@ -100,6 +106,7 @@ def register_command(command_name, function):
         _COMMANDS[command_name] = function
     else:
         raise AlreadyRegisteredError(command_name, "command")
+
 
 def clear_commands():
     """Removes all commands"""

@@ -25,15 +25,16 @@ from fife_rpg.components.moving import Moving
 from fife_rpg.behaviours import AGENT_STATES
 from fife_rpg.entities.rpg_entity import RPGEntity
 
+
 class FifeAgent(Base):
     """Component that stores the values for a fife agent
-    
+
     Fields:
         layer: The layer the agent is on
-        
+
         behaviour: The behaviour object of this agent
-        
-        instance: The FIFE instance of this agent. 
+
+        instance: The FIFE instance of this agent.
     """
 
     def __init__(self):
@@ -54,7 +55,7 @@ class FifeAgent(Base):
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.
@@ -64,33 +65,35 @@ class FifeAgent(Base):
         """
         return (super(FifeAgent, cls).register(name, auto_register))
 
+
 def setup_behaviour(agent):
     """Attach the behaviour to the layer
-    
+
     Args:
         agent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
     """
     if agent.behaviour:
         agent.behaviour.attach_to_agent(agent)
-        
-def approach_and_execute(entity, target_or_location, run_agent=True, 
+
+
+def approach_and_execute(entity, target_or_location, run_agent=True,
                     callback=None):
     """Move the entity to the given location, or follow the given target and
     execute an action when reaching the target.
 
     Args:
-        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a
         fifeagent and a moving component
-        
-        target_or_location: A fife.Location or position tuple 
+
+        target_or_location: A fife.Location or position tuple
         to move to or another entity  to follow
-        
+
         run_agent: If true the run_animation will be performed otherwise
-        the walk_animation. 
-        
+        the walk_animation.
+
         callback: A function, that will be called after the agent has reached
         its target.
-    """    
+    """
     fifeagent_name = FifeAgent.registered_as
     moving_name = Moving.registered_as
     if fifeagent_name is None or moving_name is None:
@@ -105,33 +108,34 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
     action = moving.run_animation if run_agent else moving.walk_animation
     speed = moving.run_speed if run_agent else moving.run_speed
     if isinstance(target_or_location, RPGEntity):
-        target_agent = getattr(target_or_location, fifeagent_name) 
+        target_agent = getattr(target_or_location, fifeagent_name)
         if(target_agent):
             target_or_location = target_agent.instance
         else:
             return
     if isinstance(target_or_location, fife.Instance):
         agent = target_or_location
-        fifeagent.instance.follow(action, 
-                                  agent, 
+        fifeagent.instance.follow(action,
+                                  agent,
                                   speed)
     else:
         location = target_or_location
         if not isinstance(location, fife.Location):
-            boxLocation = tuple([int(float(i)) for i in location])
+            box_location = tuple([int(float(i)) for i in location])
             location = fife.Location(fifeagent.instance.getLocation())
-            location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
-        fifeagent.instance.move(action, 
-                                location, 
+            location.setLayerCoordinates(fife.ModelCoordinate(*box_location))
+        fifeagent.instance.move(action,
+                                location,
                                 speed)
+
 
 def run(entity, location):
     """Makes the entity run to a certain location
-    
+
     Args:
-        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a
         fifeagent and a moving component
-        
+
         location: A fife.Location or position tuple to run to.
     """
     fifeagent_name = FifeAgent.registered_as
@@ -146,20 +150,21 @@ def run(entity, location):
     fifeagent.behaviour.clear_animations()
     fifeagent.behaviour.callback = None
     if not isinstance(location, fife.Location):
-        boxLocation = tuple([int(float(i)) for i in location])
+        box_location = tuple([int(float(i)) for i in location])
         location = fife.Location(fifeagent.instance.getLocation())
-        location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
-    fifeagent.instance.move(moving.run_animation, 
-                            location, 
+        location.setLayerCoordinates(fife.ModelCoordinate(*box_location))
+    fifeagent.instance.move(moving.run_animation,
+                            location,
                             moving.run_speed)
+
 
 def walk(entity, location):
     """Makes the entity walk to a certain location
-    
+
     Args:
-        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a 
+        entity: A :class:`fife_rpg.entities.rpg_entity.RPGEntity` with a
         fifeagent and a moving component
-        
+
         location: A fife.Location or position tuple to walk to.
     """
     fifeagent_name = FifeAgent.registered_as
@@ -174,12 +179,13 @@ def walk(entity, location):
     fifeagent.behaviour.clear_animations()
     fifeagent.behaviour.callback = None
     if not isinstance(location, fife.Location):
-        boxLocation = tuple([int(float(i)) for i in location])
+        box_location = tuple([int(float(i)) for i in location])
         location = fife.Location(fifeagent.instance.getLocation())
-        location.setLayerCoordinates(fife.ModelCoordinate(*boxLocation))
+        location.setLayerCoordinates(fife.ModelCoordinate(*box_location))
     fifeagent.instance.move(moving.walk_animation,
                             location,
                             moving.walk_speed)
+
 
 def register_script_commands(module=""):
     """Register commands for this module"""
@@ -187,4 +193,3 @@ def register_script_commands(module=""):
     ScriptingSystem.register_command("move",
                                      approach_and_execute,
                                      module)
-    

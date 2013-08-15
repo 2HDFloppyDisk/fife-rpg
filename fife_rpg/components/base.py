@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -27,14 +28,16 @@ from fife_rpg.components import ComponentManager
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.helpers import ClassProperty
 
+
 class Base(Component):
     """Base component for fife-rpg.
-    
+
     Properties:
         registered_as: Class property that sets under what name the class is
         registered
-        
-        dependencies: Class property that sets the classes this System depends on
+
+        dependencies: Class property that sets the classes this Component
+        depends on
     """
     __registered_as = None
     dependencies = []
@@ -56,7 +59,7 @@ class Base(Component):
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.
@@ -71,7 +74,9 @@ class Base(Component):
                 for sub_cls in inspect.getmro(cls):
                     if ((not (sub_cls is cls or sub_cls is Base))
                          and issubclass(sub_cls, Base)):
+                        # pylint: disable-msg=W0212
                         sub_cls.__registered_as = name
+                        # pylint: enable-msg=W0212
             for dependency in cls.dependencies:
                 if not dependency.registered_as:
                     dependency.register()

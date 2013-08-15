@@ -22,20 +22,21 @@
 
 from fife_rpg.components.base import Base
 
+
 class Containable(Base):
     """Component that allows an entity to be contained by Container entity.
-    
+
     Fields:
         bulk: How much space the containable uses
-        
+
         weight: The weight of the containable
-        
+
         item_Type: What type the containable item is
-        
+
         image: The image that is displayed in inventories
-        
+
         container: The container in which the containable currently is
-        
+
         slot: The slot in which the containable currently is
     """
 
@@ -55,12 +56,12 @@ class Containable(Base):
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.
 
         Returns:
             True if the component was registered, False if not.
-        """        
+        """
         return (super(Containable, cls).register(name, auto_register))

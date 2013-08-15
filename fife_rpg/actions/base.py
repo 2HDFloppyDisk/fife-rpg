@@ -24,35 +24,37 @@ from fife_rpg.exceptions import NoSuchCommandError, AlreadyRegisteredError
 from fife_rpg.actions import ActionManager
 from fife_rpg.helpers import ClassProperty
 
+
 class BaseAction(object):
     """Base class for actions
-    
+
     Properties:
         application: A :class:`fife_rpg.rpg_application.RPGApplication`
-        
+
         commands: List of additional commands to execute
 
         registered_as: Class property that sets under what name the class is
         registered
-        
-        dependencies: Class property that sets the classes this System depends on
+
+        dependencies: Class property that sets the classes this System depends
+        on
     """
     __registered_as = None
     dependencies = []
 
-    def __init__(self, application, commands = None):
+    def __init__(self, application, commands=None):
         self.commands = commands or ()
         self.application = application
         self.executed = False
-    
+
     def execute(self):
         """Execute the action
-        
+
         Raises:
             :class:`fife_rpg.exceptions.NoSuchCommandError`
             if a command is detected that is not registered.
         """
-        #Check if there are special commands and execute them
+        # Check if there are special commands and execute them
         for command_data in self.commands:
             command = command_data["Command"]
             available_commands = ActionManager.get_commands()

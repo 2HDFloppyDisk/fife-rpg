@@ -27,12 +27,13 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 
 _BEHAVIOURS = {}
 
+
 def register_behaviour(name, behaviour):
     """Registers a behaviour
 
     Args:
         name: The name of the behaviour
-        
+
         behaviour: The behaviour class
 
     Raises:
@@ -43,9 +44,11 @@ def register_behaviour(name, behaviour):
     else:
         _BEHAVIOURS[name] = behaviour
 
+
 def get_behaviours():
     """Returns a copy of the behaviour dictionary"""
     return copy(_BEHAVIOURS)
+
 
 def get_behaviour(name):
     """Returns the behaviour with the given name"""

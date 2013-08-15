@@ -21,9 +21,10 @@
 """
 from fife_rpg.components.base import Base
 
+
 class General(Base):
     """Component that stores the general values of an parpg entity
-    
+
     Fields:
         identifier: The unique identifier of the object
     """
@@ -37,7 +38,7 @@ class General(Base):
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.

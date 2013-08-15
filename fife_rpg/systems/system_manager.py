@@ -26,19 +26,21 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 
 _SYSTEMS = {}
 
+
 def get_systems():
     """Returns the registered systems"""
     return deepcopy(_SYSTEMS)
 
+
 def register_system(system_name, system_object):
     """Registers an system
-    
+
     Args:
         system_name: The name of the system_object
-        
+
         system_object: A bGrease system object
     """
     if not system_name in _SYSTEMS:
         _SYSTEMS[system_name] = system_object
     else:
-        raise AlreadyRegisteredError(system_name,  "system")
+        raise AlreadyRegisteredError(system_name, "system")

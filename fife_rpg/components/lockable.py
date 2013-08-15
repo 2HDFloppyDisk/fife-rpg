@@ -25,21 +25,22 @@ from fife_rpg.components.base import Base
 from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.exceptions import NotRegisteredError
 
+
 class Lockable(Base):
     """Component that stores the data of a lock
-    
+
     Fields:
         closed: Is the object closed or open
-        
+
         locked: Is the object locker or unlocked
-        
-        open_animation: Name of the animation that is run when the object is being
-        opened
-        
+
+        open_animation: Name of the animation that is run when the object is
+        being opened
+
         opened_animation: Name of the animation that is run when the object is
         open
-        
-        close_animation: Name of the animation that is run when the object is 
+
+        close_animation: Name of the animation that is run when the object is
         being closed
 
         closed_animation: Name of the animation that is run when the object is
@@ -47,7 +48,7 @@ class Lockable(Base):
         """
 
     def __init__(self):
-        Base.__init__(self, closed=bool, locked=bool, 
+        Base.__init__(self, closed=bool, locked=bool,
                       open_animation=str, opened_animation=str,
                       close_animation=str, closed_animation=str)
         self.fields["open_animation"].default = lambda: "open"
@@ -61,7 +62,7 @@ class Lockable(Base):
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.
@@ -71,12 +72,14 @@ class Lockable(Base):
         """
         return (super(Lockable, cls).register(name, auto_register))
 
+
 class LockedError(Exception):
     """Error that is raised when the lock is locked"""
 
     def __str__(self):
         """Returns the string representing the exception"""
         return "Is locked"
+
 
 class OpenError(Exception):
     """Error that is raised when the lock is open"""
@@ -85,6 +88,7 @@ class OpenError(Exception):
         """Returns the string representing the exception"""
         return "Is open"
 
+
 def lock_lock(lockable):
     """Lock the given lockable.
 
@@ -92,11 +96,12 @@ def lock_lock(lockable):
         lockable: A Lockable instance
 
     Raises:
-        :class:`fife_rpg.components.lockable.OpenError` if the lockable is open.
+        :class:`fife_rpg.components.lockable.OpenError` if the lockable is open
     """
     if not lockable.closed:
         raise OpenError
-    lockable.locked = True    
+    lockable.locked = True
+
 
 def unlock_lock(lockable):
     """Unlock the given lockable
@@ -106,7 +111,8 @@ def unlock_lock(lockable):
     """
     lockable.locked = False
 
-def open_lock(lockable):# pylint: disable-msg=W0622
+
+def open_lock(lockable):  # pylint: disable-msg=W0622
     """Open the lockable, if its unlocked.
 
     Args:
@@ -120,6 +126,7 @@ def open_lock(lockable):# pylint: disable-msg=W0622
         raise LockedError
     lockable.closed = False
 
+
 def close_lock(lockable):
     """Close the lockable.
 
@@ -131,17 +138,18 @@ def close_lock(lockable):
 
 def check_lockable_fifeagent(fifeagent, lockable):
     """Checks the lockable for inconsistences with the fifeagent
-    
+
     Args:
         fifeagent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
-        
+
         locakbe: A :class:`fife_rpg.components.lockable.Lockable` instance
     """
     if lockable.closed:
         fifeagent.behaviour.animate(lockable.closed_animation, repeating=True)
     else:
         fifeagent.behaviour.animate(lockable.opened_animation, repeating=True)
-        
+
+
 def register_checkers():
     """Registers the components checkers"""
     if not Lockable.registered_as:

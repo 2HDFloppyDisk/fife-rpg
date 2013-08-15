@@ -3,12 +3,12 @@
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-#   
+#
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
-#   
+#
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,6 +24,7 @@
 from fife_rpg.actions.entity_action import EntityAction
 from fife_rpg.components.description import Description
 
+
 class Look(EntityAction):
     """Action for unlocking lockables"""
 
@@ -31,7 +32,7 @@ class Look(EntityAction):
 
     def execute(self):
         """Execute the action
-        
+
         Raises:
             :class:`fife_rpg.exceptions.NoSuchCommandError`
             if a command is detected that is not registered.
@@ -39,31 +40,31 @@ class Look(EntityAction):
         Returns: A text describing the target.
         """
         description = getattr(self.target, Description.registered_as)
-        #pylint: disable=E0602
-        text = _("You see %s. \n%s") %  (_(description.view_name), 
+        # pylint: disable=E0602
+        text = _("You see %s. \n%s") % (_(description.view_name),
                                         _(description.desc))
-        #pylint: enable=E0602
+        # pylint: enable=E0602
         EntityAction.execute(self)
         return text
 
     @classmethod
-    def check_performer(cls, entity): #pylint: disable-msg=W0613
+    def check_performer(cls, entity):  # pylint: disable-msg=W0613
         """Checks whether the entity qualifies as an performer for this action
-        
+
         Args:
-            entity: The entity to ceck. 
+            entity: The entity to ceck.
             A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise
         """
         return True
-    
+
     @classmethod
-    def check_target(cls, entity): #pylint: disable-msg=W0613
+    def check_target(cls, entity):  # pylint: disable-msg=W0613
         """Checks whether the entity qualifies as a target for this action
-        
+
         Args:
-            entity: The entity to ceck. 
+            entity: The entity to ceck.
             A :class:`fife_rpg.entities.rpg_entity.RPGEntity` instance.
 
         Returns: True if the entity qualifes. False otherwise

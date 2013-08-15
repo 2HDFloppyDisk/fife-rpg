@@ -24,10 +24,11 @@ from copy import copy
 from fife_rpg.exceptions import AlreadyRegisteredError
 
 __COMMANDS = {}
-    
+
+
 def register_command(name, function):
     """Registers a function as a command
-    
+
     Args:
         name: The keyword for the command
         function: The function to call
@@ -35,6 +36,7 @@ def register_command(name, function):
     if name in __COMMANDS:
         raise AlreadyRegisteredError(name, "Command")
     __COMMANDS[name] = function
+
 
 def get_commands():
     """Returns a copy of the commands"""

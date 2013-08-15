@@ -20,7 +20,7 @@ from fife_rpg.entities import RPGEntity
 import unittest
 
 class TestEquip(unittest.TestCase):
-           
+
     class GameWorld(BaseWorld):
         """GameWorld"""
 
@@ -36,10 +36,10 @@ class TestEquip(unittest.TestCase):
 
         def get_entity(self, identifier):
             """Returns the entity with the identifier
-            
+
             Args:
                 identifier: The identifier of the entity
-            
+
             Returns:
                 The entity with the identifier or None
             """
@@ -63,18 +63,21 @@ class TestEquip(unittest.TestCase):
         self.t_arm_item.equipable.possible_slots = ["t_arm"]
         self.two_hand_item = RPGEntity(self.world, "two_hand_item")
         self.two_hand_item.equipable.possible_slots = ["l_arm,r_arm", "head"]
-        
+
     def test_equip_and_take(self):
-        self.assertRaises(equip.SlotInvalidError, equip.equip, self.wearer, self.t_arm_item, "t_arm")
-        self.assertRaises(equip.CannotBeEquippedInSlot, equip.equip, self.wearer, self.l_arm_item, "r_arm")
+        self.assertRaises(equip.SlotInvalidError, equip.equip,
+                          self.wearer, self.t_arm_item, "t_arm")
+        self.assertRaises(equip.CannotBeEquippedInSlot, equip.equip,
+                          self.wearer, self.l_arm_item, "r_arm")
         equip.equip(self.wearer, self.l_arm_item, "l_arm")
         equip.equip(self.wearer, self.r_arm_item, "r_arm")
         self.assertIsNotNone(self.l_arm_item.equipable.wearer)
-        self.assertRaises(equip.AlreadyEquippedError, equip.equip, self.wearer, self.l_arm_item, "r_arm")
+        self.assertRaises(equip.AlreadyEquippedError, equip.equip,
+                          self.wearer, self.l_arm_item, "r_arm")
         equip.equip(self.wearer, self.arms_item, "r_arm")
         self.assertIsNone(self.r_arm_item.equipable.wearer)
         self.assertIsNotNone(self.arms_item.equipable.wearer)
-        equip.take_equipable( self.wearer, self.l_arm_item.equipable.in_slot)
+        equip.take_equipable(self.wearer, self.l_arm_item.equipable.in_slot)
         self.assertIsNone(self.l_arm_item.equipable.wearer)
         equip.equip(self.wearer, self.l_arm_item, "l_arm")
         equip.equip(self.wearer, self.r_arm_item, "r_arm")
@@ -89,7 +92,7 @@ class TestEquip(unittest.TestCase):
                          ['None'])
         equip.equip(self.wearer, self.two_hand_item, "head")
         self.assertIsNotNone(self.two_hand_item.equipable.wearer)
-        
+
     def tearDown(self):
         self.world = None
         self.wearer = None

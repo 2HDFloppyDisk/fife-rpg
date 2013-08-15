@@ -21,20 +21,21 @@
 """
 from fife_rpg.components.base import Base
 
+
 class MoveAgent(Base):
     """Component that stores the values of an entity that leads to another
     position on the same map, or another map..
-    
+
     Fields:
         target_map: The map to change to
-        
+
         target_position: Where the entity appears on the map
-        
+
         target_layer: The layer the agent should be moved to
     """
 
     def __init__(self):
-        Base.__init__(self, target_map=str, target_position=list, 
+        Base.__init__(self, target_map=str, target_position=list,
                       target_layer=str)
 
     @classmethod
@@ -43,7 +44,7 @@ class MoveAgent(Base):
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.

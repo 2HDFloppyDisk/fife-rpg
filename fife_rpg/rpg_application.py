@@ -43,7 +43,7 @@ from fife_rpg.systems import GameVariables
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
 from fife_rpg.console_commands import get_commands
 
-_scripting_module = "application"
+_SCRIPTING_MODULE = "application"
 
 
 class KeyFilter(fife.IKeyFilter):
@@ -61,7 +61,7 @@ class KeyFilter(fife.IKeyFilter):
         fife.IKeyFilter.__init__(self)
         self._keys = keys
 
-    def isFiltered(self, event):  # pylint: disable-msg=W0221
+    def isFiltered(self, event):  # pylint: disable-msg=W0221, C0103
         """Checks whether the key is filtered or not.
 
         Args:
@@ -307,10 +307,10 @@ class RPGApplication(FifeManager, ApplicationBase):
             globals: The globals dictionary of the GameEnvironment that is
             filled by the GameScene
         """
-        app_module = imp.new_module(_scripting_module)
+        app_module = imp.new_module(_SCRIPTING_MODULE)
         app_module.__dict__["current_map"] = self.current_map
         app_module.__dict__["maps"] = self.maps
-        variables[_scripting_module] = app_module
+        variables[_SCRIPTING_MODULE] = app_module
 
     def add_map(self, name, filename_or_map):
         """Adds a map to the maps dictionary.
@@ -495,16 +495,16 @@ class RPGApplication(FifeManager, ApplicationBase):
         GameVariables.add_callback(self.update_game_variables)
         ScriptingSystem.register_command("set_global_lighting",
                                          self.set_global_lighting,
-                                         _scripting_module)
+                                         _SCRIPTING_MODULE)
         ScriptingSystem.register_command("get_global_lighting",
                                          self.get_global_lighting,
-                                         _scripting_module)
+                                         _SCRIPTING_MODULE)
         ScriptingSystem.register_command("is_location_in_region",
                                            self.is_location_in_region,
-                                           _scripting_module)
+                                           _SCRIPTING_MODULE)
         ScriptingSystem.register_command("is_agent_in_region",
                                            self.is_agent_in_region,
-                                           _scripting_module)
+                                           _SCRIPTING_MODULE)
 
     def request_quit(self):
         """Sends the quit command to the application's listener.
@@ -860,11 +860,11 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.current_map.camera.getLightingColor()
         return (1.0, 1.0, 1.0)
 
-    def pump(self, dt):
+    def pump(self, time_delta):
         """Performs actions every frame.
 
         Args:
-            dt: Time elapsed since last call to pump
+            time_delta: Time elapsed since last call to pump
         """
         if self._listener.quit:
             self.quit()
@@ -874,5 +874,5 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.current_map.update_entities()
             self.current_map.update_entitities_agent()
         if self.world:
-            self.world.pump(dt)
-        FifeManager.pump(self, dt)
+            self.world.pump(time_delta)
+        FifeManager.pump(self, time_delta)

@@ -83,15 +83,17 @@ class ScriptingSystem(Base):
             module: The name of the module the commands will be available at
         """
         for name, command_function in command_dict.iter_items():
-            cls.register_command(name, command_function)
+            cls.register_command(name, command_function, module)
 
     @ClassProperty
     @classmethod
-    def commands(cls):
+    def commands(cls):  # pylint: disable=C0111
         return copy(cls.__commands)
 
     def __init__(self):
         Base.__init__(self)
+        self.globals = {}
+        self.__scripts = []
         self.reset()
 
     def set_world(self, world):
@@ -140,6 +142,7 @@ class ScriptingSystem(Base):
             script.step(time_delta)
 
     def eval(self, string):
+        """Evaluate the strin inside the scripting environment"""
         script_globals = self.prepare_globals()
         return eval(string, script_globals)
 
@@ -154,7 +157,7 @@ class ScriptingSystem(Base):
         """
         script_file = file(filename, "r")
         script_module = imp.new_module(name)
-        exec script_file in script_module.__dict__
+        exec script_file in script_module.__dict__  # pylint: disable-msg=W0122
         self.__scripts.append(script_module)
         script_file.close()
 

@@ -31,22 +31,23 @@ from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.behaviours import AGENT_STATES
 
+
 class Base (fife.InstanceActionListener):
     """Behaviour that contains the basic methods for actors
-    
+
     Properties:
         agent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
-        
+
         state: The current state of the behaviour
-        
+
         animation_queue: A deque that contains the queued animations
-        
+
         callback: The function that will be called after the current animation
         is finished
 
         registered_as: Class property that sets under what name the class is
         registered
-        
+
         dependencies: Class property that sets the classes this System depends
         on
     """
@@ -63,23 +64,23 @@ class Base (fife.InstanceActionListener):
     def location(self):
         """Returns the location of the agent"""
         return self.agent.instance.getLocation().getLayerCoordinates()
-    
+
     @property
     def rotation(self):
         """Returns the rotation of the agent"""
         return self.agent.instance.getRotation()
-    
+
     @rotation.setter
     def rotation(self, rotation):
         """Sets the rotation of the agent"""
         self.agent.instance.setRotation(rotation)
-    
+
     def attach_to_agent(self, agent):
         """Attaches to a certain agent
 
         Args:
            agent: A :class:`fife_rpg.components.fifeagent.FifeAgent` instance
-           
+
            layer: :class:`fife.Layer` of the agent to attach the behaviour to
         """
         fifeagent_name = FifeAgent.registered_as
@@ -94,17 +95,17 @@ class Base (fife.InstanceActionListener):
         self.state = AGENT_STATES.IDLE
 
     def onInstanceActionFinished(self, instance, animation):
-        #pylint: disable=C0103,W0613,W0221
+        # pylint: disable=C0103,W0613,W0221
         """Called by FIFE when an animation of an agent is finished
 
         Args:
             instance: The agent instance
-            
+
             animation: The animation that the agent was doing
         """
-        # First we reset the next behavior 
+        # First we reset the next behavior
         callback = self.callback
-        self.callback = None 
+        self.callback = None
         self.idle()
 
         if callback:
@@ -116,14 +117,14 @@ class Base (fife.InstanceActionListener):
             self.idle()
 
     def onInstanceActionFrame(self, instance, animation, frame):
-        #pylint: disable=C0103,W0613,W0221
+        # pylint: disable=C0103,W0613,W0221
         """Called by FIFE when a frame of an animation of an agent is finished
 
         Args:
             instance: The agent instance
-            
+
             animation: The animation that the agent was doing
-            
+
             frame: The frame that the was done
         """
         pass
@@ -134,33 +135,33 @@ class Base (fife.InstanceActionListener):
         self.clear_animations()
         self.idle()
 
-    def animate(self, animation, direction = None, repeating = False):
+    def animate(self, animation, direction=None, repeating=False):
         """Perform an animation
 
         Args:
             animation: The animation to perform
-            
+
             direction: The direction to which the agent should face
-            
+
             repeating: Whether to repeat the animation or not
         """
         direction = direction or self.agent.instance.getFacingLocation()
         self.agent.instance.act(animation, direction, repeating)
 
-    def queue_animation(self, animation, direction = None, repeating = False):
+    def queue_animation(self, animation, direction=None, repeating=False):
         """Add an animation to the queue
 
         Args:
             animation: The animation to perform
-            
+
             direction: The direction to which the agent should face
-            
+
             repeating: Whether to repeat the animation or not
         """
-        self.animation_queue.append({"animation": animation, 
+        self.animation_queue.append({"animation": animation,
                                      "direction": direction,
                                   "repeating": repeating})
-        
+
     def clear_animations(self):
         """Remove all actions from the queue"""
         self.animation_queue.clear()

@@ -23,9 +23,10 @@
 from fife_rpg.components.base import Base
 from fife_rpg.components.equipable import Equipable
 
+
 class Equip(Base):
     """Basic equipment container component
-    
+
     Fields:
         Slots are dynamically set on construction
     """
@@ -33,19 +34,19 @@ class Equip(Base):
 
     def __init__(self, **fields):
         """Create the slots.
-        
+
         Args:
             fields: kwargs argument containing the data of the fields
         """
         Base.__init__(self, **fields)
-    
+
     @classmethod
     def register(cls, name="Equip", auto_register=True):
         """Registers the class as a component
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.
@@ -55,10 +56,11 @@ class Equip(Base):
         """
         return (super(Equip, cls).register(name, auto_register))
 
+
 class RPGEquip(Equip):
-    """Example component for storing equipped items 
+    """Example component for storing equipped items
     (what is being worn/wielded).
-    
+
     Fields:
         head: Head equipment slot
         neck: Neck equipment slot
@@ -71,8 +73,9 @@ class RPGEquip(Equip):
     """
 
     def __init__(self):
-        Equip.__init__(self, head=object, neck=object, body=object, belt=object, 
-                      leg=object, feet=object, l_arm=object, r_arm=object)
+        Equip.__init__(self, head=object, neck=object, body=object,
+                       belt=object, leg=object, feet=object,
+                       l_arm=object, r_arm=object)
         self.fields["head"].default = lambda: None
         self.fields["neck"].default = lambda: None
         self.fields["body"].default = lambda: None
@@ -88,7 +91,7 @@ class RPGEquip(Equip):
 
         Args:
             name: The name under which the class should be registered
-            
+
             auto_register: This sets whether components this component
             derives from will have their registered_as property set to the same
             name as this class.
@@ -98,61 +101,63 @@ class RPGEquip(Equip):
         """
         return (super(RPGEquip, cls).register(name, auto_register))
 
+
 class SlotInvalidError(Exception):
     """Error that gets raised when the slot is invalid
 
     Properties:
         The slot that was found to be invalid
     """
-    
+
     def __init__(self, slot):
         Exception.__init__(self)
         self.slot = slot
-    
+
     def __str__(self):
         """Returns the string representing the exception"""
         return "\"%s\" is not a valid slot." % self.slot
 
+
 class AlreadyEquippedError(Exception):
     """Error that gets raised when the equipable already has a wearer"""
-    
+
     def __str__(self):
         """Returns the string representing the exception"""
         return "The equipable is already weared."
 
+
 class CannotBeEquippedInSlot(Exception):
-    """Error that gets raised when the equipable can't be equiped in that 
+    """Error that gets raised when the equipable can't be equiped in that
     slot
-    
+
     Properties:
         slot: The slot that was being tried to equip to
-        
+
         equipable: The item that was being tried to equipped
     """
-    
-    
+
     def __init__(self, slot, equipable):
         Exception.__init__(self)
         self.slot = slot
         self.equipable = equipable
-        
+
     def __str__(self):
         """Returns the string representing the exception"""
-        return ("%s is not in the equipables slots. (%s)" % 
+        return ("%s is not in the equipables slots. (%s)" %
                 (self.slot, ', '.join(self.equipable.possible_slots))
                 )
-    
-    
+
+
 def equip(wearer, equipable, slot):
     """Equip the wearer with the given equipable.
 
     Args:
         wearer: An :class:`fife_rpg.entites.rpg_entity.RPGEntity` with a
         equip component
-        
+
         equipable: An :class:`fife_rpg.entites.rpg_entity.RPGEntity` with a
         equipable component
-        
+
         slot: The slot to which the equipable shoud be equipped
 
     Returns:
@@ -161,10 +166,10 @@ def equip(wearer, equipable, slot):
     Raises:
         :class:`fife_rpg.components.equip.AlreadyEquippedError` if the
         equipable is already equipped elsewhere.
-        
+
         :class:`fife_rpg.components.equip.SlotInvalidError` if the slot
         does not exists
-        
+
         :class:`fife_rpg.components.equip.CannotBeEquippedInSlot` if the
         equipable cannot be equipped in that slot
     """
@@ -181,12 +186,12 @@ def equip(wearer, equipable, slot):
                     possible_slots = [possible_slots]
                 for possible_slot in possible_slots:
                     old_item = (getattr(wearer_data, possible_slot)
-                                if hasattr(wearer_data, possible_slot) 
+                                if hasattr(wearer_data, possible_slot)
                                 else None)
                     setattr(wearer_data, slot, equipable.identifier)
                     if old_item:
                         old_item_entity = wearer.world.get_entity(old_item)
-                        old_item_data = getattr(old_item_entity, 
+                        old_item_data = getattr(old_item_entity,
                                                 Equipable.registered_as)
                         old_item_data.in_slot = None
                         old_item_data.wearer = None
@@ -198,6 +203,7 @@ def equip(wearer, equipable, slot):
             except AttributeError:
                 raise SlotInvalidError(slot)
     raise CannotBeEquippedInSlot(slot, equipable_data)
+
 
 def get_equipable(wearer, slot):
     """Return the equipable in the given slot.
@@ -217,13 +223,14 @@ def get_equipable(wearer, slot):
         return item
     except AttributeError:
         raise SlotInvalidError(slot)
-    
+
+
 def take_equipable(wearer, slot):
     """Remove equipable from the given slot and return it.
 
     Args:
         wearer: An :class:`fife_rpg.components.equip.Equip` instance
-        
+
         slot: The slot from which should be unequipped.
     """
     item = wearer.world.get_entity(get_equipable(wearer, slot))
@@ -231,12 +238,10 @@ def take_equipable(wearer, slot):
     item_data = getattr(item, Equipable.registered_as)
     if isinstance(item_data.in_slot, str):
         setattr(wearer_data, slot, None)
-    else:     
+    else:
         for in_slot in item_data.in_slot:
             setattr(wearer_data, in_slot, None)
     if item_data:
         item_data.in_slot = None
         item_data.wearer = None
     return item
-    
-    

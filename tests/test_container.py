@@ -34,10 +34,10 @@ class  TestContainer(unittest.TestCase):
 
         def get_entity(self, identifier):
             """Returns the entity with the identifier
-            
+
             Args:
                 identifier: The identifier of the entity
-            
+
             Returns:
                 The entity with the identifier or None
             """
@@ -46,30 +46,30 @@ class  TestContainer(unittest.TestCase):
             if len(entities) > 0:
                 return entities.pop()
             return None
-    
+
     class Inventory(RPGEntity):
         """Enity representing an Iventory"""
-        
+
         def __init__(self, world, identifier, max_bulk, slots):
             RPGEntity.__init__(self, world, identifier)
             self.container.children = slots
             self.container.max_bulk = max_bulk
-                
-    
+
+
     class Item(RPGEntity):
 
         def __init__(self, world, identifier, bulk):
             RPGEntity.__init__(self, world, identifier)
             self.containable.bulk = bulk
-        
+
     def setUp(self):
-        unittest.TestCase.setUp(self)        
+        unittest.TestCase.setUp(self)
         self.world = self.GameWorld()
         slots_15 = list()
         slots_25 = list()
         for _ in xrange(3):
             slots_15.append(None)
-        
+
         for _ in xrange(10):
             slots_25.append(None)
 
@@ -85,7 +85,7 @@ class  TestContainer(unittest.TestCase):
         self.axe_2 = self.Item(self.world, "axe_2", 4)
         self.mace_2 = self.Item(self.world, "mace_2", 5)
         self.spear_2 = self.Item(self.world, "spear_2", 8)
-        
+
     def tearDown(self):
         self.dagger_1 = None
         self.sword_1 = None
@@ -96,7 +96,7 @@ class  TestContainer(unittest.TestCase):
         self.sword_2 = None
         self.axe_2 = None
         self.mace_2 = None
-        self.spear_2 = None        
+        self.spear_2 = None
         self.inv_15 = None
         self.inv_25 = None
         self.world = None
@@ -106,37 +106,37 @@ class  TestContainer(unittest.TestCase):
             self.assertIsNone(child)
 
         for child in self.inv_25.container.children:
-            self.assertIsNone(child)            
-        
+            self.assertIsNone(child)
+
     def test_PutTake(self):
         self.assertIsNone(container.get_item(self.inv_15, 0))
-        
-        container.put_item(self.inv_15, self.sword_1, 0)        
+
+        container.put_item(self.inv_15, self.sword_1, 0)
         self.assertIsNotNone(container.get_item(self.inv_15, 0))
-        self.assertIsNotNone(self.sword_1.containable.container)        
+        self.assertIsNotNone(self.sword_1.containable.container)
         sword_1_container = self.world.get_entity(
                                 self.sword_1.containable.container)
         self.assertListEqual(self.inv_15.container.children,
                     sword_1_container.container.children)
-        self.assertEqual(container.get_item(self.inv_15, 0), 
+        self.assertEqual(container.get_item(self.inv_15, 0),
                          self.sword_1)
-        self.assertEqual(container.get_item(self.inv_15, 0).containable.slot, 
+        self.assertEqual(container.get_item(self.inv_15, 0).containable.slot,
                          self.sword_1.containable.slot)
-        
+
         container.take_item(self.inv_15, 0)
         self.assertIsNone(self.inv_15.container.children[0])
-        self.assertIsNone(self.sword_1.containable.container)        
-        
+        self.assertIsNone(self.sword_1.containable.container)
+
     def test_Swap(self):
         self.assertIsNone(self.inv_15.container.children[0])
-        
-        container.put_item(self.inv_15, self.sword_1, 0)        
+
+        container.put_item(self.inv_15, self.sword_1, 0)
         sword1 = container.get_item(self.inv_15, 0)
         sword1_data = sword1.containable
-        self.assertEqual(sword1_data.container, 
+        self.assertEqual(sword1_data.container,
                          self.sword_1.containable.container)
         self.assertEqual(sword1_data.slot, self.sword_1.containable.slot)
-        
+
         sword2 = container.put_item(self.inv_15, self.dagger_1, 0)
         sword2_data = sword2.containable
         self.assertEqual(sword2_data.container, sword2_data.container)
@@ -147,27 +147,34 @@ class  TestContainer(unittest.TestCase):
                                 self.dagger_1.containable.container)
         self.assertListEqual(self.inv_15.container.children,
                     dagger_1_container.container.children)
-        self.assertEqual(container.get_item(self.inv_15, 0).containable.container,
-                         self.dagger_1.containable.container)
+        self.assertEqual(
+                    container.get_item(self.inv_15, 0).containable.container,
+                    self.dagger_1.containable.container)
         self.assertEqual(container.get_item(self.inv_15, 0).containable.slot,
                          self.dagger_1.containable.slot)
-        
+
     def test_BulkSlots(self):
         container.put_item(self.inv_15, self.sword_1)
         container.put_item(self.inv_25, self.sword_2)
-        self.assertEqual(container.get_total_bulk(self.inv_15), self.sword_1.containable.bulk)
-        self.assertEqual(container.get_total_bulk(self.inv_25), self.sword_2.containable.bulk)
-        
+        self.assertEqual(container.get_total_bulk(self.inv_15),
+                         self.sword_1.containable.bulk)
+        self.assertEqual(container.get_total_bulk(self.inv_25),
+                         self.sword_2.containable.bulk)
+
         container.put_item(self.inv_15, self.axe_1)
         container.put_item(self.inv_25, self.axe_2)
-        self.assertEqual(container.get_total_bulk(self.inv_15), container.get_total_bulk(self.inv_25))
-        
-        self.assertRaises(container.BulkLimitError, container.put_item, self.inv_15, self.spear_1)
+        self.assertEqual(container.get_total_bulk(self.inv_15),
+                         container.get_total_bulk(self.inv_25))
+
+        self.assertRaises(container.BulkLimitError, container.put_item,
+                          self.inv_15, self.spear_1)
         container.put_item(self.inv_25, self.spear_2)
 
         container.put_item(self.inv_15, self.dagger_1)
         container.put_item(self.inv_25, self.dagger_2)
-        self.assertNotEqual(container.get_total_bulk(self.inv_15), container.get_total_bulk(self.inv_25))
+        self.assertNotEqual(container.get_total_bulk(self.inv_15),
+                            container.get_total_bulk(self.inv_25))
 
-        self.assertRaises(container.NoFreeSlotError, container.put_item, self.inv_15, self.mace_1)
+        self.assertRaises(container.NoFreeSlotError, container.put_item,
+                          self.inv_15, self.mace_1)
         container.put_item(self.inv_25, self.mace_2)

@@ -53,11 +53,11 @@ if __name__ == "__main__":
                        'where the systems are')
     parser.add_argument('-o', "--output", metavar="output", type=str,
                        help='The output file')
-    
+
     args = parser.parse_args()
-    
+
     sub_package = args.sub_package if args.sub_package else ""
-    
+
     output = args.output if args.output else "systems.yaml"
     output_file = file(output, "w")
     systems = {"Systems" : list_systems(args.base_package, sub_package)}
