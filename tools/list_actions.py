@@ -6,7 +6,8 @@ import argparse
 
 import yaml
 
-from fife_rpg.actions.base import Base
+from fife_rpg.actions.base import BaseAction
+
 
 def list_actions(base_package, sub_package):
     """Lists the actions that are in a package
@@ -32,7 +33,8 @@ def list_actions(base_package, sub_package):
                                     module_name))
             action = getattr(module, member)
             try:
-                if (issubclass(action, Base) and not action is Base):
+                if (issubclass(action, BaseAction) and
+                    not action is BaseAction):
                     if "." in action.__module__:
                         continue
                     action_name = action.__name__
@@ -44,8 +46,8 @@ def list_actions(base_package, sub_package):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-            description='Store actions in a package with their python path in a '
-            'yaml file.')
+            description='Store actions in a package with their python path in'
+             'a yaml file.')
     parser.add_argument("base_package",
                        help='The base package of the componets')
     parser.add_argument("sub_package", metavar="sub_package",
