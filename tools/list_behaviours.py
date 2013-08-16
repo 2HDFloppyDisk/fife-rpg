@@ -8,12 +8,15 @@ import yaml
 
 from fife_rpg.behaviours.base import Base
 
+
 def list_components(base_package, sub_package):
     """Lists the behaviours that are in a package
 
     Args:
-        base_package: The main package the behaviours are in. Example "fife_rpg"
-        sub_package: The sub package the behaviours are in. Example "behaviours"
+        base_package: The main package the behaviours are in.
+        Example "fife_rpg"
+        sub_package: The sub package the behaviours are in.
+        Example "behaviours"
 
     Returns:
         A dictionary with the behaviours and the path to the module they are in
@@ -43,8 +46,8 @@ def list_components(base_package, sub_package):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-            description='Store behaviours in a package with their python path in a '
-            'yaml file.')
+            description='Store behaviours in a package with their python path'
+            'in a yaml file.')
     parser.add_argument("base_package",
                        help='The base package of the componets')
     parser.add_argument("sub_package", metavar="sub_package",
@@ -59,5 +62,6 @@ if __name__ == "__main__":
 
     output = args.output if args.output else "behaviours.yaml"
     output_file = file(output, "w")
-    behaviours = {"Behaviours": list_components(args.base_package, sub_package)}
+    behaviours = {"Behaviours": list_components(args.base_package,
+                                                sub_package)}
     yaml.dump(behaviours, output_file, default_flow_style=False)
