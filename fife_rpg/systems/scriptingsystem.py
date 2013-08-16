@@ -93,7 +93,7 @@ class ScriptingSystem(Base):
     def __init__(self):
         Base.__init__(self)
         self.globals = {}
-        self.__scripts = []
+        self.__scripts = {}
         self.reset()
 
     def set_world(self, world):
@@ -105,7 +105,7 @@ class ScriptingSystem(Base):
     def reset(self):
         """Resets the scripting system"""
         self.globals = {}
-        self.__scripts = []
+        self.__scripts = {}
 
     def prepare_globals(self):
         """Builds the actual globals passed to scripts and returns them
@@ -134,7 +134,7 @@ class ScriptingSystem(Base):
         Args:
             time_delta: Time since last step invocation
         """
-        for script in self.__scripts:
+        for script in self.__scripts.itervalues():
             if not "step" in script.__dict__:
                 continue
             script_globals = self.prepare_globals()
@@ -158,7 +158,7 @@ class ScriptingSystem(Base):
         script_file = file(filename, "r")
         script_module = imp.new_module(name)
         exec script_file in script_module.__dict__  # pylint: disable-msg=W0122
-        self.__scripts.append(script_module)
+        self.__scripts[name] = script_module
         script_file.close()
 
     def load_scripts(self, filename=None):
@@ -193,7 +193,7 @@ class ScriptingSystem(Base):
         """
         if GameVariables.registered_as:
             getattr(self.world.systems, GameVariables.registered_as).step(0)
-        for script in self.__scripts:
+        for script in self.__scripts.itervalues():
             if not "map_switched" in script.__dict__:
                 continue
             script_globals = self.prepare_globals()
