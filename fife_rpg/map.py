@@ -271,9 +271,13 @@ class Map(object):  # pylint: disable=R0924
             upper left position of the window.
         """
         if agent is not None and agent != "":
-            agent = self.__application.world.get_entity(agent)
-            fifeagent = getattr(agent, FifeAgent.registered_as)
-            agent = fifeagent.instance
+            entity = self.__application.world.get_entity(agent)
+            if entity in self.entities:
+                fifeagent = getattr(entity, FifeAgent.registered_as)
+                agent = fifeagent.instance
+            else:
+                raise TypeError("The map %s has no entity %s" % (self.name,
+                                                                 agent))
         else:
             agent = None
         if layer is not None and layer != "":
