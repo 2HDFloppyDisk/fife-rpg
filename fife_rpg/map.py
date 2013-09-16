@@ -260,7 +260,7 @@ class Map(object):  # pylint: disable=R0924
             illuminate lower layers, but not higher ones. If empty or None this
             will be ignored.
 
-            location: The relative or absolute location of the agent depending
+            location: The relative or absolute location of the light depending
             on whether the agent was set or not. A list with two or three
             values.
             If None this will be ignored.
