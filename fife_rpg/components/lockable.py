@@ -34,27 +34,27 @@ class Lockable(Base):
 
         locked: Is the object locker or unlocked
 
-        open_animation: Name of the animation that is run when the object is
+        open_action: Name of the action that is run when the object is
         being opened
 
-        opened_animation: Name of the animation that is run when the object is
+        opened_action: Name of the action that is run when the object is
         open
 
-        close_animation: Name of the animation that is run when the object is
+        close_action: Name of the action that is run when the object is
         being closed
 
-        closed_animation: Name of the animation that is run when the object is
+        closed_action: Name of the action that is run when the object is
         being closed
         """
 
     def __init__(self):
         Base.__init__(self, closed=bool, locked=bool,
-                      open_animation=str, opened_animation=str,
-                      close_animation=str, closed_animation=str)
-        self.fields["open_animation"].default = lambda: "open"
-        self.fields["opened_animation"].default = lambda: "opened"
-        self.fields["close_animation"].default = lambda: "close"
-        self.fields["closed_animation"].default = lambda: "closed"
+                      open_action=str, opened_action=str,
+                      close_action=str, closed_action=str)
+        self.fields["open_action"].default = lambda: "open"
+        self.fields["opened_action"].default = lambda: "opened"
+        self.fields["close_action"].default = lambda: "close"
+        self.fields["closed_action"].default = lambda: "closed"
 
     @classmethod
     def register(cls, name="Lockable", auto_register=True):
@@ -145,9 +145,9 @@ def check_lockable_fifeagent(fifeagent, lockable):
         locakbe: A :class:`fife_rpg.components.lockable.Lockable` instance
     """
     if lockable.closed:
-        fifeagent.behaviour.animate(lockable.closed_animation, repeating=True)
+        fifeagent.behaviour.act(lockable.closed_action, repeating=True)
     else:
-        fifeagent.behaviour.animate(lockable.opened_animation, repeating=True)
+        fifeagent.behaviour.act(lockable.opened_action, repeating=True)
 
 
 def register_checkers():

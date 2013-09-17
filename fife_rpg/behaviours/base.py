@@ -40,9 +40,9 @@ class Base (fife.InstanceActionListener):
 
         state: The current state of the behaviour
 
-        animation_queue: A deque that contains the queued animations
+        action_queue: A deque that contains the queued actions
 
-        callback: The function that will be called after the current animation
+        callback: The function that will be called after the current action
         is finished
 
         registered_as: Class property that sets under what name the class is
@@ -57,7 +57,7 @@ class Base (fife.InstanceActionListener):
         fife.InstanceActionListener.__init__(self)
         self.agent = None
         self.state = None
-        self.animation_queue = deque()
+        self.action_queue = deque()
         self.callback = None
 
     @property
@@ -94,14 +94,14 @@ class Base (fife.InstanceActionListener):
         """Set the state to idle"""
         self.state = AGENT_STATES.IDLE
 
-    def onInstanceActionFinished(self, instance, animation):
+    def onInstanceActionFinished(self, instance, action):
         # pylint: disable=C0103,W0613,W0221
-        """Called by FIFE when an animation of an agent is finished
+        """Called by FIFE when an action of an agent is finished
 
         Args:
             instance: The agent instance
 
-            animation: The animation that the agent was doing
+            action: The action that the agent was doing
         """
         # First we reset the next behavior
         callback = self.callback
@@ -111,74 +111,74 @@ class Base (fife.InstanceActionListener):
         if callback:
             callback()
         try:
-            animtion = self.animation_queue.popleft()
-            self.animate(**animtion)
+            action = self.action_queue.popleft()
+            self.act(**action)
         except IndexError:
             self.idle()
 
-    def onInstanceActionFrame(self, instance, animation, frame):
+    def onInstanceActionFrame(self, instance, action, frame):
         # pylint: disable=C0103,W0613,W0221
-        """Called by FIFE when a frame of an animation of an agent is finished
+        """Called by FIFE when a frame of an action of an agent is finished
 
         Args:
             instance: The agent instance
 
-            animation: The animation that the agent was doing
+            action: The action that the agent was doing
 
             frame: The frame that the was done
         """
         pass
 
-    def onInstanceActionCancelled(self, instance, animation):
+    def onInstanceActionCancelled(self, instance, action):
         # pylint: disable=C0103,W0613,W0221
-        """Called by FIFE when an animation of an agent is cancelled
+        """Called by FIFE when an action of an agent is cancelled
 
         Args:
             instance: The agent instance
 
-            animation: The animation that the agent was doing
+            action: The action that the agent was doing
         """
         pass
 
     def talk(self):
-        """Set the agent to their talking animation"""
+        """Set the agent to their talking action"""
         self.state = AGENT_STATES.TALK
-        self.clear_animations()
+        self.clear_actions()
         self.idle()
 
-    def animate(self, animation, direction=None, repeating=False):
-        """Perform an animation
+    def act(self, action, direction=None, repeating=False):
+        """Perform an action
 
         Args:
-            animation: The animation to perform
+            action: The action to perform
 
             direction: The direction to which the agent should face
 
-            repeating: Whether to repeat the animation or not
+            repeating: Whether to repeat the action or not
         """
         direction = direction or self.agent.instance.getFacingLocation()
         if repeating:
-            self.agent.instance.actRepeat(animation, direction)
+            self.agent.instance.actRepeat(action, direction)
         else:
-            self.agent.instance.actOnce(animation, direction)
+            self.agent.instance.actOnce(action, direction)
 
-    def queue_animation(self, animation, direction=None, repeating=False):
-        """Add an animation to the queue
+    def queue_action(self, action, direction=None, repeating=False):
+        """Add an action to the queue
 
         Args:
-            animation: The animation to perform
+            action: The action to perform
 
             direction: The direction to which the agent should face
 
-            repeating: Whether to repeat the animation or not
+            repeating: Whether to repeat the action or not
         """
-        self.animation_queue.append({"animation": animation,
+        self.action_queue.append({"action": action,
                                      "direction": direction,
                                   "repeating": repeating})
 
-    def clear_animations(self):
+    def clear_actions(self):
         """Remove all actions from the queue"""
-        self.animation_queue.clear()
+        self.action_queue.clear()
 
     @classmethod
     def register(cls, name="Base"):

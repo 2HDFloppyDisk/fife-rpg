@@ -88,8 +88,8 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
         target_or_location: A fife.Location or position tuple
         to move to or another entity  to follow
 
-        run_agent: If true the run_animation will be performed otherwise
-        the walk_animation.
+        run_agent: If true the run_action will be performed otherwise
+        the walk_action.
 
         callback: A function, that will be called after the agent has reached
         its target.
@@ -105,7 +105,7 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
     fifeagent.behaviour.state = AGENT_STATES.APPROACH
     fifeagent.behaviour.callback = callback
 
-    action = moving.run_animation if run_agent else moving.walk_animation
+    action = moving.run_action if run_agent else moving.walk_action
     speed = moving.run_speed if run_agent else moving.run_speed
     if isinstance(target_or_location, RPGEntity):
         target_agent = getattr(target_or_location, fifeagent_name)
@@ -147,13 +147,13 @@ def run(entity, location):
     if not fifeagent or not moving:
         return
     fifeagent.behaviour.state = AGENT_STATES.RUN
-    fifeagent.behaviour.clear_animations()
+    fifeagent.behaviour.clear_actions()
     fifeagent.behaviour.callback = None
     if not isinstance(location, fife.Location):
         box_location = tuple([int(float(i)) for i in location])
         location = fife.Location(fifeagent.instance.getLocation())
         location.setLayerCoordinates(fife.ModelCoordinate(*box_location))
-    fifeagent.instance.move(moving.run_animation,
+    fifeagent.instance.move(moving.run_action,
                             location,
                             moving.run_speed)
 
@@ -176,13 +176,13 @@ def walk(entity, location):
     if not fifeagent or not moving:
         return
     fifeagent.behaviour.state = AGENT_STATES.WALK
-    fifeagent.behaviour.clear_animations()
+    fifeagent.behaviour.clear_actions()
     fifeagent.behaviour.callback = None
     if not isinstance(location, fife.Location):
         box_location = tuple([int(float(i)) for i in location])
         location = fife.Location(fifeagent.instance.getLocation())
         location.setLayerCoordinates(fife.ModelCoordinate(*box_location))
-    fifeagent.instance.move(moving.walk_animation,
+    fifeagent.instance.move(moving.walk_action,
                             location,
                             moving.walk_speed)
 
