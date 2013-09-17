@@ -45,8 +45,8 @@ class Open(EntityAction):
             fifeagent_data = getattr(self.target, FifeAgent.registered_as)
             if fifeagent_data:
                 behaviour = fifeagent_data.behaviour
-                behaviour.animate(lockable.open_animation)
-                behaviour.queue_animation(lockable.opened_animation,
+                behaviour.act(lockable.open_action)
+                behaviour.queue_action(lockable.opened_action,
                                           repeating=True)
 
         EntityAction.execute(self)

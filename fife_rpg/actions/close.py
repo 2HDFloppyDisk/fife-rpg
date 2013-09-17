@@ -45,8 +45,8 @@ class Close(EntityAction):
             fifeagent_data = getattr(self.target, FifeAgent.registered_as)
             if fifeagent_data:
                 behaviour = fifeagent_data.behaviour
-                behaviour.animate(lockable.close_animation)
-                behaviour.queue_animation(lockable.closed_animation,
+                behaviour.act(lockable.close_action)
+                behaviour.queue_action(lockable.closed_action,
                                           repeating=True)
 
         EntityAction.execute(self)
