@@ -31,6 +31,7 @@ from bGrease.grease_fife.mode import FifeManager
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
 from fife.extensions.pychan.internal import get_manager
+from fife.extensions.pychan.pychanbasicapplication import PychanApplicationBase
 
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg import Map
@@ -354,7 +355,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                 visual = fife.InstanceVisual.create(fife_instance)
                 if (map_object.getAction('default')):
                     target = fife.Location(game_map.actor_layer)
-                    fife_instance.act('default', target, True)
+                    fife_instance.actRepeat('default', target)
                 fifeagent = getattr(entity, FifeAgent.registered_as)
                 behaviour_class = BehaviourManager.get_behaviour(
                                                         agent.behaviour_type)
@@ -876,3 +877,11 @@ class RPGApplication(FifeManager, ApplicationBase):
         if self.world:
             self.world.pump(time_delta)
         FifeManager.pump(self, time_delta)
+
+
+class RPGApplicationPychan(RPGApplication, PychanApplicationBase):
+    """The RPGApplication with fifechan support"""
+
+    def __init__(self, setting=None):
+        RPGApplication.__init__(self, setting)
+        PychanApplicationBase.__init__(self, setting)

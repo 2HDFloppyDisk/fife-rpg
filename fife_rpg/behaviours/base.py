@@ -129,6 +129,17 @@ class Base (fife.InstanceActionListener):
         """
         pass
 
+    def onInstanceActionCancelled(self, instance, animation):
+        # pylint: disable=C0103,W0613,W0221
+        """Called by FIFE when an animation of an agent is cancelled
+
+        Args:
+            instance: The agent instance
+
+            animation: The animation that the agent was doing
+        """
+        pass
+
     def talk(self):
         """Set the agent to their talking animation"""
         self.state = AGENT_STATES.TALK
@@ -146,7 +157,10 @@ class Base (fife.InstanceActionListener):
             repeating: Whether to repeat the animation or not
         """
         direction = direction or self.agent.instance.getFacingLocation()
-        self.agent.instance.act(animation, direction, repeating)
+        if repeating:
+            self.agent.instance.actRepeat(animation, direction)
+        else:
+            self.agent.instance.actOnce(animation, direction)
 
     def queue_animation(self, animation, direction=None, repeating=False):
         """Add an animation to the queue
