@@ -20,7 +20,6 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-import time
 import os
 from copy import copy
 import gettext
@@ -30,8 +29,11 @@ import yaml
 from bGrease.grease_fife.mode import FifeManager
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
-from fife.extensions.pychan.internal import get_manager
+from fife.extensions import pychan
 from fife.extensions.pychan.pychanbasicapplication import PychanApplicationBase
+from fife.extensions.cegui.ceguibasicapplication import CEGUIApplicationBase
+from fife.extensions.librocket.rocketbasicapplication \
+                                                import RocketApplicationBase
 
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg import Map
@@ -72,125 +74,6 @@ class KeyFilter(fife.IKeyFilter):
             True if the key is filtered, False if not.
         """
         return event.getKey().getValue() in self._keys
-
-
-class ApplicationListener(
-    fife.IKeyListener, fife.ICommandListener, fife.ConsoleExecuter):
-    """A basic listener for window commands, console commands and keyboard
-    inputs.
-
-    Does not process game related input.
-
-    Properties:
-        quit: Sets whether to quit the application on the next pump or not.
-    """
-
-    def __init__(self, engine, application):
-        """Initializes all listeners and registers itself with the
-        eventmanager.
-
-        Args:
-            engine: A fife.Engine instance
-
-            application: A RPGApplication instance
-        """
-        self._engine = engine
-        self._application = application
-        self._eventmanager = self._engine.getEventManager()
-
-        fife.IKeyListener.__init__(self)
-        self._eventmanager.addKeyListener(self)
-
-        fife.ICommandListener.__init__(self)
-        self._eventmanager.addCommandListener(self)
-
-        fife.ConsoleExecuter.__init__(self)
-        get_manager().getConsole().setConsoleExecuter(self)
-
-        keyfilter = KeyFilter([fife.Key.ESCAPE, fife.Key.CARET,
-                               fife.Key.PRINT_SCREEN])
-        keyfilter.__disown__()
-
-        self._eventmanager.setKeyFilter(keyfilter)
-
-        self.quit = False
-
-    def keyPressed(self, event):  # pylint: disable-msg=C0103,W0221
-        """Processes any non game related keyboard input.
-
-        Args:
-            event: The fife.KeyEvent that happened
-        """
-        if event.isConsumed():
-            return
-
-        keyval = event.getKey().getValue()
-
-        if keyval == fife.Key.ESCAPE:
-            self.quit = True
-            event.consume()
-        elif keyval == fife.Key.CARET:
-            get_manager().getConsole().toggleShowHide()
-            event.consume()
-        elif keyval == fife.Key.PRINT_SCREEN:
-            self._engine.getRenderBackend().captureScreen(
-                time.strftime("%Y%m%d_%H%M%S", time.localtime()) + ".png")
-            event.consume()
-
-    def keyReleased(self, event):  # pylint: disable-msg=C0103,W0221
-        """Gets called when a key is released
-
-        Args:
-            event: The fife.KeyEvent that happened
-        """
-        pass
-
-    def onCommand(self, command):  # pylint: disable-msg=C0103,W0221
-        """Process commands
-
-        Args:
-            command: The fife.Command that is being processed
-        """
-        self.quit = (command.getCommandType() == fife.CMD_QUIT_GAME)
-        if self.quit:
-            command.consume()
-
-    def onConsoleCommand(self, command):  # pylint: disable-msg=C0103,W0221
-        """Process console commands
-
-        Args:
-            command: A string containing the command
-
-        Returns:
-            A string representing the result of the command
-        """
-        result = ""
-
-        args = command.split(" ")
-        cmd = []
-        for arg in args:
-            arg = arg.strip()
-            if arg != "":
-                cmd.append(arg)
-
-        if cmd[0].lower() in ('quit', 'exit'):
-            self.quit = True
-            result = 'quitting'
-        elif cmd[0].lower() in ('help'):
-            helptextfile = self._application.settings.get(
-                "RPG", "HelpText", "misc/help.txt")
-            get_manager().getConsole().println(open(helptextfile, 'r').read())
-            result = "--OK--"
-        elif cmd[0] in get_commands():
-            result = get_commands()[cmd[0]](self._application, *cmd[1:])
-        else:
-            result = 'Command Not Found...'
-
-        return result
-
-    def onToolsClick(self):  # pylint: disable-msg=C0103,W0221
-        """Gets called when the the 'tool' button on the console is clicked"""
-        print "No tools set up yet"
 
 
 class RPGApplication(FifeManager, ApplicationBase):
@@ -484,11 +367,6 @@ class RPGApplication(FifeManager, ApplicationBase):
         maps_doc = yaml.load(maps_file)
         for name, filename in maps_doc["Maps"].iteritems():
             self.add_map(name, filename)
-
-    def createListener(self):  # pylint: disable-msg=C0103
-        """Creates the listener for the application and returns it."""
-        self._listener = ApplicationListener(self.engine, self)
-        return self._listener
 
     def create_world(self):
         """Creates the world used by this application"""
@@ -867,8 +745,6 @@ class RPGApplication(FifeManager, ApplicationBase):
         Args:
             time_delta: Time elapsed since last call to pump
         """
-        if self._listener.quit:
-            self.quit()
         if self.current_map:
             self.check_agent_changes()
             self.current_map.update_entities_fife()
@@ -879,9 +755,149 @@ class RPGApplication(FifeManager, ApplicationBase):
         FifeManager.pump(self, time_delta)
 
 
+class BaseEventListener(fife.IKeyListener, fife.ICommandListener):
+    """
+    Default, rudimentary event listener.
+
+    Will cause the application to quit on pressing ESC, or when a
+    quit-game command was received.
+    """
+    def __init__(self, app):
+        self.app = app
+        self.engine = app.engine
+        eventmanager = self.engine.getEventManager()
+        # eventmanager.setNonConsumableKeys([fife.Key.ESCAPE])
+        fife.IKeyListener.__init__(self)
+        eventmanager.addKeyListener(self)
+        fife.ICommandListener.__init__(self)
+        eventmanager.addCommandListener(self)
+
+    def keyPressed(self, evt):  # pylint: disable-msg=W0221, C0103
+        keyval = evt.getKey().getValue()
+        if keyval == fife.Key.ESCAPE:
+            self.app.quit()
+
+    def keyReleased(self, evt):  # pylint: disable-msg=W0221, C0103
+        pass
+
+    def onCommand(self, command):  # pylint: disable-msg=W0221, C0103
+        if command.getCommandType() == fife.CMD_QUIT_GAME:
+            self.app.quit()
+            command.consume()
+
+
+class PychanListener(BaseEventListener, fife.ConsoleExecuter):
+    """Listener for pychan"""
+
+    def __init__(self, app):
+        BaseEventListener.__init__(self, app)
+        fife.ConsoleExecuter.__init__(self)
+        self.console = pychan.manager.hook.guimanager.getConsole()
+        self.console.setConsoleExecuter(self)
+
+    def keyPressed(self, evt):  # pylint: disable-msg=W0221, C0103
+        keyval = evt.getKey().getValue()
+        if keyval == fife.Key.F10:
+            pychan.manager.hook.guimanager.getConsole().toggleShowHide()
+            evt.consume()
+        else:
+            BaseEventListener.keyPressed(self, evt)
+
+    def onConsoleCommand(self, command):  # pylint: disable-msg=C0103,W0221
+        """Process console commands
+
+        Args:
+        command: A string containing the command
+
+        Returns:
+        A string representing the result of the command
+        """
+        result = ""
+
+        args = command.split(" ")
+        cmd = []
+        for arg in args:
+            arg = arg.strip()
+            if arg != "":
+                cmd.append(arg)
+
+        if cmd[0].lower() in ('quit', 'exit'):
+            self.app.quit()
+            result = 'quitting'
+        elif cmd[0].lower() in ('help'):
+            helptextfile = self._application.settings.get(
+                "RPG", "HelpText", "misc/help.txt")
+            self.console.println(open(helptextfile, 'r').read())
+            result = "--OK--"
+        elif cmd[0] in get_commands():
+            result = get_commands()[cmd[0]](self._application, *cmd[1:])
+        else:
+            result = 'Command Not Found...'
+
+        return result
+
+    def onToolsClick(self):  # pylint: disable-msg=C0103,W0221
+        """Gets called when the the 'tool' button on the console is clicked"""
+        print "No tools set up yet"
+
+
 class RPGApplicationPychan(RPGApplication, PychanApplicationBase):
     """The RPGApplication with fifechan support"""
 
     def __init__(self, setting=None):
         RPGApplication.__init__(self, setting)
         PychanApplicationBase.__init__(self, setting)
+
+    def createListener(self):  # pylint: disable-msg=C0103
+        self._listener = PychanListener(self)
+        return self._listener
+
+
+class CEGUIListener(BaseEventListener):
+    """Listener for CEGUI"""
+    pass
+
+
+class RPGApplicationCEGUI(RPGApplication, CEGUIApplicationBase):
+    """The RPGApplication with CEGUI support"""
+
+    def __init__(self, setting=None):
+        RPGApplication.__init__(self, setting)
+        CEGUIApplicationBase.__init__(self, setting)
+
+    def createListener(self):  # pylint: disable-msg=C0103
+        self._listener = CEGUIListener(self)
+        return self._listener
+
+
+class RocketListener(BaseEventListener):
+    """Listener for Rocket"""
+
+    def __init__(self, app):
+        BaseEventListener.__init__(self, app)
+        self.debuggeractive = False
+
+    def keyReleased(self, evt):  # pylint: disable-msg=C0103,W0221
+        keyval = evt.getKey().getValue()
+
+        if keyval == fife.Key.F12:
+            if not self.debuggeractive:
+                self.app.guimanager.showDebugger()
+                self.debuggeractive = True
+            else:
+                self.app.guimanager.hideDebugger()
+                self.debuggeractive = False
+        else:
+            BaseEventListener.keyReleased(self, evt)
+
+
+class RPGApplicationRocket(RPGApplication, RocketApplicationBase):
+    """THe RPGApplication with Rocket support"""
+
+    def __init__(self, setting=None):
+        RPGApplication.__init__(self, setting)
+        RocketApplicationBase.__init__(self, setting)
+
+    def createListener(self):  # pylint: disable-msg=C0103
+        self._listener = RocketListener(self)
+        return self._listener
