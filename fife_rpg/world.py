@@ -26,8 +26,7 @@ import sys
 import imp
 
 from bGrease.grease_fife.world import World
-from fife.extensions.serializers.xmlobject import XMLObjectLoader
-from fife.extensions.serializers.xml_loader_tools import loadImportDirRec
+from fife.fife import MapLoader
 import yaml
 
 from fife_rpg.components import ComponentManager
@@ -182,9 +181,11 @@ class RPGWorld(World):  # pylint: disable=R0924
         if not object_path:
             object_path = self.application.settings.get(
                 "fife-rpg", "AgentObjectsPath", "objects/agents")
-        engine = self.engine
-        obj_loader = XMLObjectLoader(engine)
-        loadImportDirRec(obj_loader, object_path, engine, True)
+        loader = MapLoader(self.engine.getModel(),
+                                self.engine.getVFS(),
+                                self.engine.getImageManager(),
+                                self.engine.getRenderBackend())
+        loader.loadImportDirectory(object_path)
 
     def read_object_db(self, db_filename=None):
         """Reads the Object Information Database from a file
