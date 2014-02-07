@@ -10,6 +10,7 @@ from fife_rpg.mvc import ControllerBase
 from fife_rpg.rpg_application import RPGApplication
 from fife_rpg.rpg_application import RPGApplicationPychan
 from fife_rpg.rpg_application import RPGApplicationCEGUI
+from fife_rpg.rpg_application import RPGApplicationRocket
 from fife_rpg.world import RPGWorld
 from fife_rpg.game_scene import GameSceneView
 from fife_rpg.game_scene import GameSceneController

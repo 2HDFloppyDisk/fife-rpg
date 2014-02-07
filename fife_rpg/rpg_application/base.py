@@ -12,10 +12,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module contains the main application class.
+"""This module contains the base application class.
 
-.. module:: rpg_application
-    :synopsis: Contains the main application class.
+.. module:: base
+    :synopsis: Contains the base application class.
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
@@ -29,11 +29,6 @@ import yaml
 from bGrease.grease_fife.mode import FifeManager
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
-from fife.extensions import pychan
-from fife.extensions.pychan.pychanbasicapplication import PychanApplicationBase
-from fife.extensions.cegui.ceguibasicapplication import CEGUIApplicationBase
-from fife.extensions.librocket.rocketbasicapplication \
-                                                import RocketApplicationBase
 
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg import Map
@@ -52,7 +47,7 @@ _SCRIPTING_MODULE = "application"
 class KeyFilter(fife.IKeyFilter):
     """This is the implementation of the fife.IKeyFilter class.
 
-    Prevents any filtered keys from being consumed by guichan.
+    Prevents any filtered keys from being consumed by pychan.
     """
 
     def __init__(self, keys):
@@ -785,119 +780,3 @@ class BaseEventListener(fife.IKeyListener, fife.ICommandListener):
             self.app.quit()
             command.consume()
 
-
-class PychanListener(BaseEventListener, fife.ConsoleExecuter):
-    """Listener for pychan"""
-
-    def __init__(self, app):
-        BaseEventListener.__init__(self, app)
-        fife.ConsoleExecuter.__init__(self)
-        self.console = pychan.manager.hook.guimanager.getConsole()
-        self.console.setConsoleExecuter(self)
-
-    def keyPressed(self, evt):  # pylint: disable-msg=W0221, C0103
-        keyval = evt.getKey().getValue()
-        if keyval == fife.Key.F10:
-            pychan.manager.hook.guimanager.getConsole().toggleShowHide()
-            evt.consume()
-        else:
-            BaseEventListener.keyPressed(self, evt)
-
-    def onConsoleCommand(self, command):  # pylint: disable-msg=C0103,W0221
-        """Process console commands
-
-        Args:
-        command: A string containing the command
-
-        Returns:
-        A string representing the result of the command
-        """
-        result = ""
-
-        args = command.split(" ")
-        cmd = []
-        for arg in args:
-            arg = arg.strip()
-            if arg != "":
-                cmd.append(arg)
-
-        if cmd[0].lower() in ('quit', 'exit'):
-            self.app.quit()
-            result = 'quitting'
-        elif cmd[0].lower() in ('help'):
-            helptextfile = self._application.settings.get(
-                "RPG", "HelpText", "misc/help.txt")
-            self.console.println(open(helptextfile, 'r').read())
-            result = "--OK--"
-        elif cmd[0] in get_commands():
-            result = get_commands()[cmd[0]](self._application, *cmd[1:])
-        else:
-            result = 'Command Not Found...'
-
-        return result
-
-    def onToolsClick(self):  # pylint: disable-msg=C0103,W0221
-        """Gets called when the the 'tool' button on the console is clicked"""
-        print "No tools set up yet"
-
-
-class RPGApplicationPychan(RPGApplication, PychanApplicationBase):
-    """The RPGApplication with fifechan support"""
-
-    def __init__(self, setting=None):
-        RPGApplication.__init__(self, setting)
-        PychanApplicationBase.__init__(self, setting)
-
-    def createListener(self):  # pylint: disable-msg=C0103
-        self._listener = PychanListener(self)
-        return self._listener
-
-
-class CEGUIListener(BaseEventListener):
-    """Listener for CEGUI"""
-    pass
-
-
-class RPGApplicationCEGUI(RPGApplication, CEGUIApplicationBase):
-    """The RPGApplication with CEGUI support"""
-
-    def __init__(self, setting=None):
-        RPGApplication.__init__(self, setting)
-        CEGUIApplicationBase.__init__(self, setting)
-
-    def createListener(self):  # pylint: disable-msg=C0103
-        self._listener = CEGUIListener(self)
-        return self._listener
-
-
-class RocketListener(BaseEventListener):
-    """Listener for Rocket"""
-
-    def __init__(self, app):
-        BaseEventListener.__init__(self, app)
-        self.debuggeractive = False
-
-    def keyReleased(self, evt):  # pylint: disable-msg=C0103,W0221
-        keyval = evt.getKey().getValue()
-
-        if keyval == fife.Key.F12:
-            if not self.debuggeractive:
-                self.app.guimanager.showDebugger()
-                self.debuggeractive = True
-            else:
-                self.app.guimanager.hideDebugger()
-                self.debuggeractive = False
-        else:
-            BaseEventListener.keyReleased(self, evt)
-
-
-class RPGApplicationRocket(RPGApplication, RocketApplicationBase):
-    """THe RPGApplication with Rocket support"""
-
-    def __init__(self, setting=None):
-        RPGApplication.__init__(self, setting)
-        RocketApplicationBase.__init__(self, setting)
-
-    def createListener(self):  # pylint: disable-msg=C0103
-        self._listener = RocketListener(self)
-        return self._listener
