@@ -23,6 +23,7 @@ from fife import fife
 from fife.extensions.librocket.rocketbasicapplication \
                                                 import RocketApplicationBase
 
+from fife_rpg.rpg_application.base import RPGApplication
 from fife_rpg.rpg_application.base import BaseEventListener
 
 
