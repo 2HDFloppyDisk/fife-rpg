@@ -318,6 +318,10 @@ class RPGWorld(World):  # pylint: disable=R0924
             raise ValueError("There is no identifier and no Template set."
                              "Can't create an Entity without an identifier.")
 
+    def clear(self):
+        """Clear the world, remove all entities"""
+        self.object_db = {}
+
     def pump(self, time_delta):
         """Performs actions every frame
 
