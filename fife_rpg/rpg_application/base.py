@@ -264,11 +264,6 @@ class RPGApplication(FifeManager, ApplicationBase):
             if not isinstance(game_map, Map):
                 maps_path = self.settings.get(
                     "fife-rpg", "MapsPath", "maps")
-                grid_type = self.settings.get(
-                    "fife-rpg", "GridType", "square")
-                grid_type = (self.engine.getModel().
-                                getCellGrid(grid_type)
-                             )
                 camera = self.settings.get(
                     "fife-rpg", "Camera", "main")
 
