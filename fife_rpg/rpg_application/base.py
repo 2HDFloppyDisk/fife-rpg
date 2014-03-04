@@ -411,11 +411,13 @@ class RPGApplication(FifeManager, ApplicationBase):
 
         Args:
             filename: The path to the components file. If this is set to None
-            the ComponentsFile setting will be used.
+            the ComponentsFile or CombinedFile setting will be used.
         """
         if filename is None:
             filename = self.settings.get("fife-rpg", "ComponentsFile",
                                          "components.yaml")
+            filename = self.settings.get("fife-rpg", "CombinedFile",
+                                         filename)
         self._components = {}
         components_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(components_file)["Components"].iteritems():
@@ -491,11 +493,13 @@ class RPGApplication(FifeManager, ApplicationBase):
 
         Args:
             filename: The path to the actions file. If this is set to None the
-            ActionsFile setting will be used.
+            ActionsFile or CombinedFile setting will be used.
         """
         if filename is None:
             filename = self.settings.get("fife-rpg", "ActionsFile",
                                          "actions.yaml")
+            filename = self.settings.get("fife-rpg", "CombinedFile",
+                                         filename)
         self._actions = {}
         actions_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(actions_file)["Actions"].iteritems():
@@ -544,11 +548,13 @@ class RPGApplication(FifeManager, ApplicationBase):
 
         Args:
             filename: The path to the systems file. If this is set to None the
-            SystemsFile setting will be used.
+            SystemsFile or CombinedFile setting will be used.
         """
         if filename is None:
             filename = self.settings.get("fife-rpg", "SystemsFile",
                                          "systems.yaml")
+            filename = self.settings.get("fife-rpg", "CombinedFile",
+                                         filename)
         self._systems = {}
         systems_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(systems_file)["Systems"].iteritems():
@@ -597,11 +603,13 @@ class RPGApplication(FifeManager, ApplicationBase):
 
         Args:
             filename: The path to the behaviours file. If this is set to None
-            the BehavioursFile setting will be used.
+            the BehavioursFile or CombinedFile setting will be used.
         """
         if filename is None:
             filename = self.settings.get("fife-rpg", "BehavioursFile",
                                          "behaviours.yaml")
+            filename = self.settings.get("fife-rpg", "CombinedFile",
+                                         filename)
         self._behaviours = {}
         behaviours_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(behaviours_file)["Behaviours"].iteritems():
