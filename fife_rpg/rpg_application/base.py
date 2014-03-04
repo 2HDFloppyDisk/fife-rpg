@@ -654,6 +654,19 @@ class RPGApplication(FifeManager, ApplicationBase):
             else:
                 self.register_behaviour(behaviour)
 
+    def load_combined(self, filepath=None):
+        """Loads components, actions, systems and behaviours.
+
+        Args:
+            filepath: The path to the file. If set to None either the
+            CominedFile Setting or the specific setting for the module will be
+            used.
+        """
+        self.load_actions(filepath)
+        self.load_behaviours(filepath)
+        self.load_components(filepath)
+        self.load_systems(filepath)
+
     def is_location_in_region(self, map_name, location, region_name):
         """Checks whether the location is in the region of the map
 
