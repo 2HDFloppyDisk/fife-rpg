@@ -38,7 +38,7 @@ class AlreadyRegisteredError(Exception):
 
     def __str__(self):
         """Returns the message of the Exception"""
-        return ("An %s with the name '%s' already exists" %
+        return ("A(n) %s with the name '%s' already exists" %
                     (self.type, self.name))
 
 class NotRegisteredError(Exception):

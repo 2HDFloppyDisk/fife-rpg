@@ -40,7 +40,7 @@ def register_behaviour(name, behaviour):
         AlreadyRegisteredError if there is already a behaviour with that name
     """
     if name in _BEHAVIOURS:
-        raise AlreadyRegisteredError("behaviour", name)
+        raise AlreadyRegisteredError(name, "behaviour")
     else:
         _BEHAVIOURS[name] = behaviour
 
