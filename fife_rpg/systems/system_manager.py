@@ -44,3 +44,7 @@ def register_system(system_name, system_object):
         _SYSTEMS[system_name] = system_object
     else:
         raise AlreadyRegisteredError(system_name, "system")
+
+def clear_systems():
+    """Removes all registered systems"""
+    _SYSTEMS.clear()

@@ -55,3 +55,7 @@ def get_behaviour(name):
     if name in _BEHAVIOURS:
         return _BEHAVIOURS[name]
     return None
+
+def clear_behaviours():
+    """Remove all registered behaviours"""
+    _BEHAVIOURS.clear()

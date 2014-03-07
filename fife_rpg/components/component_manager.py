@@ -46,6 +46,9 @@ def register_component(component_name, component_object):
     else:
         raise AlreadyRegisteredError(component_name, "component")
 
+def clear_components():
+    """Removes all registered components"""
+    _COMPONENTS.clear()
 
 def get_checkers():
     """Returns the registered checkers"""
@@ -62,3 +65,7 @@ def register_checker(component_names, callback):
         callback: The checker function
     """
     _CHECKERS.append((component_names, callback))
+
+def clear_checkers():
+    """Removes all checkers"""
+    del _CHECKERS[:]
