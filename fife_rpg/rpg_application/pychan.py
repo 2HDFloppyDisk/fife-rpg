@@ -21,10 +21,11 @@
 """
 from fife import fife
 from fife.extensions import pychan
-from fife.extensions.pychan.pychanbasicapplication import PychanApplicationBase  
+from fife.extensions.pychan.pychanbasicapplication import PychanApplicationBase
 
 from fife_rpg.rpg_application.base import RPGApplication
 from fife_rpg.rpg_application.base import BaseEventListener
+from fife_rpg.console_commands import get_commands
 
 
 class PychanListener(BaseEventListener, fife.ConsoleExecuter):
@@ -92,4 +93,3 @@ class RPGApplicationPychan(RPGApplication, PychanApplicationBase):
     def createListener(self):  # pylint: disable-msg=C0103
         self._listener = PychanListener(self)
         return self._listener
-

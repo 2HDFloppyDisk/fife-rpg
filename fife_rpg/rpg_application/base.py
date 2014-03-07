@@ -20,26 +20,25 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-import os
 from copy import copy
 import gettext
 import imp
+import os
 
-import yaml
 from bGrease.grease_fife.mode import FifeManager
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
-
-from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg import Map
-from fife_rpg.world import RPGWorld
+from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.components.agent import Agent, STACK_POSITION
 from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
 from fife_rpg.components.general import General
-from fife_rpg.behaviours import BehaviourManager
+from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.systems import GameVariables
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
-from fife_rpg.console_commands import get_commands
+from fife_rpg.world import RPGWorld
+import yaml
+
 
 _SCRIPTING_MODULE = "application"
 
@@ -795,4 +794,3 @@ class BaseEventListener(fife.IKeyListener, fife.ICommandListener):
         if command.getCommandType() == fife.CMD_QUIT_GAME:
             self.app.quit()
             command.consume()
-

@@ -29,7 +29,7 @@ try:
 except ImportError:
     class RPGApplicationPychan(object):
         """Just a dummy class that raises an exception"""
-        def __init__(self, settings):
+        def __init__(self, _):
             raise RuntimeError("FIFE was build with fifechan disabled. "
                                "Pychan applications will not work.")
 try:
@@ -38,7 +38,7 @@ try:
 except ImportError:
     class RPGApplicationCEGUI(object):
         """Just a dummy class that raises an exception"""
-        def __init__(self, settings):
+        def __init__(self, _):
             raise RuntimeError("FIFE was build without CEGUI enabled. "
                                "CEGUI applications will not work.")
 try:
@@ -47,7 +47,6 @@ try:
 except ImportError:
     class RPGApplicationRocket(object):
         """Just a dummy class that raises an exception"""
-        def __init__(self, settings):
+        def __init__(self, _):
             raise RuntimeError("FIFE was build without librocket enabled. "
                                "Rocket applications will not work.")
-

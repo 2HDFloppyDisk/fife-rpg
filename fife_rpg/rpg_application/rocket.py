@@ -58,4 +58,3 @@ class RPGApplicationRocket(RPGApplication, RocketApplicationBase):
     def createListener(self):  # pylint: disable-msg=C0103
         self._listener = RocketListener(self)
         return self._listener
-

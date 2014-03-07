@@ -19,11 +19,10 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
-from fife import fife
 from fife.extensions.cegui.ceguibasicapplication import CEGUIApplicationBase
-
-from fife_rpg.rpg_application.base import RPGApplication
 from fife_rpg.rpg_application.base import BaseEventListener
+from fife_rpg.rpg_application.base import RPGApplication
+
 
 class CEGUIListener(BaseEventListener):
     """Listener for CEGUI"""
@@ -40,4 +39,3 @@ class RPGApplicationCEGUI(RPGApplication, CEGUIApplicationBase):
     def createListener(self):  # pylint: disable-msg=C0103
         self._listener = CEGUIListener(self)
         return self._listener
-
