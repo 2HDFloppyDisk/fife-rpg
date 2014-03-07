@@ -25,7 +25,7 @@ import inspect
 from bGrease.component import Component
 
 from fife_rpg.components import ComponentManager
-from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
 from fife_rpg.helpers import ClassProperty
 
 
@@ -83,4 +83,30 @@ class Base(Component):
             return True
         except AlreadyRegisteredError as error:
             print error
+            return False
+
+    @classmethod
+    def unregister(cls, auto_unregister=True):
+        """Unregister a component class
+
+        Args:
+            auto_register: This sets whether components this component
+            derives from will have their registered_as property unset as well
+
+        Returns:
+            True if the component was unregistered, false if Not
+        """
+        try:
+            ComponentManager.unregister_component(cls.__registered_as)
+            cls.__registered_as = None
+            if auto_unregister:
+                for sub_cls in inspect.getmro(cls):
+                    if ((not (sub_cls is cls or sub_cls is Base))
+                         and issubclass(sub_cls, Base)):
+                        # pylint: disable-msg=W0212
+                        sub_cls.__registered_as = None
+                        # pylint: enable-msg=W0212
+            return True
+        except NotRegisteredError as error:
+            print(error)
             return False

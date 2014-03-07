@@ -20,7 +20,8 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-from fife_rpg.exceptions import NoSuchCommandError, AlreadyRegisteredError
+from fife_rpg.exceptions import (NoSuchCommandError, AlreadyRegisteredError,
+                                 NotRegisteredError)
 from fife_rpg.actions import ActionManager
 from fife_rpg.helpers import ClassProperty
 
@@ -83,6 +84,21 @@ class BaseAction(object):
             return True
         except AlreadyRegisteredError as error:
             print error
+            return False
+
+    @classmethod
+    def unregister(cls):
+        """Unregister an action class
+
+        Returns:
+            True if the action was unregistered, false if Not
+        """
+        try:
+            ActionManager.unregister_action(cls.__registered_as)
+            cls.__registered_as = None
+            return True
+        except NotRegisteredError as error:
+            print(error)
             return False
 
     @ClassProperty

@@ -197,3 +197,17 @@ class Base (fife.InstanceActionListener):
         except AlreadyRegisteredError as error:
             print error
             return False
+
+    @classmethod
+    def unregister(cls):
+        """Unregister a behaviour class
+
+        Returns:
+            True if the behaviour was unregistered, false if Not
+        """
+        try:
+            BehaviourManager.unregister_behaviour(cls.__registered_as)
+            cls.__registered_as = None
+        except NotRegisteredError as error:
+            print(error)
+            return False

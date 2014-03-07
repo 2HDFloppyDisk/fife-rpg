@@ -27,7 +27,7 @@ for example, in menus,
 
 from copy import copy
 
-from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
 
 _ACTIONS = {}
 _COMMANDS = {}
@@ -79,11 +79,21 @@ def register_action(action_name, action_class):
     else:
         raise AlreadyRegisteredError(action_name, "action")
 
+def unregister_action(action_name):
+    """Unregister an action
+
+    Args:
+        action_name: The name of the action
+    """
+    if action_name in _ACTIONS:
+        del _ACTIONS[action_name]
+    else:
+        raise NotRegisteredError("action")
 
 def clear_actions():
     """Removes all actions"""
-    _ACTIONS.clear()
-
+    for action in get_actions().itervalues():
+        action.unregister()
 
 def get_commands():
     """Returns the registered commands"""
