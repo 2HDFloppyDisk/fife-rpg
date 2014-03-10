@@ -85,7 +85,7 @@ class Agent(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Agent, cls).register(name, auto_register))
+        return super(Agent, cls).register(name, auto_register)
 
 
 def knows(agent, knowledge):

@@ -26,7 +26,7 @@ from fife_rpg.systems import SystemManager
 from fife_rpg.helpers import ClassProperty
 
 
-class Base(System):
+class Base(System):  # pylint: disable=W0223
     """Base system for fife-rpg.
 
     Properties:
@@ -78,5 +78,5 @@ class Base(System):
             SystemManager.unregister_system(cls.__registered_as)
             cls.__registered_as = None
         except NotRegisteredError as error:
-            print(error)
+            print error
             return False

@@ -219,10 +219,10 @@ class DialogueController(ControllerBase):
             with the name of a file to load, or a |Dialogue| instance.
         """
         ControllerBase.__init__(self, view, application)
-        if(isinstance(dialogue, str)):
+        if isinstance(dialogue, str):
             dialogue_file = self.application.engine.getVFS().open(dialogue)
             dialogue = yaml.load(dialogue_file)
-        if(isinstance(dialogue, dict)):
+        if isinstance(dialogue, dict):
             self.dialogue = Dialogue(self.application.world, dialogue)
         else:
             self.dialogue = dialogue

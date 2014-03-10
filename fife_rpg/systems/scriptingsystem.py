@@ -54,7 +54,7 @@ class ScriptingSystem(Base):
         Returns:
             True if the system was registered, False if not.
         """
-        return (super(ScriptingSystem, cls).register(name))
+        return super(ScriptingSystem, cls).register(name)
 
     @classmethod
     def register_command(cls, name, command_function, module=""):
@@ -157,7 +157,7 @@ class ScriptingSystem(Base):
         """
         script_file = file(filename, "r")
         script_module = imp.new_module(name)
-        exec script_file in script_module.__dict__  # pylint: disable-msg=W0122
+        exec script_file in script_module.__dict__  # pylint: disable=W0122
         self.__scripts[name] = script_module
         script_file.close()
 

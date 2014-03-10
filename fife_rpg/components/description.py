@@ -51,4 +51,4 @@ class Description(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Description, cls).register(name, auto_register))
+        return super(Description, cls).register(name, auto_register)

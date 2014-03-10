@@ -55,4 +55,4 @@ class MoveCamera(BaseAction):
         Returns:
             True if the action was registered, False if not.
         """
-        return (super(MoveCamera, cls).register(name))
+        return super(MoveCamera, cls).register(name)

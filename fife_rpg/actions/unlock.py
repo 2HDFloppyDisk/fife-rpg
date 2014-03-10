@@ -43,7 +43,7 @@ class Unlock(EntityAction):
         EntityAction.execute(self)
 
     @classmethod
-    def check_performer(cls, entity):  # pylint: disable-msg=W0613
+    def check_performer(cls, entity):  # pylint: disable=W0613
         """Checks whether the entity qualifies as an performer for this action
 
         Args:
@@ -55,7 +55,7 @@ class Unlock(EntityAction):
         return True
 
     @classmethod
-    def check_target(cls, entity):  # pylint: disable-msg=W0613
+    def check_target(cls, entity):  # pylint: disable=W0613
         """Checks whether the entity qualifies as a target for this action
 
         Args:

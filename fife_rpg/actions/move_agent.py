@@ -51,7 +51,7 @@ class MoveAgent(EntityAction):
         return "Change Map"
 
     @classmethod
-    def check_performer(cls, entity):  # pylint: disable-msg=W0613
+    def check_performer(cls, entity):  # pylint: disable=W0613
         """Checks whether the entity qualifies as an performer for this action
 
         Args:
@@ -66,7 +66,7 @@ class MoveAgent(EntityAction):
         return False
 
     @classmethod
-    def check_target(cls, entity):  # pylint: disable-msg=W0613
+    def check_target(cls, entity):  # pylint: disable=W0613
         """Checks whether the entity qualifies as a target for this action
 
         Args:

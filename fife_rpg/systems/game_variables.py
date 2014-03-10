@@ -42,7 +42,7 @@ class GameVariables(Base):
         Returns:
             True if the system was registered, False if not.
         """
-        return (super(GameVariables, cls).register(name))
+        return super(GameVariables, cls).register(name)
 
     @classmethod
     def add_callback(cls, callback):

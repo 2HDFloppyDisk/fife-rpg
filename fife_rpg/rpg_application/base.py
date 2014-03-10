@@ -58,7 +58,7 @@ class KeyFilter(fife.IKeyFilter):
         fife.IKeyFilter.__init__(self)
         self._keys = keys
 
-    def isFiltered(self, event):  # pylint: disable-msg=W0221, C0103
+    def isFiltered(self, event):  # pylint: disable=W0221, C0103
         """Checks whether the key is filtered or not.
 
         Args:
@@ -230,7 +230,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                     fife.ExactModelCoordinate(*agent.position),
                     general.identifier)
                 visual = fife.InstanceVisual.create(fife_instance)
-                if (map_object.getAction('default')):
+                if map_object.getAction('default'):
                     target = fife.Location(game_map.actor_layer)
                     fife_instance.actRepeat('default', target)
                 fifeagent = getattr(entity, FifeAgent.registered_as)
@@ -782,15 +782,15 @@ class BaseEventListener(fife.IKeyListener, fife.ICommandListener):
         fife.ICommandListener.__init__(self)
         eventmanager.addCommandListener(self)
 
-    def keyPressed(self, evt):  # pylint: disable-msg=W0221, C0103
+    def keyPressed(self, evt):  # pylint: disable=W0221, C0103
         keyval = evt.getKey().getValue()
         if keyval == fife.Key.ESCAPE:
             self.app.quit()
 
-    def keyReleased(self, evt):  # pylint: disable-msg=W0221, C0103
+    def keyReleased(self, evt):  # pylint: disable=W0221, C0103
         pass
 
-    def onCommand(self, command):  # pylint: disable-msg=W0221, C0103
+    def onCommand(self, command):  # pylint: disable=W0221, C0103
         if command.getCommandType() == fife.CMD_QUIT_GAME:
             self.app.quit()
             command.consume()

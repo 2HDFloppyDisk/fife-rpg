@@ -125,7 +125,7 @@ class GameSceneListener(fife.IMouseListener):
         """Makes the listener receive events"""
         self.eventmanager.removeMouseListener(self)
 
-    def mousePressed(self, event):  # pylint: disable-msg=C0103,W0221
+    def mousePressed(self, event):  # pylint: disable=C0103,W0221
         """Called when a mouse button was pressed.
 
         Args:
@@ -133,7 +133,7 @@ class GameSceneListener(fife.IMouseListener):
         """
         pass
 
-    def mouseMoved(self, event):  # pylint: disable-msg=C0103,W0221
+    def mouseMoved(self, event):  # pylint: disable=C0103,W0221
         """Called when the mouse was moved.
 
         Args:
@@ -162,7 +162,7 @@ class GameSceneListener(fife.IMouseListener):
                     if data is not None:
                         renderer.addOutlined(instance, *data)
 
-    def mouseReleased(self, event):  # pylint: disable-msg=C0103,W0221
+    def mouseReleased(self, event):  # pylint: disable=C0103,W0221
         """Called when a mouse button was released.
 
         Args:
@@ -170,7 +170,7 @@ class GameSceneListener(fife.IMouseListener):
         """
         pass
 
-    def mouseDragged(self, event):  # pylint: disable-msg=C0103,W0221
+    def mouseDragged(self, event):  # pylint: disable=C0103,W0221
         """Called when the mouse is moved while a button is being pressed.
 
         Args:
@@ -178,7 +178,7 @@ class GameSceneListener(fife.IMouseListener):
         """
         pass
 
-    def mouseWheelMovedUp(self, event):  # pylint: disable-msg=W0221, C0103
+    def mouseWheelMovedUp(self, event):  # pylint: disable=W0221, C0103
         """Called when the mouse wheel is moved upwards
 
         Args:
@@ -186,7 +186,7 @@ class GameSceneListener(fife.IMouseListener):
         """
         pass
 
-    def mouseWheelMovedDown(self, event):  # pylint: disable-msg=W0221, C0103
+    def mouseWheelMovedDown(self, event):  # pylint: disable=W0221, C0103
         """Called when the mouse wheel is moved downwards
 
         Args:

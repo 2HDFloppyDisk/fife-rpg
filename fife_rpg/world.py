@@ -38,7 +38,7 @@ from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.components.general import General
 
 
-class RPGWorld(World):  # pylint: disable=R0924
+class RPGWorld(World):
     """The Base world for all rpgs.
 
     Sets up the generic systems and components

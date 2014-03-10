@@ -52,4 +52,4 @@ class MoveAgent(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(MoveAgent, cls).register(name, auto_register))
+        return super(MoveAgent, cls).register(name, auto_register)

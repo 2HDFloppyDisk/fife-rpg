@@ -161,7 +161,7 @@ class CharacterStatisticSystem(Base):
         Returns:
             True if the system was registered, False if not.
         """
-        return (super(CharacterStatisticSystem, cls).register(name))
+        return super(CharacterStatisticSystem, cls).register(name)
 
     def __init__(self):
         Base.__init__(self)

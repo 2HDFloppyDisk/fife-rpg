@@ -61,4 +61,4 @@ class Equipable(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Equipable, cls).register(name, auto_register))
+        return super(Equipable, cls).register(name, auto_register)

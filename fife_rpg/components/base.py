@@ -74,9 +74,9 @@ class Base(Component):
                 for sub_cls in inspect.getmro(cls):
                     if ((not (sub_cls is cls or sub_cls is Base))
                          and issubclass(sub_cls, Base)):
-                        # pylint: disable-msg=W0212
+                        # pylint: disable=W0212
                         sub_cls.__registered_as = name
-                        # pylint: enable-msg=W0212
+                        # pylint: enable=W0212
             for dependency in cls.dependencies:
                 if not dependency.registered_as:
                     dependency.register()
@@ -103,10 +103,10 @@ class Base(Component):
                 for sub_cls in inspect.getmro(cls):
                     if ((not (sub_cls is cls or sub_cls is Base))
                          and issubclass(sub_cls, Base)):
-                        # pylint: disable-msg=W0212
+                        # pylint: disable=W0212
                         sub_cls.__registered_as = None
-                        # pylint: enable-msg=W0212
+                        # pylint: enable=W0212
             return True
         except NotRegisteredError as error:
-            print(error)
+            print error
             return False

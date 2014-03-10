@@ -70,4 +70,4 @@ class CharacterStatistics(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(CharacterStatistics, cls).register(name, auto_register))
+        return super(CharacterStatistics, cls).register(name, auto_register)

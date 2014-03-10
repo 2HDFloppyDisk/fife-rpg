@@ -34,7 +34,7 @@ class RocketListener(BaseEventListener):
         BaseEventListener.__init__(self, app)
         self.debuggeractive = False
 
-    def keyReleased(self, evt):  # pylint: disable-msg=C0103,W0221
+    def keyReleased(self, evt):  # pylint: disable=C0103,W0221
         keyval = evt.getKey().getValue()
 
         if keyval == fife.Key.F12:
@@ -55,6 +55,6 @@ class RPGApplicationRocket(RPGApplication, RocketApplicationBase):
         RPGApplication.__init__(self, setting)
         RocketApplicationBase.__init__(self, setting)
 
-    def createListener(self):  # pylint: disable-msg=C0103
+    def createListener(self):  # pylint: disable=C0103
         self._listener = RocketListener(self)
         return self._listener

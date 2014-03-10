@@ -63,7 +63,7 @@ class FifeAgent(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(FifeAgent, cls).register(name, auto_register))
+        return super(FifeAgent, cls).register(name, auto_register)
 
 
 def setup_behaviour(agent):
@@ -109,7 +109,7 @@ def approach_and_execute(entity, target_or_location, run_agent=True,
     speed = moving.run_speed if run_agent else moving.run_speed
     if isinstance(target_or_location, RPGEntity):
         target_agent = getattr(target_or_location, fifeagent_name)
-        if(target_agent):
+        if target_agent:
             target_or_location = target_agent.instance
         else:
             return

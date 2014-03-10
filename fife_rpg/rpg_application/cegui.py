@@ -36,6 +36,6 @@ class RPGApplicationCEGUI(RPGApplication, CEGUIApplicationBase):
         RPGApplication.__init__(self, setting)
         CEGUIApplicationBase.__init__(self, setting)
 
-    def createListener(self):  # pylint: disable-msg=C0103
+    def createListener(self):  # pylint: disable=C0103
         self._listener = CEGUIListener(self)
         return self._listener

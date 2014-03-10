@@ -37,7 +37,7 @@ class PychanListener(BaseEventListener, fife.ConsoleExecuter):
         self.console = pychan.manager.hook.guimanager.getConsole()
         self.console.setConsoleExecuter(self)
 
-    def keyPressed(self, evt):  # pylint: disable-msg=W0221, C0103
+    def keyPressed(self, evt):  # pylint: disable=W0221, C0103
         keyval = evt.getKey().getValue()
         if keyval == fife.Key.F10:
             pychan.manager.hook.guimanager.getConsole().toggleShowHide()
@@ -45,7 +45,7 @@ class PychanListener(BaseEventListener, fife.ConsoleExecuter):
         else:
             BaseEventListener.keyPressed(self, evt)
 
-    def onConsoleCommand(self, command):  # pylint: disable-msg=C0103,W0221
+    def onConsoleCommand(self, command):  # pylint: disable=C0103,W0221
         """Process console commands
 
         Args:
@@ -66,11 +66,6 @@ class PychanListener(BaseEventListener, fife.ConsoleExecuter):
         if cmd[0].lower() in ('quit', 'exit'):
             self.app.quit()
             result = 'quitting'
-        elif cmd[0].lower() in ('help'):
-            helptextfile = self._application.settings.get(
-                "RPG", "HelpText", "misc/help.txt")
-            self.console.println(open(helptextfile, 'r').read())
-            result = "--OK--"
         elif cmd[0] in get_commands():
             result = get_commands()[cmd[0]](self._application, *cmd[1:])
         else:
@@ -78,7 +73,7 @@ class PychanListener(BaseEventListener, fife.ConsoleExecuter):
 
         return result
 
-    def onToolsClick(self):  # pylint: disable-msg=C0103,W0221
+    def onToolsClick(self):  # pylint: disable=C0103,W0221
         """Gets called when the the 'tool' button on the console is clicked"""
         print "No tools set up yet"
 
@@ -90,6 +85,6 @@ class RPGApplicationPychan(RPGApplication, PychanApplicationBase):
         RPGApplication.__init__(self, setting)
         PychanApplicationBase.__init__(self, setting)
 
-    def createListener(self):  # pylint: disable-msg=C0103
+    def createListener(self):  # pylint: disable=C0103
         self._listener = PychanListener(self)
         return self._listener

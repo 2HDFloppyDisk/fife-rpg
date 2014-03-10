@@ -64,4 +64,4 @@ class Containable(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Containable, cls).register(name, auto_register))
+        return super(Containable, cls).register(name, auto_register)

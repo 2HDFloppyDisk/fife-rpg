@@ -27,7 +27,6 @@ class ClassProperty(property):
         return self.fget.__get__(None, owner)()  # pylint: disable=E1101
 
 
-# pylint: disable=R0924
 class Enum(set):
     """A enumeration type"""
     def __getattr__(self, name):

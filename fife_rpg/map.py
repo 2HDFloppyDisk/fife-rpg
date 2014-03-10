@@ -49,7 +49,7 @@ class NoSuchRegionError(Exception):
                     (self.map, self.region))
 
 
-class Map(object):  # pylint: disable=R0924
+class Map(object):
     """Contains the data of a map
 
     Properties:

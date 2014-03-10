@@ -54,7 +54,7 @@ class Equip(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Equip, cls).register(name, auto_register))
+        return super(Equip, cls).register(name, auto_register)
 
 
 class RPGEquip(Equip):
@@ -99,7 +99,7 @@ class RPGEquip(Equip):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(RPGEquip, cls).register(name, auto_register))
+        return super(RPGEquip, cls).register(name, auto_register)
 
 
 class SlotInvalidError(Exception):

@@ -41,6 +41,7 @@ class AlreadyRegisteredError(Exception):
         return ("A(n) %s with the name '%s' already exists" %
                     (self.type, self.name))
 
+
 class NotRegisteredError(Exception):
     """Exception that gets raised when a class is not registered
 
@@ -56,6 +57,7 @@ class NotRegisteredError(Exception):
         """Returns the message of the Exception"""
         return ("%s class not registered." %
                     (self.type))
+
 
 class NoSuchCommandError(Exception):
     """Exception that gets raised when the command is not found

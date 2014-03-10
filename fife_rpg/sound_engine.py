@@ -23,7 +23,7 @@
 """
 
 
-class SoundEngine:
+class SoundEngine(object):
     """Plays sounds and __music
 
     Properties:
@@ -54,7 +54,7 @@ class SoundEngine:
         Args:
             sfile: Filename to play
         """
-        if(sfile is not None):
+        if sfile is not None:
             # setup the new sound
             sound = self.__engine.getSoundClipManager().load(sfile)
             self.__music.setSoundClip(sound)
@@ -65,13 +65,13 @@ class SoundEngine:
 
     def pause_music(self):
         """Pauses current music playback"""
-        if(self.__music_init == True):
+        if self.__music_init == True:
             self.__music.pause()
             self.__is_music_on = False
 
     def toggle_music(self):
         """Toggle status of music, either on or off"""
-        if((self.__is_music_on == False)and(self.__music_init == True)):
+        if (self.__is_music_on == False) and (self.__music_init == True):
             self.play_music()
         else:
             self.pause_music()

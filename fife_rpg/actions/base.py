@@ -98,7 +98,7 @@ class BaseAction(object):
             cls.__registered_as = None
             return True
         except NotRegisteredError as error:
-            print(error)
+            print error
             return False
 
     @ClassProperty

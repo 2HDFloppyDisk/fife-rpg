@@ -32,7 +32,7 @@ from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.behaviours import AGENT_STATES
 
 
-class Base (fife.InstanceActionListener):
+class Base(fife.InstanceActionListener):
     """Behaviour that contains the basic methods for actors
 
     Properties:
@@ -209,5 +209,5 @@ class Base (fife.InstanceActionListener):
             BehaviourManager.unregister_behaviour(cls.__registered_as)
             cls.__registered_as = None
         except NotRegisteredError as error:
-            print(error)
+            print error
             return False
