@@ -29,6 +29,7 @@ from fife_rpg.components.general import General
 
 
 class NoSuchRegionError(Exception):
+
     """Gets thrown when the code tried to access a region that does not exits
     on the map.
 
@@ -46,10 +47,11 @@ class NoSuchRegionError(Exception):
     def __str__(self):
         """Returns a string representing the exception"""
         return ("The map '%s' has no region called '%s'." %
-                    (self.map, self.region))
+                (self.map, self.region))
 
 
 class Map(object):
+
     """Contains the data of a map
 
     Properties:
@@ -156,7 +158,7 @@ class Map(object):
         """
         if isinstance(location, tuple) or isinstance(location, list):
             location = fife.DoublePoint(location[0], location[1])
-        if not region in self.regions:
+        if region not in self.regions:
             raise NoSuchRegionError(self.name, region)
         else:
             return self.regions[region].contains(location)
@@ -183,7 +185,7 @@ class Map(object):
             if hasattr(entity, FifeAgent.registered_as):
                 fifeagent = getattr(entity, FifeAgent.registered_as)
                 agent = getattr(entity, Agent.registered_as)
-                if agent.new_map  is not None and agent.new_map != self.name:
+                if agent.new_map is not None and agent.new_map != self.name:
                     self.remove_entity(entity.identifier)
                     continue
                 location = fifeagent.instance.getLocation()
@@ -191,8 +193,8 @@ class Map(object):
                     location.setLayer(self.get_layer(agent.layer))
                 if agent.new_position is not None:
                     location.setExactLayerCoordinates(
-                                                    fife.ExactModelCoordinate(
-                                                        *agent.new_position))
+                        fife.ExactModelCoordinate(
+                            *agent.new_position))
                 fifeagent.instance.setLocation(location)
                 if agent.new_rotation is not None:
                     fifeagent.instance.setRotation(agent.rotation)
@@ -317,8 +319,8 @@ class Map(object):
             arguments.append(point)
         if not arguments:
             raise TypeError("A light needs either an agent"
-                ", a location and a layer"
-                ", or a point")
+                            ", a location and a layer"
+                            ", or a point")
         node = fife.RendererNode(*arguments)
         return node
 
@@ -434,8 +436,8 @@ class Map(object):
         return light_renderer.getLightInfo(group)[-1]
 
     def add_light_from_animation(self, group, animation, agent=None,
-                                layer=None, location=None, point=None,
-                                blend_mode=(-1, -1)):
+                                 layer=None, location=None, point=None,
+                                 blend_mode=(-1, -1)):
         """Adds a light that uses an animation lightmap.
 
         Arguments:
@@ -473,8 +475,8 @@ class Map(object):
         node = self.__create_render_node(agent, layer, location, point)
         if not isinstance(animation, fife.Animation):
             animation = xmlanimation.loadXMLAnimation(
-                                                    self.__application.engine,
-                                                    animation)
+                self.__application.engine,
+                animation)
         light_renderer = self.get_light_renderer()
         light_renderer.addAnimation(group, node, animation, *blend_mode)
         return light_renderer.getLightInfo(group)[-1]
