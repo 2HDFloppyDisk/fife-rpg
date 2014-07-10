@@ -78,6 +78,9 @@ class Map(object):
             Agent.register()
         if not General.registered_as:
             General.register()
+        cameras = fife_map.getCameras()
+        for camera in cameras:
+            camera.setEnabled(False)
 
     @property
     def fife_map(self):
@@ -475,3 +478,27 @@ class Map(object):
         light_renderer = self.get_light_renderer()
         light_renderer.addAnimation(group, node, animation, *blend_mode)
         return light_renderer.getLightInfo(group)[-1]
+
+    def enable_camera(self, name):
+        """Enables the camera with the given name
+
+        Args:
+
+            name: The name of the camera
+        """
+        try:
+            self.fife_map.getCamera(name).setEnabled(True)
+        except:  # pylint: disable=bare-except
+            pass
+
+    def disable_camera(self, name):
+        """Enables the camera with the given name
+
+        Args:
+
+            name: The name of the camera
+        """
+        try:
+            self.fife_map.getCamera(name).setEnabled(False)
+        except:  # pylint: disable=bare-except
+            pass
