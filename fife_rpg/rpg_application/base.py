@@ -397,6 +397,8 @@ class RPGApplication(FifeManager, ApplicationBase):
         Returns: Converted coordinates as fife.Location
         """
         active_map = self.current_map
+        if active_map is None:
+            return None
         if not isinstance(click, fife.ScreenPoint):
             click = fife.ScreenPoint(click[0], click[1])
         coord = active_map.camera.toMapCoordinates(click, False)
