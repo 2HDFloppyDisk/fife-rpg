@@ -141,7 +141,10 @@ class Map(object):
             point: A :class:`fife.ScreenPoint`
 
             layer: The :class:`fife.Layer` from which we want the instances
+            or the name of the layer
         """
+        if not isinstance(layer, fife.Layer):
+            layer = self.get_layer(layer)
         return self.camera.getMatchingInstances(point, layer)
 
     def is_in_region(self, location, region):
@@ -504,3 +507,29 @@ class Map(object):
             self.fife_map.getCamera(name).setEnabled(False)
         except:  # pylint: disable=bare-except
             pass
+
+    def move_camera_to(self, position):
+        """Move the current camera to the given position
+
+        Args:
+
+            position: Position on the map to move the camera to
+        """
+        location = self.camera.getLocation()
+        coords = fife.ExactModelCoordinate(*position)
+        location.setMapCoordinates(coords)
+        self.camera.setLocation(location)
+
+    def move_camera_by(self, vector):
+        """Move the current camera by the amount given by the vector
+
+        Args:
+
+            vector: A list of 2 numbers that determine the movement vector
+        """
+        location = self.camera.getLocation()
+        coords = location.getMapCoordinates()
+        position_offset = fife.DoublePoint3D(*vector)
+        coords += position_offset
+        location.setMapCoordinates(coords)
+        self.camera.setLocation(location)
