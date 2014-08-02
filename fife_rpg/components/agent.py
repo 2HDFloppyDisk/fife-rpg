@@ -71,6 +71,16 @@ class Agent(Base):
         self.fields["new_position"].default = lambda: None
         self.fields["new_rotation"].default = lambda: None
 
+    @property
+    def saveable_fields(self):
+        """Returns the fields of the component that can be saved."""
+        fields = self.fields.keys()
+        fields.remove("new_map")
+        fields.remove("new_layer")
+        fields.remove("new_position")
+        fields.remove("new_rotation")
+        return fields
+
     @classmethod
     def register(cls, name="Agent", auto_register=True):
         """Registers the class as a component
