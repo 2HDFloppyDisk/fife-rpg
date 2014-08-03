@@ -41,7 +41,9 @@ class MoveAgent(EntityAction):
         move_agent = getattr(self.target, MoveAgent.registered_as)
         agent = getattr(self.performer, Agent.registered_as)
         agent.new_map = move_agent.target_map
-        agent.new_position = move_agent.target_position
+        agent.new_position = (move_agent.target_position.x,
+                              move_agent.target_position.y,
+                              move_agent.target_position.z)
         agent.new_layer = move_agent.target_layer
         EntityAction.execute(self)
 
