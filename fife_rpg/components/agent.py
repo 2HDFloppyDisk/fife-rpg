@@ -22,6 +22,7 @@
 
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.components.base import Base
+from ..helpers import DoublePoint3DYaml
 
 STACK_POSITION = {"actor": 2, "item": 1, "ground_object": 0}
 
@@ -42,10 +43,9 @@ class Agent(Base):
 
         type: The type of the agent. actor, ground_object or item
 
-        position: The position of the agent as a 2 or 3 item list or tuple
+        position: The position of the agent
 
         new_position: The position the agent should be moved to
-        as a 2 or 3 item list or  tuple
 
         rotation: The rotation of the agent in degrees
 
@@ -61,7 +61,8 @@ class Agent(Base):
     def __init__(self):
         Base.__init__(self, gfx=str, map=str, new_map=object,
                       layer=str, new_layer=object, type=str,
-                      position=list, new_position=object, rotation=int,
+                      position=DoublePoint3DYaml, new_position=object,
+                      rotation=int,
                       new_rotation=object, behaviour_type=str,
                       behaviour_args=dict, knows=set)
         self.fields["type"].default = lambda: "actor"

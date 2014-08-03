@@ -44,6 +44,7 @@ _SCRIPTING_MODULE = "application"
 
 
 class KeyFilter(fife.IKeyFilter):
+
     """This is the implementation of the fife.IKeyFilter class.
 
     Prevents any filtered keys from being consumed by pychan.
@@ -71,6 +72,7 @@ class KeyFilter(fife.IKeyFilter):
 
 
 class RPGApplication(FifeManager, ApplicationBase):
+
     """The main application.  It inherits fife.extensions.ApplicationBase.
 
     Properties:
@@ -103,7 +105,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.name = self.settings.get("fife-rpg", "ProjectName")
         if self.name is None:
             raise AttributeError("The application name is not specified in"
-            "the settings file")
+                                 "the settings file")
         self._listener = None
         self.world = None
         self._maps = {}
@@ -220,14 +222,17 @@ class RPGApplication(FifeManager, ApplicationBase):
         for entity in game_map.entities:
             agent = getattr(entity, Agent.registered_as)
             map_object = fife_model.getObject(agent.gfx,
-                object_namespace)
+                                              object_namespace)
             general = getattr(entity, General.registered_as)
             layer = game_map.get_layer(agent.layer)
             fife_instance = layer.getInstance(general.identifier)
             if not fife_instance:
+                position = agent.position
                 fife_instance = layer.createInstance(
                     map_object,
-                    fife.ExactModelCoordinate(*agent.position),
+                    fife.ExactModelCoordinate(position.x,
+                                              position.y,
+                                              position.z),
                     general.identifier)
                 visual = fife.InstanceVisual.create(fife_instance)
                 if map_object.getAction('default'):
@@ -235,7 +240,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                     fife_instance.actRepeat('default', target)
                 fifeagent = getattr(entity, FifeAgent.registered_as)
                 behaviour_class = BehaviourManager.get_behaviour(
-                                                        agent.behaviour_type)
+                    agent.behaviour_type)
                 behaviour = behaviour_class(**agent.behaviour_args)
                 behaviour.agent = fife_instance
                 fifeagent.behaviour = behaviour
@@ -246,8 +251,11 @@ class RPGApplication(FifeManager, ApplicationBase):
             else:
                 visual = fife_instance.get2dGfxVisual()
                 location = fife_instance.getLocation()
+                position = agent.position
                 location.setExactLayerCoordinates(fife.ExactModelCoordinate(
-                                                    *agent.position))
+                    position.x,
+                    position.y,
+                    position.z))
                 fife_instance.setLocation(location)
             fife_instance.setRotation(agent.rotation)
             visual.setStackPosition(STACK_POSITION[agent.type])
@@ -286,7 +294,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                     regions_data = yaml.load(regions_file)
                     if regions_data is not None:
                         for region_name, region_data in (
-                                                    regions_data.iteritems()):
+                                regions_data.iteritems()):
                             region = fife.DoubleRect(x=region_data[0],
                                                      y=region_data[1],
                                                      width=region_data[2],
@@ -323,7 +331,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                 callback(old_map, name)
         else:
             raise LookupError("The map with the name '%s' cannot be found"
-                        % (name))
+                              % (name))
 
     def add_map_switch_callback(self, callback):
         """Adds a callback function which gets called after
@@ -368,11 +376,11 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          self.get_global_lighting,
                                          _SCRIPTING_MODULE)
         ScriptingSystem.register_command("is_location_in_region",
-                                           self.is_location_in_region,
-                                           _SCRIPTING_MODULE)
+                                         self.is_location_in_region,
+                                         _SCRIPTING_MODULE)
         ScriptingSystem.register_command("is_agent_in_region",
-                                           self.is_agent_in_region,
-                                           _SCRIPTING_MODULE)
+                                         self.is_agent_in_region,
+                                         _SCRIPTING_MODULE)
 
     def request_quit(self):
         """Sends the quit command to the application's listener.
@@ -480,14 +488,14 @@ class RPGApplication(FifeManager, ApplicationBase):
         for component in component_list:
             if not isinstance(component, str):
                 self.register_component(
-                            *component,
-                            register_checkers=register_checkers,
-                            register_script_commands=register_script_commands)
+                    *component,
+                    register_checkers=register_checkers,
+                    register_script_commands=register_script_commands)
             else:
                 self.register_component(
-                            component,
-                            register_checkers=register_checkers,
-                            register_script_commands=register_script_commands)
+                    component,
+                    register_checkers=register_checkers,
+                    register_script_commands=register_script_commands)
 
     def load_actions(self, filename=None):
         """Load the action definitions from a file
@@ -768,12 +776,14 @@ class RPGApplication(FifeManager, ApplicationBase):
 
 
 class BaseEventListener(fife.IKeyListener, fife.ICommandListener):
+
     """
     Default, rudimentary event listener.
 
     Will cause the application to quit on pressing ESC, or when a
     quit-game command was received.
     """
+
     def __init__(self, app):
         self.app = app
         self.engine = app.engine
