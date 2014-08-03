@@ -29,6 +29,7 @@ from bGrease.grease_fife.world import World
 from fife.fife import MapLoader
 import yaml
 
+from fife_rpg import helpers
 from fife_rpg.components import ComponentManager
 from fife_rpg.systems import SystemManager
 from fife_rpg.entities.rpg_entity import RPGEntity
@@ -64,6 +65,16 @@ class RPGWorld(World):
             General.register()
         yaml.add_representer(RPGEntity, self.entity_representer)
         yaml.add_constructor('!Entity', self.entity_constructor,
+                             yaml.SafeLoader)
+        yaml.add_representer(helpers.DoublePointYaml,
+                             helpers.double_point_representer)
+        yaml.add_constructor("!DoublePoint",
+                             helpers.double_point_constructor,
+                             yaml.SafeLoader)
+        yaml.add_representer(helpers.DoublePoint3DYaml,
+                             helpers.double_point_3d_representer)
+        yaml.add_constructor("!DoublePoint3D",
+                             helpers.double_point_3d_constructor,
                              yaml.SafeLoader)
         World.__init__(self, application.engine)
 

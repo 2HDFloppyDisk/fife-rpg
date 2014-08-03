@@ -22,11 +22,15 @@
 """
 import inspect
 
+import bGrease
 from bGrease.component import Component
 
 from fife_rpg.components import ComponentManager
 from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
-from fife_rpg.helpers import ClassProperty
+from fife_rpg.helpers import ClassProperty, DoublePoint3DYaml, DoublePointYaml
+
+bGrease.component.field.types[DoublePoint3DYaml] = DoublePoint3DYaml
+bGrease.component.field.types[DoublePointYaml] = DoublePointYaml
 
 
 class Base(Component):
