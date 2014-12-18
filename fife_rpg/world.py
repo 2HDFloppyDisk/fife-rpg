@@ -266,7 +266,7 @@ class RPGWorld(World):
             The created dictionary
         """
         entity_dict = {}
-        components_data = entity_dict["components"] = {}
+        components_data = entity_dict["Components"] = {}
         components = ComponentManager.get_components()
         for name, component in components.iteritems():
             component_values = getattr(entity, name)
