@@ -117,6 +117,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         self._systems = {}
         self._behaviours = {}
         self._map_switched_callbacks = []
+        self._map_loaded_callbacks = []
         default_language = self.settings.get("i18n", "DefaultLanguage", "en")
         languages_dir = self.settings.get("i18n", "Directory", "__languages")
         for language in self.settings.get("i18n", "Languages", ("en",)):
@@ -304,7 +305,9 @@ class RPGApplication(FifeManager, ApplicationBase):
 
                 game_map.update_entities()
                 self._maps[name] = game_map
-            self.update_agents(game_map)
+                for callback in self._map_loaded_callbacks:
+                    callback(game_map)
+                self.update_agents(game_map)
 
         else:
             raise LookupError("The map with the name '%s' cannot be found"
@@ -354,13 +357,37 @@ class RPGApplication(FifeManager, ApplicationBase):
             index = self._map_switched_callbacks.index(callback)
             del self._map_switched_callbacks[index]
 
+    def add_map_load_callback(self, callback):
+        """Adds a callback function which gets called after
+        a map was loaded
+
+        Args:
+            callback: The function to add
+        """
+        if callback not in self._map_loaded_callbacks:
+            self._map_loaded_callbacks.append(callback)
+
+    def remove_map_load_callback(self, callback):
+        """Removes a callback function that got called after a map
+        was loaded.
+
+        Args:
+            callback: The function to remove
+        """
+        if callback in self._map_loaded_callbacks:
+            index = self._map_loaded_callbacks.index(callback)
+            del self._map_loaded_callbacks[index]
+
     def load_maps(self):
         """Load the names of the available maps from a map file."""
         self._maps = {}
         maps_path = self.settings.get(
             "fife-rpg", "MapsPath", "maps")
         vfs = self.engine.getVFS()
-        maps_file = vfs.open(os.path.join(maps_path, "maps.yaml"))
+        filename = os.path.join(maps_path, "maps.yaml")
+        if not os.path.exists(filename):
+            return
+        maps_file = vfs.open(filename)
         maps_doc = yaml.load(maps_file)
         for name, filename in maps_doc["Maps"].iteritems():
             self.add_map(name, filename)
