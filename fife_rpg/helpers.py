@@ -66,8 +66,13 @@ class DoublePointYaml(DoublePoint):
         DoublePoint.__init__(self, x_pos, y_pos)
 
     def __eq__(self, other):  # pylint: disable=arguments-differ
-        if other is None or other is ():
+        if other is None:
             return False
+        if not isinstance(other, DoublePoint):
+            try:
+                other = DoublePoint(*other[:2])
+            except TypeError:
+                return False
         return DoublePoint.__eq__(self, other)
 
 
@@ -120,8 +125,13 @@ class DoublePoint3DYaml(DoublePoint3D):
         DoublePoint3D.__init__(self, x_pos, y_pos, z_pos)
 
     def __eq__(self, other):  # pylint: disable=arguments-differ
-        if other is None or other is ():
+        if other is None:
             return False
+        if not isinstance(other, DoublePoint3D):
+            try:
+                other = DoublePoint3D(*other[:3])
+            except TypeError:
+                return False
         return DoublePoint3D.__eq__(self, other)
 
 
