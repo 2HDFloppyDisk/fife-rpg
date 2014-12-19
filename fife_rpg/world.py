@@ -256,11 +256,14 @@ class RPGWorld(World):
             pass
 
     @classmethod
-    def create_entity_dictionary(cls, entity):
+    def create_entity_dictionary(cls, entity, remove_default=True):
         """Creates a dictionary containing the values of the Entity
 
         Args:
             entity: The Entity instance
+
+            remove_default: Skips fields whose value is the same as the
+            default value.
 
         Returns:
             The created dictionary
@@ -273,9 +276,13 @@ class RPGWorld(World):
             if component_values:
                 component_data = None
                 for field in component.saveable_fields:
+                    fields = component.fields
                     if not component_data:
                         component_data = components_data[name] = {}
-                    component_data[field] = getattr(component_values, field)
+                    value = getattr(component_values, field)
+                    if remove_default and value == fields[field].default():
+                        continue
+                    component_data[field] = value
         return entity_dict
 
     def entity_representer(self, dumper, data):
