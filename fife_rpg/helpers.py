@@ -79,10 +79,8 @@ class DoublePointYaml(DoublePoint):
 def double_point_representer(dumper, data):
     """Represent a fife.DoublePoint"""
     assert isinstance(data, DoublePoint)
-    x_pos = data.x
-    y_pos = data.y
-    return dumper.represent_scalar(u"!DoublePoint",
-                                   u"%s:%s" % (x_pos, y_pos))
+    pos = [data.x, data.y]
+    return dumper.represent_list(pos)
 
 
 def double_point_constructor(loader, node):
@@ -138,11 +136,8 @@ class DoublePoint3DYaml(DoublePoint3D):
 def double_point_3d_representer(dumper, data):
     """Represent a fife DoublePoint3D"""
     assert isinstance(data, DoublePoint3D)
-    x_pos = data.x
-    y_pos = data.y
-    z_pos = data.z
-    return dumper.represent_scalar(u"!DoublePoint3D",
-                                   u"%s:%s:%s" % (x_pos, y_pos, z_pos))
+    pos = [data.x, data.y, data.z]
+    return dumper.represent_list(pos)
 
 
 def double_point_3d_constructor(loader, node):
