@@ -20,6 +20,8 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+import yaml
+
 from fife.fife import DoublePoint, DoublePoint3D
 
 
@@ -147,3 +149,14 @@ def double_point_3d_constructor(loader, node):
     return DoublePoint3DYaml(float(x_pos),
                              float(y_pos),
                              float(z_pos))
+
+
+class FRPGDumper(yaml.Dumper):
+    """Normal dumper with changes to save save the file in a specific style"""
+    def represent_mapping(self, tag, mapping, flow_style=False):
+        return yaml.Dumper.represent_mapping(self, tag, mapping, flow_style)
+
+
+def dump_entities(entities, stream=None):
+    """Dump entities in the preferred FifeRGP style"""
+    return yaml.dump_all(entities, stream, Dumper=FRPGDumper, indent=4)
