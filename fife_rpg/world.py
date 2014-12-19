@@ -229,11 +229,11 @@ class RPGWorld(World):
             template_data = copy(self.object_db[template_name])
             for key in template_data.keys():
                 if key in entity_data:
-                    tmp_attributes = template_data[key]
+                    tmp_attributes = template_data[key].copy()
                     tmp_attributes.update(entity_data[key])
                     entity_data[key] = tmp_attributes
                 else:
-                    entity_data[key] = template_data[key]
+                    entity_data[key] = template_data[key].copy()
         return entity_data
 
     def load_and_create_entities(self, entities_file_name=None):
