@@ -192,7 +192,7 @@ class Map(object):
                     self.remove_entity(entity.identifier)
                     continue
                 location = fifeagent.instance.getLocation()
-                if agent.new_layer is not None:
+                if agent.create_layer is not None:
                     location.setLayer(self.get_layer(agent.layer))
                 if agent.new_position is not None:
                     location.setExactLayerCoordinates(
@@ -202,7 +202,7 @@ class Map(object):
                 if agent.new_rotation is not None:
                     fifeagent.instance.setRotation(agent.rotation)
                 agent.new_map = None
-                agent.new_layer = None
+                agent.create_layer = None
                 agent.new_position = None
                 agent.new_rotation = None
 
