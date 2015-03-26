@@ -34,6 +34,7 @@ bGrease.component.field.types[DoublePointYaml] = DoublePointYaml
 
 
 class Base(Component):
+
     """Base component for fife-rpg.
 
     Properties:
@@ -77,7 +78,7 @@ class Base(Component):
             if auto_register:
                 for sub_cls in inspect.getmro(cls):
                     if ((not (sub_cls is cls or sub_cls is Base))
-                         and issubclass(sub_cls, Base)):
+                            and issubclass(sub_cls, Base)):
                         # pylint: disable=W0212
                         sub_cls.__registered_as = name
                         # pylint: enable=W0212
@@ -106,7 +107,7 @@ class Base(Component):
             if auto_unregister:
                 for sub_cls in inspect.getmro(cls):
                     if ((not (sub_cls is cls or sub_cls is Base))
-                         and issubclass(sub_cls, Base)):
+                            and issubclass(sub_cls, Base)):
                         # pylint: disable=W0212
                         sub_cls.__registered_as = None
                         # pylint: enable=W0212

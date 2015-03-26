@@ -26,7 +26,8 @@ from fife_rpg.systems import SystemManager
 from fife_rpg.helpers import ClassProperty
 
 
-class Base(System):  # pylint: disable=W0223
+class Base(System):  # pylint: disable=abstract-method
+
     """Base system for fife-rpg.
 
     Properties:
@@ -60,7 +61,9 @@ class Base(System):  # pylint: disable=W0223
             for dependency in cls.dependencies:
                 if not dependency.registered_as:
                     dependency.register()
+            # pylint: disable=abstract-class-instantiated
             SystemManager.register_system(name, cls())
+            # pylint: enable=abstract-class-instantiated
             cls.__registered_as = name
             return True
         except AlreadyRegisteredError as error:

@@ -57,6 +57,7 @@ def get_stat_cost(offset):
 
 
 class NoSuchStatisticError(Exception):
+
     """Exception that gets raised when a statistic was tried to be accessed
     that does not exist
 
@@ -74,6 +75,7 @@ class NoSuchStatisticError(Exception):
 
 
 class NoStatisticComponentError(Exception):
+
     """Exception that gets raised when an entity does not have a
     character_statistics component
 
@@ -92,6 +94,7 @@ class NoStatisticComponentError(Exception):
 
 
 class Statistic(object):
+
     """Class to store the data about a statistic
 
     Properties:
@@ -109,6 +112,7 @@ class Statistic(object):
 
 
 class CalculatedStatistic(Statistic):
+
     """Class to store the data about a calculated statistic
 
     Properties:
@@ -127,6 +131,7 @@ class CalculatedStatistic(Statistic):
 
 
 class CharacterStatisticSystem(Base):
+
     """The game environment system manages what variables and functions are
     available to scripts.
 
@@ -378,7 +383,7 @@ class CharacterStatisticSystem(Base):
         Returns:
             True if the statistic can be increase, False if not.
         """
-        if not statistic in self.primary_statistics:
+        if statistic not in self.primary_statistics:
             return False  # Only primary statistics can be increased
         value = self.get_statistic_value(entity, statistic)
         if value < self.max_stat_value:
@@ -398,7 +403,7 @@ class CharacterStatisticSystem(Base):
         Returns:
             True if the statistic can be decrease, False if not.
         """
-        if not statistic in self.primary_statistics:
+        if statistic not in self.primary_statistics:
             return False  # Only primary statistics can be decreased
         statistic = self.get_statistic_value(entity, statistic)
         return statistic > self.min_stat_value
@@ -456,7 +461,7 @@ class CharacterStatisticSystem(Base):
             stats_component = getattr(entity, comp_name)
             comp_secondary_stats = stats_component.secondary_stats
             for statistic_name, statistic in (
-                                        self.secondary_statistics.iteritems()):
+                    self.secondary_statistics.iteritems()):
                 total = 0
                 for name, influence in statistic.influences.iteritems():
                     value = self.get_statistic_value(entity, name)

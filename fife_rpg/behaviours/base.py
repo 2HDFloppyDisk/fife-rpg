@@ -33,6 +33,7 @@ from fife_rpg.behaviours import AGENT_STATES
 
 
 class Base(fife.InstanceActionListener):
+
     """Behaviour that contains the basic methods for actors
 
     Properties:
@@ -173,7 +174,7 @@ class Base(fife.InstanceActionListener):
             repeating: Whether to repeat the action or not
         """
         self.action_queue.append({"action": action,
-                                     "direction": direction,
+                                  "direction": direction,
                                   "repeating": repeating})
 
     def clear_actions(self):

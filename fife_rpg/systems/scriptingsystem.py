@@ -33,6 +33,7 @@ import imp
 
 
 class ScriptingSystem(Base):
+
     """System responsible for managing scripts.
 
     Properties:
@@ -69,7 +70,7 @@ class ScriptingSystem(Base):
         """
         if name in cls.__commands:
             raise AlreadyRegisteredError(name, "command")
-        if not module in cls.__commands:
+        if module not in cls.__commands:
             cls.__commands[module] = {}
         cls.__commands[module][name] = command_function
 
@@ -120,7 +121,7 @@ class ScriptingSystem(Base):
         for name, module_commands in self.commands.iteritems():
             if name == "":
                 continue
-            if not name in script_globals:
+            if name not in script_globals:
                 script_globals[name] = imp.new_module(name)
             module = script_globals[name]
             module.__dict__.update(module_commands)
@@ -135,7 +136,7 @@ class ScriptingSystem(Base):
             time_delta: Time since last step invocation
         """
         for script in self.__scripts.itervalues():
-            if not "step" in script.__dict__:
+            if "step" not in script.__dict__:
                 continue
             script_globals = self.prepare_globals()
             script.__dict__.update(script_globals)
@@ -144,7 +145,7 @@ class ScriptingSystem(Base):
     def eval(self, string):
         """Evaluate the strin inside the scripting environment"""
         script_globals = self.prepare_globals()
-        return eval(string, script_globals)
+        return eval(string, script_globals)  # pylint: disable=eval-used
 
     def add_script(self, name, filename):
         """Adds a script to the scripts dictionary
@@ -194,7 +195,7 @@ class ScriptingSystem(Base):
         if GameVariables.registered_as:
             getattr(self.world.systems, GameVariables.registered_as).step(0)
         for script in self.__scripts.itervalues():
-            if not "map_switched" in script.__dict__:
+            if "map_switched" not in script.__dict__:
                 continue
             script_globals = self.prepare_globals()
             script.__dict__.update(script_globals)

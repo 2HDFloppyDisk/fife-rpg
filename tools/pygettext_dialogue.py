@@ -1,4 +1,5 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
+
 # -*- coding: utf-8 -*-
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,13 +27,15 @@ import os
 
 import yaml
 
-if __name__ == '__main__':
+
+def main():
+    """Function that is run when this file is being run as a script"""
     parser = argparse.ArgumentParser(
-            description='Get message strings from fife-rpg dialogue files.')
+        description='Get message strings from fife-rpg dialogue files.')
     parser.add_argument("input",
-                       help='The input file')
+                        help='The input file')
     parser.add_argument('-o', "--output", metavar="output", type=str,
-                       help='The output file')
+                        help='The output file')
 
     args = parser.parse_args()
 
@@ -64,3 +67,6 @@ if __name__ == '__main__':
             messages_file.writelines(lines)
         print "Success"
 
+
+if __name__ == '__main__':
+    main()

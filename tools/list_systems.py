@@ -1,4 +1,27 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
+
+# -*- coding: utf-8 -*-
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Gather all systems that are defined in a package.
+
+.. module:: list_systems
+    :synopsis: Gather all systems that are defined in a package.
+
+.. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
+"""
+
 from os.path import basename, splitext, join
 from glob import glob
 import sys
@@ -7,6 +30,7 @@ import argparse
 import yaml
 
 from fife_rpg.systems.base import Base
+
 
 def list_systems(base_package, sub_package):
     """Lists the systems that are in a package
@@ -19,7 +43,7 @@ def list_systems(base_package, sub_package):
         A dictionary with the systems and the path to the module they are in
     """
     systems = getattr(__import__(base_package, fromlist=[sub_package]),
-                     sub_package)
+                      sub_package)
     package_path = join(systems.__path__[0])
     sys.path.append(package_path)
     system_dict = {}
@@ -32,27 +56,29 @@ def list_systems(base_package, sub_package):
                                     module_name))
             system = getattr(module, member)
             try:
-                if (issubclass(system, Base) and not system is Base):
+                if issubclass(system, Base) and system is not Base:
                     if "." in system.__module__:
                         continue
                     system_name = system.__name__
-                    if not system_name in system_dict:
+                    if system_name not in system_dict:
                         system_dict[system_name] = module_path
             except TypeError:
                 pass
     return system_dict
 
-if __name__ == "__main__":
+
+def main():
+    """Function that is run when this file is being run as a script"""
     parser = argparse.ArgumentParser(
-            description='Store systems in a package with their python path in a '
-            'yaml file.')
+        description='Store systems in a package with their python path in a '
+        'yaml file.')
     parser.add_argument("base_package",
-                       help='The base package of the componets')
+                        help='The base package of the componets')
     parser.add_argument("sub_package", metavar="sub_package",
-                       help='The python path, relative to the base_package, '
-                       'where the systems are')
+                        help='The python path, relative to the base_package, '
+                        'where the systems are')
     parser.add_argument('-o', "--output", metavar="output", type=str,
-                       help='The output file')
+                        help='The output file')
 
     args = parser.parse_args()
 
@@ -60,5 +86,9 @@ if __name__ == "__main__":
 
     output = args.output if args.output else "systems.yaml"
     output_file = file(output, "w")
-    systems = {"Systems" : list_systems(args.base_package, sub_package)}
+    systems = {"Systems": list_systems(args.base_package, sub_package)}
     yaml.dump(systems, output_file, default_flow_style=False)
+
+
+if __name__ == "__main__":
+    main()

@@ -40,6 +40,7 @@ from fife_rpg.components.general import General
 
 
 class RPGWorld(World):
+
     """The Base world for all rpgs.
 
     Sets up the generic systems and components
@@ -103,7 +104,7 @@ class RPGWorld(World):
             True if the identifier is used, false if not
         """
         entity = self.get_entity(identifier)
-        return not entity is None
+        return entity is not None
 
     def create_unique_identifier(self, identifier):
         """Returns an unused identifier based on the given identifier
@@ -193,9 +194,9 @@ class RPGWorld(World):
             object_path = self.application.settings.get(
                 "fife-rpg", "AgentObjectsPath", "objects/agents")
         loader = MapLoader(self.engine.getModel(),
-                                self.engine.getVFS(),
-                                self.engine.getImageManager(),
-                                self.engine.getRenderBackend())
+                           self.engine.getVFS(),
+                           self.engine.getImageManager(),
+                           self.engine.getRenderBackend())
         loader.loadImportDirectory(object_path)
 
     def read_object_db(self, db_filename=None):
@@ -321,7 +322,7 @@ class RPGWorld(World):
                 self.update_from_template(components_data, template)
             general_name = General.registered_as
             identifier = None
-            if not general_name in components_data:
+            if general_name not in components_data:
                 identifier = self.create_unique_identifier(template)
             else:
                 general_data = components_data[General.registered_as]

@@ -175,7 +175,7 @@ class RPGApplication(FifeManager, ApplicationBase):
 
     def switch_language(self, language):
         """Switch to the given language"""
-        if not language in self._languages:
+        if language not in self._languages:
             raise KeyError("The language '%s' is not available" % language)
         if not language == self._current_language:
             self._languages[language].install()
@@ -202,7 +202,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             filename_or_map: The file name map, without the extension,
             or a Map instance.
         """
-        if not name in self._maps:
+        if name not in self._maps:
             self._maps[name] = filename_or_map
         else:
             raise AlreadyRegisteredError(name, "Map")
@@ -481,7 +481,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         component_path = self._components[component_name]
         module = __import__(component_path, fromlist=[component_path])
         component = getattr(module, component_name)
-        if not registered_name is None:
+        if registered_name is not None:
             component.register(registered_name)
         else:
             component.register()
@@ -554,7 +554,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         action_path = self._actions[action_name]
         module = __import__(action_path, fromlist=[action_path])
         action = getattr(module, action_name)
-        if not registered_name is None:
+        if registered_name is not None:
             action.register(registered_name)
         else:
             action.register()
@@ -609,7 +609,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         system_path = self._systems[system_name]
         module = __import__(system_path, fromlist=[system_path])
         system = getattr(module, system_name)
-        if not registered_name is None:
+        if registered_name is not None:
             system.register(registered_name)
         else:
             system.register()
@@ -665,7 +665,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         behaviour_path = self._behaviours[behaviour_name]
         module = __import__(behaviour_path, fromlist=[behaviour_path])
         behaviour = getattr(module, behaviour_name)
-        if not registered_name is None:
+        if registered_name is not None:
             behaviour.register(registered_name)
         else:
             behaviour.register()
@@ -716,7 +716,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             location: A list or tuple containing the location
         """
         game_map = (self.maps[map_name]
-                    if not map_name is None
+                    if map_name is not None
                     else self.current_map)
         return game_map.is_in_region(location, region_name)
 

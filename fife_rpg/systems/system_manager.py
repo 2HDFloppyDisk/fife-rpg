@@ -40,7 +40,7 @@ def register_system(system_name, system_object):
 
         system_object: A bGrease system object
     """
-    if not system_name in _SYSTEMS:
+    if system_name not in _SYSTEMS:
         _SYSTEMS[system_name] = system_object
     else:
         raise AlreadyRegisteredError(system_name, "system")

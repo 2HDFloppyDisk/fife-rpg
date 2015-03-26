@@ -24,6 +24,7 @@ from fife_rpg.components.base import Base
 
 
 class CharacterStatistics(Base):
+
     """Component that defines character statistics.
 
     Fields:
@@ -47,8 +48,7 @@ class CharacterStatistics(Base):
     def __init__(self):
         Base.__init__(self, gender=str, picture=str, age=int, origin=str,
                       primary_stats=dict, secondary_stats=dict,
-                      stat_points=int, traits=list,
-                      )
+                      stat_points=int, traits=list,)
 
     @property
     def saveable_fields(self):

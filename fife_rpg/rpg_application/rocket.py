@@ -21,13 +21,14 @@
 """
 from fife import fife
 from fife.extensions.librocket.rocketbasicapplication \
-                                                import RocketApplicationBase
+    import RocketApplicationBase
 
 from fife_rpg.rpg_application.base import RPGApplication
 from fife_rpg.rpg_application.base import BaseEventListener
 
 
 class RocketListener(BaseEventListener):
+
     """Listener for Rocket"""
 
     def __init__(self, app):
@@ -49,6 +50,7 @@ class RocketListener(BaseEventListener):
 
 
 class RPGApplicationRocket(RPGApplication, RocketApplicationBase):
+
     """THe RPGApplication with Rocket support"""
 
     def __init__(self, setting=None):

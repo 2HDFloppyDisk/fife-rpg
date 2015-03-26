@@ -28,6 +28,7 @@ from fife_rpg.components.fifeagent import FifeAgent
 
 
 class Open(EntityAction):
+
     """Action for opening unlocked lockables"""
 
     dependencies = [Lockable]
@@ -46,8 +47,7 @@ class Open(EntityAction):
             if fifeagent_data:
                 behaviour = fifeagent_data.behaviour
                 behaviour.act(lockable.open_action)
-                behaviour.queue_action(lockable.opened_action,
-                                          repeating=True)
+                behaviour.queue_action(lockable.opened_action, repeating=True)
 
         EntityAction.execute(self)
 

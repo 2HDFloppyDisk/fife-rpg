@@ -28,6 +28,7 @@ from fife_rpg.components.fifeagent import FifeAgent
 
 
 class Close(EntityAction):
+
     """Action for closing lockables"""
 
     dependencies = [Lockable]
@@ -46,8 +47,7 @@ class Close(EntityAction):
             if fifeagent_data:
                 behaviour = fifeagent_data.behaviour
                 behaviour.act(lockable.close_action)
-                behaviour.queue_action(lockable.closed_action,
-                                          repeating=True)
+                behaviour.queue_action(lockable.closed_action, repeating=True)
 
         EntityAction.execute(self)
 

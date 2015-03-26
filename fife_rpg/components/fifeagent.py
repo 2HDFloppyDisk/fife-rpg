@@ -27,6 +27,7 @@ from fife_rpg.entities.rpg_entity import RPGEntity
 
 
 class FifeAgent(Base):
+
     """Component that stores the values for a fife agent
 
     Fields:
@@ -77,7 +78,7 @@ def setup_behaviour(agent):
 
 
 def approach_and_execute(entity, target_or_location, run_agent=True,
-                    callback=None):
+                         callback=None):
     """Move the entity to the given location, or follow the given target and
     execute an action when reaching the target.
 

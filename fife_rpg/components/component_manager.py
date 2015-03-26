@@ -41,7 +41,7 @@ def register_component(component_name, component_object):
 
         component_object: A bGrease component object
     """
-    if not component_name in _COMPONENTS:
+    if component_name not in _COMPONENTS:
         _COMPONENTS[component_name] = component_object
     else:
         raise AlreadyRegisteredError(component_name, "component")

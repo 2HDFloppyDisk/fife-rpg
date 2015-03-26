@@ -74,7 +74,7 @@ def register_action(action_name, action_class):
         :class:`fife_rpg.exceptions.AlreadyRegisteredError`
         if the action already exists.
     """
-    if not action_name in _ACTIONS:
+    if action_name not in _ACTIONS:
         _ACTIONS[action_name] = action_class
     else:
         raise AlreadyRegisteredError(action_name, "action")
@@ -115,7 +115,7 @@ def register_command(command_name, function):
         :class:`fife_rpg.exceptions.AlreadyRegisteredError`
         if the command already exists.
     """
-    if not command_name in _COMMANDS:
+    if command_name not in _COMMANDS:
         _COMMANDS[command_name] = function
     else:
         raise AlreadyRegisteredError(command_name, "command")

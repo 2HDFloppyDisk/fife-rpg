@@ -138,7 +138,7 @@ def get_total_bulk(container):
         if child:
             child_entity = world.get_entity(child)
             child_component = getattr(child_entity,
-                    Containable.registered_as)
+                                      Containable.registered_as)
             total_bulk += child_component.bulk
     return total_bulk
 
@@ -158,7 +158,7 @@ def get_total_weight(container):
         if child:
             child_entity = world.get_entity(child)
             child_component = getattr(child_entity,
-                    Containable.registered_as)
+                                      Containable.registered_as)
             total_weight += child_component.weight
     return total_weight
 
@@ -182,7 +182,7 @@ def get_item(container, slot_or_type):
         for child in container_data.children:
             if child:
                 child_component = getattr(child,
-                        Containable.registered_as)
+                                          Containable.registered_as)
                 if child_component.item_type == slot_or_type:
                     return world.get_entity(child)
     return None
