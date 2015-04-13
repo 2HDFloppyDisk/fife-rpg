@@ -57,7 +57,9 @@ class Map(object):
     Properties:
         fife_map: A fife.Map instance, representing the fife_map
 
-        name: The name of the fife_map.
+        name: The internal name of the fife_map.
+
+        view_name: The name of the map that should be displayed
 
         camera: The name of the default camera
 
@@ -67,12 +69,17 @@ class Map(object):
         is_active: Whether the map is currently active or nor
     """
 
-    def __init__(self, fife_map, name, camera, regions, application):
-        self.__map = fife_map
-        self.__name = name
+    def __init__(self, fife_map_or_filename, view_name, camera, regions,
+                 application):
+        self.__map = fife_map_or_filename
+        self.__is_loaded = isinstance(self.__map, fife.Map)
+        self.__name = None
+        self.__camera = camera
+        if self.__is_loaded:
+            self.__setup_map_data()
+        self.__view_name = view_name
         self.__regions = regions
         self.__entities = {}
-        self.__camera = fife_map.getCamera(camera)
         self.__application = application
         if not FifeAgent.registered_as:
             FifeAgent.register()
@@ -80,9 +87,6 @@ class Map(object):
             Agent.register()
         if not General.registered_as:
             General.register()
-        cameras = fife_map.getCameras()
-        for camera in cameras:
-            camera.setEnabled(False)
 
     @property
     def fife_map(self):
@@ -91,8 +95,13 @@ class Map(object):
 
     @property
     def name(self):
-        """Returns the name of the map"""
+        """Returns the internal name of the map"""
         return self.__name
+
+    @property
+    def view_name(self):
+        """Returns the name of the map that is being displayed"""
+        return self.__view_name
 
     @property
     def regions(self):
@@ -113,6 +122,11 @@ class Map(object):
     def is_active(self):
         """Returns wheter the map is active or not"""
         return self.camera.isEnabled()
+
+    @property
+    def is_loaded(self):
+        """Returns whether the map is loaded or not"""
+        return self.__is_loaded
 
     def __getitem__(self, name):
         """Returns the entity with the given name
@@ -166,8 +180,31 @@ class Map(object):
         else:
             return self.regions[region].contains(location)
 
+    def __setup_map_data(self):
+        """Sets up the map data after the map was loaded"""
+        self.__name = self.__map.getId()
+        self.__camera = self.__map.getCamera(self.__camera)
+        cameras = self.__map.getCameras()
+        for camera in cameras:
+            camera.setEnabled(False)
+
     def activate(self):
         """Activates the map"""
+        if not self.is_loaded:
+            engine = self.__application.engine
+            loader = fife.MapLoader(engine.getModel(),
+                                    engine.getVFS(),
+                                    engine.getImageManager(),
+                                    engine.getRenderBackend())
+
+            if loader.isLoadable(self.__map):
+                self.__map = loader.load(self.__map)
+                self.__is_loaded = isinstance(self.__map, fife.Map)
+                self.__setup_map_data()
+            else:
+                raise RuntimeError("Can't load mapfile %s" % str(self.__map))
+            self.update_entities()
+            self.__application.map_loded(self.__map.getId())
         self.camera.setEnabled(True)
 
     def deactivate(self):

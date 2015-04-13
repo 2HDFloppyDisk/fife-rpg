@@ -38,7 +38,7 @@ from fife_rpg.systems import GameVariables
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
 from fife_rpg.world import RPGWorld
 import yaml
-
+from xml.etree import cElementTree as etree
 
 _SCRIPTING_MODULE = "application"
 
@@ -193,19 +193,18 @@ class RPGApplication(FifeManager, ApplicationBase):
         app_module.__dict__["maps"] = self.maps
         variables[_SCRIPTING_MODULE] = app_module
 
-    def add_map(self, name, filename_or_map):
+    def add_map(self, identifier, game_map):
         """Adds a map to the maps dictionary.
 
         Args:
-            name: The name of the map
+            identifier: The identifier of the map
 
-            filename_or_map: The file name map, without the extension,
-            or a Map instance.
+            game_map: A Map instance.
         """
-        if name not in self._maps:
-            self._maps[name] = filename_or_map
+        if identifier not in self._maps:
+            self._maps[identifier] = game_map
         else:
-            raise AlreadyRegisteredError(name, "Map")
+            raise AlreadyRegisteredError(identifier, "Map")
 
     def update_agents(self, game_map):
         """Updates the map to be in sync with the entities
@@ -261,57 +260,22 @@ class RPGApplication(FifeManager, ApplicationBase):
             fife_instance.setRotation(agent.rotation)
             visual.setStackPosition(STACK_POSITION[agent.type])
 
-    def load_map(self, name):
-        """Load the map with the given name
+    def map_loded(self, identifier):
+        """Called from Map instances after the map was loaded
 
         Args:
-            name: The name of the map to load
+            identifier: The identifier of the loaded map
         """
-        if name in self._maps:
-            game_map = self._maps[name]
-            if not isinstance(game_map, Map):
-                maps_path = self.settings.get(
-                    "fife-rpg", "MapsPath", "maps")
-                camera = self.settings.get(
-                    "fife-rpg", "Camera", "main")
-
-                loader = fife.MapLoader(self.engine.getModel(),
-                                        self.engine.getVFS(),
-                                        self.engine.getImageManager(),
-                                        self.engine.getRenderBackend())
-
-                filename = os.path.join(maps_path, game_map + '.xml')
-                if loader.isLoadable(filename):
-                    fife_map = loader.load(filename)
-
-                regions_filename = ("%s_regions.yaml" %
-                                    os.path.splitext(filename)[0])
-                regions = {}
-                try:
-                    regions_file = self.engine.getVFS().open(regions_filename)
-                except RuntimeError:
-                    regions_file = None
-                if regions_file is not None:
-                    regions_data = yaml.load(regions_file)
-                    if regions_data is not None:
-                        for region_name, region_data in (
-                                regions_data.iteritems()):
-                            region = fife.DoubleRect(x=region_data[0],
-                                                     y=region_data[1],
-                                                     width=region_data[2],
-                                                     height=region_data[3])
-                            regions[region_name] = region
-                game_map = Map(fife_map, name, camera, regions, self)
-
-                game_map.update_entities()
-                self._maps[name] = game_map
-                for callback in self._map_loaded_callbacks:
-                    callback(game_map)
-                self.update_agents(game_map)
+        if identifier in self._maps:
+            game_map = self.maps[identifier]
+            for callback in self._map_loaded_callbacks:
+                callback(game_map)
+            self.update_agents(game_map)
 
         else:
-            raise LookupError("The map with the name '%s' cannot be found"
-                              % (name))
+            raise LookupError("The map with the identifier '%s' cannot be "
+                              "found"
+                              % (identifier))
 
     def switch_map(self, name):
         """Switches to the given map.
@@ -329,7 +293,6 @@ class RPGApplication(FifeManager, ApplicationBase):
                 callback(old_map, name)
             return
         if name in self._maps:
-            self.load_map(name)
             self._current_map = self.maps[name]
             self._current_map.activate()
             for callback in self._map_switched_callbacks:
@@ -391,8 +354,33 @@ class RPGApplication(FifeManager, ApplicationBase):
             return
         maps_file = vfs.open(filename)
         maps_doc = yaml.load(maps_file)
+        maps_path = self.settings.get(
+            "fife-rpg", "MapsPath", "maps")
+        camera = self.settings.get(
+            "fife-rpg", "Camera", "main")
+
         for name, filename in maps_doc["Maps"].iteritems():
-            self.add_map(name, filename)
+            filepath = os.path.join(maps_path, filename + '.xml')
+            identifier = etree.parse(filepath).getroot().attrib["id"]
+            regions_filename = ("%s_regions.yaml" %
+                                os.path.splitext(filepath)[0])
+            regions = {}
+            try:
+                regions_file = self.engine.getVFS().open(regions_filename)
+            except RuntimeError:
+                regions_file = None
+            if regions_file is not None:
+                regions_data = yaml.load(regions_file)
+                if regions_data is not None:
+                    for region_name, region_data in (
+                            regions_data.iteritems()):
+                        region = fife.DoubleRect(x=region_data[0],
+                                                 y=region_data[1],
+                                                 width=region_data[2],
+                                                 height=region_data[3])
+                        regions[region_name] = region
+            game_map = Map(filepath, name, camera, regions, self)
+            self.add_map(identifier, game_map)
 
     def create_world(self):
         """Creates the world used by this application"""
