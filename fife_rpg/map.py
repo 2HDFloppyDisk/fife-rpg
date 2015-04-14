@@ -72,10 +72,8 @@ class Map(object):
     def __init__(self, fife_map_or_filename, view_name, camera, regions,
                  application):
         self.__map = fife_map_or_filename
-        self.__is_loaded = isinstance(self.__map, fife.Map)
-        self.__name = None
         self.__camera = camera
-        if self.__is_loaded:
+        if self.is_loaded:
             self.__setup_map_data()
         self.__view_name = view_name
         self.__regions = regions
@@ -96,7 +94,10 @@ class Map(object):
     @property
     def name(self):
         """Returns the internal name of the map"""
-        return self.__name
+        if self.is_loaded:
+            return self.__map.getId()
+        else:
+            return None
 
     @property
     def view_name(self):
@@ -126,7 +127,7 @@ class Map(object):
     @property
     def is_loaded(self):
         """Returns whether the map is loaded or not"""
-        return self.__is_loaded
+        return isinstance(self.__map, fife.Map)
 
     def __getitem__(self, name):
         """Returns the entity with the given name
@@ -182,7 +183,6 @@ class Map(object):
 
     def __setup_map_data(self):
         """Sets up the map data after the map was loaded"""
-        self.__name = self.__map.getId()
         self.__camera = self.__map.getCamera(self.__camera)
         cameras = self.__map.getCameras()
         for camera in cameras:
@@ -199,7 +199,6 @@ class Map(object):
 
             if loader.isLoadable(self.__map):
                 self.__map = loader.load(self.__map)
-                self.__is_loaded = isinstance(self.__map, fife.Map)
                 self.__setup_map_data()
             else:
                 raise RuntimeError("Can't load mapfile %s" % str(self.__map))
