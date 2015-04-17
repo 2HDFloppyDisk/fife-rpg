@@ -64,16 +64,19 @@ class RPGWorld(World):
             FifeAgent.register()
         if not General.registered_as:
             General.register()
-        yaml.add_representer(RPGEntity, self.entity_representer)
+        yaml.add_representer(RPGEntity, self.entity_representer,
+                             yaml.SafeDumper)
         yaml.add_constructor('!Entity', self.entity_constructor,
                              yaml.SafeLoader)
         yaml.add_representer(helpers.DoublePointYaml,
-                             helpers.double_point_representer)
+                             helpers.double_point_representer,
+                             yaml.SafeDumper)
         yaml.add_constructor("!DoublePoint",
                              helpers.double_point_constructor,
                              yaml.SafeLoader)
         yaml.add_representer(helpers.DoublePoint3DYaml,
-                             helpers.double_point_3d_representer)
+                             helpers.double_point_3d_representer,
+                             yaml.SafeDumper)
         yaml.add_constructor("!DoublePoint3D",
                              helpers.double_point_3d_constructor,
                              yaml.SafeLoader)

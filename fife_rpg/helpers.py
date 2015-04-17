@@ -44,6 +44,7 @@ class Enum(set):
 
 
 class DoublePointYaml(DoublePoint):
+
     """fife.DoublePoint that can be dumped by yaml"""
 
     def __init__(self, x_pos_or_object=None, y_pos=None):
@@ -94,6 +95,7 @@ def double_point_constructor(loader, node):
 
 
 class DoublePoint3DYaml(DoublePoint3D):
+
     """fife.DoublePoint3D that can be dumped by yaml"""
 
     def __init__(self, x_pos_or_object=None, y_pos=None, z_pos=None):
@@ -151,10 +153,13 @@ def double_point_3d_constructor(loader, node):
                              float(z_pos))
 
 
-class FRPGDumper(yaml.Dumper):
+class FRPGDumper(yaml.SafeDumper):
+
     """Normal dumper with changes to save save the file in a specific style"""
+
     def represent_mapping(self, tag, mapping, flow_style=False):
-        return yaml.Dumper.represent_mapping(self, tag, mapping, flow_style)
+        return yaml.SafeDumper.represent_mapping(self, tag, mapping,
+                                                 flow_style)
 
 
 def dump_entities(entities, stream=None):
