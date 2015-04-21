@@ -44,6 +44,7 @@ class Containable(Base):
     def __init__(self):
         Base.__init__(self, bulk=int, weight=int, item_type=str, image=str,
                       container=object, slot=int)
+        self.fields['slot'].default = lambda: -1
 
     @property
     def saveable_fields(self):

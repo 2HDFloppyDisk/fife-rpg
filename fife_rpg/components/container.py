@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -34,12 +33,14 @@ class Container(Base):
         children: The entites that are in this container
 
         max_bulk: How much place the container has
+
+        max_slots: How many slots the container has
     """
 
     dependencies = [Containable]
 
     def __init__(self):
-        Base.__init__(self, children=list, max_bulk=int)
+        Base.__init__(self, children=list, max_bulk=int, max_slots=int)
         self.fields['children'].default = list
 
     @property
@@ -114,13 +115,24 @@ def get_free_slot(container):
         if there is no free slot.
     """
 
+    world = container.world
     container = getattr(container, Container.registered_as)
-    index = 0
+    used_slots = set()
     for child in container.children:
-        if not child:
-            return index
-        index += 1
-    raise NoFreeSlotError
+        child_entity = world.get_entity(child)
+        child_component = getattr(child_entity, Containable.registered_as)
+        used_slots.add(child_component.slot)
+    if container.max_slots > 0:
+        usable_slots = set(range(container.max_slots))
+    else:
+        try:
+            usable_slots = set(range(max(used_slots) + 2))
+        except ValueError:
+            usable_slots = set((0,))
+    try:
+        return min(usable_slots - used_slots)
+    except ValueError:
+        raise NoFreeSlotError
 
 
 def get_total_bulk(container):
@@ -135,11 +147,10 @@ def get_total_bulk(container):
     container = getattr(container, Container.registered_as)
     total_bulk = 0
     for child in container.children:
-        if child:
-            child_entity = world.get_entity(child)
-            child_component = getattr(child_entity,
-                                      Containable.registered_as)
-            total_bulk += child_component.bulk
+        child_entity = world.get_entity(child)
+        child_component = getattr(child_entity,
+                                  Containable.registered_as)
+        total_bulk += child_component.bulk
     return total_bulk
 
 
@@ -155,11 +166,10 @@ def get_total_weight(container):
     container = getattr(container, Container.registered_as)
     total_weight = 0
     for child in container.children:
-        if child:
-            child_entity = world.get_entity(child)
-            child_component = getattr(child_entity,
-                                      Containable.registered_as)
-            total_weight += child_component.weight
+        child_entity = world.get_entity(child)
+        child_component = getattr(child_entity,
+                                  Containable.registered_as)
+        total_weight += child_component.weight
     return total_weight
 
 
@@ -176,15 +186,17 @@ def get_item(container, slot_or_type):
     world = container.world
     container_data = getattr(container, Container.registered_as)
     if type(slot_or_type) == int:
-        if len(container_data.children) >= slot_or_type + 1:
-            return world.get_entity(container_data.children[slot_or_type])
+        for child in container_data.children:
+            child_entity = world.get_entity(child)
+            child_component = getattr(child_entity, Containable.registered_as)
+            if child_component.slot == slot_or_type:
+                return child_entity
     else:
         for child in container_data.children:
-            if child:
-                child_component = getattr(child,
-                                          Containable.registered_as)
-                if child_component.item_type == slot_or_type:
-                    return world.get_entity(child)
+            child_entity = world.get_entity(child)
+            child_component = getattr(child_entity, Containable.registered_as)
+            if child_component.item_type == slot_or_type:
+                return child_entity
     return None
 
 
@@ -203,9 +215,14 @@ def remove_item(container, slot_or_type):
         item = get_item(container, slot_or_type)
         if item:
             item = getattr(item, Containable.registered_as)
-            container_data.children[item.slot] = None
+            del container_data.children[item.slot]
             item.container = None
             item.slot = -1
+            if container_data.max_slots <= 0:
+                world = container.world
+                for x in xrange(len(container_data.children)):
+                    item = world.get_entity(container_data.children[x])
+                    getattr(item, Containable.registered_as).slot = x
 
 
 def take_item(container, slot_or_type):
@@ -257,10 +274,12 @@ def put_item(container, item, slot=-1):
     if old_item:
         old_item_data = getattr(old_item, Containable.registered_as)
         total_bulk -= old_item_data.bulk
+    elif container_data.max_slots <= 0:
+        slot = get_free_slot(container)
     if total_bulk > container_data.max_bulk:
         raise BulkLimitError(total_bulk, container_data.max_bulk)
     remove_item(container, slot)
-    container_data.children[slot] = item.identifier
+    container_data.children.append(item.identifier)
     if item_data.container:
         remove_item(item_data.container, item_data.slot)
     item_data.container = container.identifier

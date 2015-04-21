@@ -19,8 +19,11 @@ from bGrease.world import BaseWorld
 from fife_rpg.entities import RPGEntity
 from fife_rpg.components import containable, container, general
 
-class  TestContainer(unittest.TestCase):
+
+class TestContainer(unittest.TestCase):
+
     class GameWorld(BaseWorld):
+
         """GameWorld"""
 
         def configure(self):
@@ -48,13 +51,14 @@ class  TestContainer(unittest.TestCase):
             return None
 
     class Inventory(RPGEntity):
+
         """Enity representing an Iventory"""
 
-        def __init__(self, world, identifier, max_bulk, slots):
+        def __init__(self, world, identifier, max_bulk, slots, max_slots):
             RPGEntity.__init__(self, world, identifier)
             self.container.children = slots
             self.container.max_bulk = max_bulk
-
+            self.container.max_slots = max_slots
 
     class Item(RPGEntity):
 
@@ -65,16 +69,14 @@ class  TestContainer(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.world = self.GameWorld()
+        no_slots = list()
         slots_15 = list()
         slots_25 = list()
-        for _ in xrange(3):
-            slots_15.append(None)
 
-        for _ in xrange(10):
-            slots_25.append(None)
-
-        self.inv_15 = self.Inventory(self.world, "inv_15", 15, slots_15)
-        self.inv_25 = self.Inventory(self.world, "inv_25", 25, slots_25)
+        self.inv_no_slots = self.Inventory(self.world, "inv_no_slots", 200,
+                                           no_slots, 0)
+        self.inv_15 = self.Inventory(self.world, "inv_15", 15, slots_15, 3)
+        self.inv_25 = self.Inventory(self.world, "inv_25", 25, slots_25, 10)
         self.dagger_1 = self.Item(self.world, "dagger_1", 2)
         self.sword_1 = self.Item(self.world, "sword_1", 4)
         self.axe_1 = self.Item(self.world, "axe_1", 4)
@@ -108,27 +110,57 @@ class  TestContainer(unittest.TestCase):
         for child in self.inv_25.container.children:
             self.assertIsNone(child)
 
-    def test_PutTake(self):
+    def test_PutTakeSlots(self):
         self.assertIsNone(container.get_item(self.inv_15, 0))
 
         container.put_item(self.inv_15, self.sword_1, 0)
         self.assertIsNotNone(container.get_item(self.inv_15, 0))
         self.assertIsNotNone(self.sword_1.containable.container)
         sword_1_container = self.world.get_entity(
-                                self.sword_1.containable.container)
+            self.sword_1.containable.container)
         self.assertListEqual(self.inv_15.container.children,
-                    sword_1_container.container.children)
+                             sword_1_container.container.children)
         self.assertEqual(container.get_item(self.inv_15, 0),
                          self.sword_1)
         self.assertEqual(container.get_item(self.inv_15, 0).containable.slot,
                          self.sword_1.containable.slot)
 
         container.take_item(self.inv_15, 0)
-        self.assertIsNone(self.inv_15.container.children[0])
+        self.assertIsNone(container.get_item(self.inv_15, 0))
+        self.assertIsNone(self.sword_1.containable.container)
+
+    def test_PutTakeNoSlots(self):
+        self.assertIsNone(container.get_item(self.inv_no_slots, 0))
+
+        container.put_item(self.inv_no_slots, self.sword_1)
+        self.assertIsNotNone(container.get_item(self.inv_no_slots,
+                                                self.sword_1.containable.slot))
+        self.assertIsNotNone(self.sword_1.containable.container)
+        sword_1_container = self.world.get_entity(
+            self.sword_1.containable.container)
+        self.assertListEqual(self.inv_no_slots.container.children,
+                             sword_1_container.container.children)
+        self.assertEqual(container.get_item(self.inv_no_slots, 0),
+                         self.sword_1)
+        container.put_item(self.inv_no_slots, self.axe_2)
+        self.assertEqual(self.axe_2.containable.slot, 1)
+        container.put_item(self.inv_no_slots, self.mace_1, 5)
+        self.assertEqual(self.mace_1.containable.slot, 2)
+        self.assertEqual(container.take_item(self.inv_no_slots, 1), self.axe_2)
+        self.assertEqual(self.mace_1.containable.slot, 1)
+        self.assertEqual(container.take_item(self.inv_no_slots, 1),
+                         self.mace_1)
+        container.take_item(self.inv_no_slots, 1)
+        temp_item = container.get_item(self.inv_no_slots, 0)
+        self.assertEqual(temp_item.containable.slot,
+                         self.sword_1.containable.slot)
+
+        container.take_item(self.inv_no_slots, 0)
+        self.assertIsNone(container.get_item(self.inv_no_slots, 0))
         self.assertIsNone(self.sword_1.containable.container)
 
     def test_Swap(self):
-        self.assertIsNone(self.inv_15.container.children[0])
+        self.assertIsNone(container.get_item(self.inv_15, 0))
 
         container.put_item(self.inv_15, self.sword_1, 0)
         sword1 = container.get_item(self.inv_15, 0)
@@ -144,12 +176,12 @@ class  TestContainer(unittest.TestCase):
 
         self.assertIsNotNone(container.get_item(self.inv_15, 0))
         dagger_1_container = self.world.get_entity(
-                                self.dagger_1.containable.container)
+            self.dagger_1.containable.container)
         self.assertListEqual(self.inv_15.container.children,
-                    dagger_1_container.container.children)
+                             dagger_1_container.container.children)
         self.assertEqual(
-                    container.get_item(self.inv_15, 0).containable.container,
-                    self.dagger_1.containable.container)
+            container.get_item(self.inv_15, 0).containable.container,
+            self.dagger_1.containable.container)
         self.assertEqual(container.get_item(self.inv_15, 0).containable.slot,
                          self.dagger_1.containable.slot)
 
