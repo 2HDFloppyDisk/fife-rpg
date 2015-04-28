@@ -4,13 +4,12 @@
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-from operator import attrgetter
-
+#
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
-
+#
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -21,6 +20,8 @@ from operator import attrgetter
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+
+from operator import attrgetter
 
 from fife_rpg.components.base import Base
 from fife_rpg.components.containable import Containable
@@ -221,7 +222,7 @@ def remove_item(container, slot_or_type):
         item = get_item(container, slot_or_type)
         if item:
             item = getattr(item, Containable.registered_as)
-            item.container = None
+            item.container = ""
             item.slot = -1
             if container_data.max_slots <= 0:
                 entities = get_items(container)
@@ -270,7 +271,7 @@ def merge_stack(source, dest):
         to_add = source_data.current_stack
     else:
         to_add = free
-    if dest_data.container is not None:
+    if dest_data.container:
         container = source.world.get_entity(dest_data.container)
         total_bulk = get_total_bulk(container)
         container_data = getattr(container, Container.registered_as)

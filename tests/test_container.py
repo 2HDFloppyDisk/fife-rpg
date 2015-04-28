@@ -143,7 +143,7 @@ class TestContainer(unittest.TestCase):
 
         container.take_item(self.inv_15, 0)
         self.assertIsNone(container.get_item(self.inv_15, 0))
-        self.assertIsNone(self.sword_1.containable.container)
+        self.assertEqual(self.sword_1.containable.container, "")
 
     def test_PutTakeNoSlots(self):
         self.assertIsNone(container.get_item(self.inv_no_slots, 0))
@@ -173,7 +173,7 @@ class TestContainer(unittest.TestCase):
 
         container.take_item(self.inv_no_slots, 0)
         self.assertIsNone(container.get_item(self.inv_no_slots, 0))
-        self.assertIsNone(self.sword_1.containable.container)
+        self.assertEqual(self.sword_1.containable.container, "")
 
     def test_Swap(self):
         self.assertIsNone(container.get_item(self.inv_15, 0))

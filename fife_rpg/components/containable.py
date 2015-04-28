@@ -47,7 +47,7 @@ class Containable(Base):
 
     def __init__(self):
         Base.__init__(self, bulk=float, weight=int, item_type=str, image=str,
-                      container=object, slot=int, max_stack=int,
+                      container=str, slot=int, max_stack=int,
                       current_stack=int)
         self.fields['slot'].default = lambda: -1
         self.fields['max_stack'].default = lambda: 1
