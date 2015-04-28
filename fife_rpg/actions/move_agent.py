@@ -44,7 +44,7 @@ class MoveAgent(EntityAction):
         agent.new_position = (move_agent.target_position.x,
                               move_agent.target_position.y,
                               move_agent.target_position.z)
-        agent.create_layer = move_agent.target_layer
+        agent.new_layer = move_agent.target_layer
         EntityAction.execute(self)
 
     @property

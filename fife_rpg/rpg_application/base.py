@@ -740,11 +740,11 @@ class RPGApplication(FifeManager, ApplicationBase):
             if agent.map == self.current_map.name:
                 continue
             agent.map = agent.new_map or agent.map
-            agent.layer = agent.create_layer or agent.layer
+            agent.layer = agent.new_layer or agent.layer
             agent.position = agent.new_position or agent.position
             agent.rotation = agent.new_rotation or agent.rotation
             agent.new_map = None
-            agent.create_layer = None
+            agent.new_layer = None
             agent.new_position = None
             agent.new_rotation = None
             if agent.map:

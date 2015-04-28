@@ -39,7 +39,7 @@ class Agent(Base):
 
         layer: The layer the agent is on
 
-        create_layer: The new layer the agent should be move to
+        new_layer: The new layer the agent should be move to
 
         type: The type of the agent. actor, ground_object or item
 
@@ -60,7 +60,7 @@ class Agent(Base):
 
     def __init__(self):
         Base.__init__(self, gfx=str, map=str, new_map=object,
-                      layer=str, create_layer=object, type=str,
+                      layer=str, new_layer=object, type=str,
                       position=DoublePoint3DYaml, new_position=object,
                       rotation=int,
                       new_rotation=object, behaviour_type=str,
@@ -68,7 +68,7 @@ class Agent(Base):
         self.fields["type"].default = lambda: "actor"
         self.fields["behaviour_args"].default = dict
         self.fields["new_map"].default = lambda: None
-        self.fields["create_layer"].default = lambda: None
+        self.fields["new_layer"].default = lambda: None
         self.fields["new_position"].default = lambda: None
         self.fields["new_rotation"].default = lambda: None
 
@@ -77,7 +77,7 @@ class Agent(Base):
         """Returns the fields of the component that can be saved."""
         fields = self.fields.keys()
         fields.remove("new_map")
-        fields.remove("create_layer")
+        fields.remove("new_layer")
         fields.remove("new_position")
         fields.remove("new_rotation")
         return fields
