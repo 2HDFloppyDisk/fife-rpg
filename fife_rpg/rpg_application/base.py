@@ -508,7 +508,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              " \"Components\" Setting found")
 
         for component in component_list:
-            if not isinstance(component, str):
+            if not isinstance(component, basestring):
                 self.register_component(
                     *component,
                     register_checkers=register_checkers,
