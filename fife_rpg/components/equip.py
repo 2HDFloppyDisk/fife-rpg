@@ -88,7 +88,7 @@ class RPGEquip(Equip):
         self.fields["r_arm"].default = lambda: None
 
     @classmethod
-    def register(cls, name="equip", auto_register=True):
+    def register(cls, name="Equip", auto_register=True):
         """Registers the class as a component
 
         Args:
