@@ -173,6 +173,11 @@ class RPGApplication(FifeManager, ApplicationBase):
         """Returns a copy of the maps dictionary"""
         return copy(self._maps)
 
+    @property
+    def components(self):
+        """Returns a copy of the available components"""
+        return copy(self._components)
+
     def switch_language(self, language):
         """Switch to the given language"""
         if language not in self._languages:
