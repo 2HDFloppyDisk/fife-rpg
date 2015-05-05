@@ -58,12 +58,7 @@ class RPGWorld(World):
         self.application = application
         self.object_db = {}
         GameVariables.add_callback(self.update_game_variables)
-        if not Agent.registered_as:
-            Agent.register()
-        if not FifeAgent.registered_as:
-            FifeAgent.register()
-        if not General.registered_as:
-            General.register()
+        self.register_mandatory_components()
         yaml.add_representer(RPGEntity, self.entity_representer,
                              yaml.SafeDumper)
         yaml.add_constructor('!Entity', self.entity_constructor,
@@ -81,6 +76,15 @@ class RPGWorld(World):
                              helpers.double_point_3d_constructor,
                              yaml.SafeLoader)
         World.__init__(self, application.engine)
+
+    def register_mandatory_components(self):
+        """Registers the mandatory components"""
+        if not Agent.registered_as:
+            Agent.register()
+        if not FifeAgent.registered_as:
+            FifeAgent.register()
+        if not General.registered_as:
+            General.register()
 
     def get_entity(self, identifier):
         """Returns the entity with the identifier
