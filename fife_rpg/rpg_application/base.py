@@ -454,6 +454,18 @@ class RPGApplication(FifeManager, ApplicationBase):
         for name, path in yaml.load(components_file)["Components"].iteritems():
             self._components[name] = path
 
+    def get_component_data(self, component_name):
+        """Returns the class and module of the given component
+
+        Args:
+
+            component_name: The name of the component
+        """
+        component_path = self._components[component_name]
+        module = __import__(component_path, fromlist=[component_path])
+        component = getattr(module, component_name)
+        return component, module
+
     def register_component(self, component_name, registered_name=None,
                            register_checkers=True,
                            register_script_commands=True):
@@ -471,9 +483,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             register_script_commands: If True a "register_script_commands"
             functions will be searched in the module and called
         """
-        component_path = self._components[component_name]
-        module = __import__(component_path, fromlist=[component_path])
-        component = getattr(module, component_name)
+        component, module = self.get_component_data(component_name)
         if registered_name is not None:
             component.register(registered_name)
         else:
