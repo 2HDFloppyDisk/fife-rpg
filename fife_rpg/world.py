@@ -25,7 +25,7 @@ from copy import copy
 import sys
 import imp
 
-from bGrease.grease_fife.world import World
+from bGrease.grease_fife.world import World, WorldEntitySet, EntityExtent
 from fife.fife import MapLoader
 import yaml
 
@@ -37,6 +37,15 @@ from fife_rpg.systems import GameVariables
 from fife_rpg.components.agent import Agent
 from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.components.general import General
+
+
+class RPGWorldEntitySet(WorldEntitySet):
+
+    """Specialized World entity set"""
+
+    def remove(self, entity):
+        self.world.on_entity_delete(entity)
+        WorldEntitySet.remove(self, entity)
 
 
 class RPGWorld(World):
@@ -76,6 +85,9 @@ class RPGWorld(World):
                              helpers.double_point_3d_constructor,
                              yaml.SafeLoader)
         World.__init__(self, application.engine)
+        self.entities = RPGWorldEntitySet(self)
+        self._full_extent = EntityExtent(self, self.entities)
+        self._entity_delete_callbacks = set()
 
     def register_mandatory_components(self):
         """Registers the mandatory components"""
@@ -347,6 +359,21 @@ class RPGWorld(World):
     def clear(self):
         """Clear the world, remove all entities"""
         self.object_db = {}
+
+    def add_entity_delete_callback(self, func):
+        """Adds a callback to the entity delete callbacks"""
+        self._entity_delete_callbacks.add(func)
+
+    def on_entity_delete(self, entity):
+        """Calls the callbacks for deletion of an entity.
+
+        Args:
+
+            entity:
+                The entity that should be deleted.
+        """
+        for callback in self._entity_delete_callbacks:
+            callback(entity)
 
     def pump(self, time_delta):
         """Performs actions every frame

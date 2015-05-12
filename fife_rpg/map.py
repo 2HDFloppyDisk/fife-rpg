@@ -190,6 +190,8 @@ class Map(object):
 
     def activate(self):
         """Activates the map"""
+        self.__application.world.add_entity_delete_callback(
+            self.cb_entity_delete)
         if not self.is_loaded:
             engine = self.__application.engine
             loader = fife.MapLoader(engine.getModel(),
@@ -569,3 +571,8 @@ class Map(object):
         coords += position_offset
         location.setMapCoordinates(coords)
         self.camera.setLocation(location)
+
+    def cb_entity_delete(self, entity):
+        """Called when an entiy is about to be deleted"""
+        if entity in self.entities:
+            self.remove_entity(entity.identifier)

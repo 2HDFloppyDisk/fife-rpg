@@ -30,6 +30,7 @@ from fife_rpg.components.container import put_item
 
 
 class PickUp(EntityAction):
+
     """Action for picking up items from a map"""
 
     dependencies = [General, Agent, Containable, Container]
@@ -45,7 +46,7 @@ class PickUp(EntityAction):
         game_map = self.application.maps[agent.map]
         general = getattr(self.target, General.registered_as)
         game_map.remove_entity(general.identifier)
-
+        game_map.update_entities()
         put_item(self.performer, self.target)
         super(PickUp, self).execute()
 
