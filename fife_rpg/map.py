@@ -221,8 +221,8 @@ class Map(object):
         """Updates the fife instances to the values of the agent"""
         old_entities = self.entities.copy()
         for entity in old_entities:
-            if hasattr(entity, FifeAgent.registered_as):
-                fifeagent = getattr(entity, FifeAgent.registered_as)
+            fifeagent = getattr(entity, FifeAgent.registered_as)
+            if fifeagent:
                 agent = getattr(entity, Agent.registered_as)
                 if agent.new_map is not None and agent.new_map != self.name:
                     self.remove_entity(entity.identifier)
@@ -245,8 +245,8 @@ class Map(object):
     def update_entitities_agent(self):
         """Update the values of the agent component of the maps entities"""
         for entity in self.entities:
-            if hasattr(entity, FifeAgent.registered_as):
-                fifeagent = getattr(entity, FifeAgent.registered_as)
+            fifeagent = getattr(entity, FifeAgent.registered_as)
+            if fifeagent:
                 agent = getattr(entity, Agent.registered_as)
                 location = fifeagent.behaviour.location
                 agent.position = (location.x, location.y, location.z)
