@@ -49,10 +49,11 @@ class Base(fife.InstanceActionListener):
         registered_as: Class property that sets under what name the class is
         registered
 
-        dependencies: Class property that sets the classes this System depends
-        on
+        dependencies: Class property that sets the classes this Behaviour
+        depends on
     """
     __registered_as = None
+    dependencies = []
 
     def __init__(self):
         fife.InstanceActionListener.__init__(self)
@@ -194,6 +195,9 @@ class Base(fife.InstanceActionListener):
         try:
             BehaviourManager.register_behaviour(name, cls)
             cls.__registered_as = name
+            for dependency in cls.dependencies:
+                if not dependency.registered_as:
+                    dependency.register()
             return True
         except AlreadyRegisteredError as error:
             print error
