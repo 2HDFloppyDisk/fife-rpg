@@ -178,6 +178,21 @@ class RPGApplication(FifeManager, ApplicationBase):
         """Returns a copy of the available components"""
         return copy(self._components)
 
+    @property
+    def actions(self):
+        """Returns a copy of the available actions"""
+        return copy(self._actions)
+
+    @property
+    def systems(self):
+        """Returns a copy of the available systems"""
+        return copy(self._systems)
+
+    @property
+    def behaviours(self):
+        """Returns a copy of the available behaviours"""
+        return copy(self._behaviours)
+
     def switch_language(self, language):
         """Switch to the given language"""
         if language not in self._languages:
@@ -546,6 +561,18 @@ class RPGApplication(FifeManager, ApplicationBase):
         for name, path in yaml.load(actions_file)["Actions"].iteritems():
             self._actions[name] = path
 
+    def get_action_data(self, action_name):
+        """Returns the class and module of the givenaction
+
+        Args:
+
+            action_name: The name of the action
+        """
+        action_path = self._actions[action_name]
+        module = __import__(action_path, fromlist=[action_path])
+        action = getattr(module, action_name)
+        return action, module
+
     def register_action(self, action_name, registered_name=None):
         """Calls the actions register method.
 
@@ -554,9 +581,7 @@ class RPGApplication(FifeManager, ApplicationBase):
 
             registered_name: Name under which the action should be registered
         """
-        action_path = self._actions[action_name]
-        module = __import__(action_path, fromlist=[action_path])
-        action = getattr(module, action_name)
+        action = self.get_action_data(action_name)[0]
         if registered_name is not None:
             action.register(registered_name)
         else:
@@ -579,7 +604,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              "Setting found")
 
         for action in action_list:
-            if not isinstance(action, str):
+            if not isinstance(action, basestring):
                 self.register_action(*action)
             else:
                 self.register_action(action)
@@ -601,6 +626,18 @@ class RPGApplication(FifeManager, ApplicationBase):
         for name, path in yaml.load(systems_file)["Systems"].iteritems():
             self._systems[name] = path
 
+    def get_system_data(self, system_name):
+        """Returns the class and module of the given system
+
+        Args:
+
+            system_name: The name of the system
+        """
+        system_path = self._systems[system_name]
+        module = __import__(system_path, fromlist=[system_path])
+        system = getattr(module, system_name)
+        return system, module
+
     def register_system(self, system_name, registered_name=None):
         """Calls the systems register method.
 
@@ -609,9 +646,7 @@ class RPGApplication(FifeManager, ApplicationBase):
 
             registered_name: Name under which the system should be registered
         """
-        system_path = self._systems[system_name]
-        module = __import__(system_path, fromlist=[system_path])
-        system = getattr(module, system_name)
+        system = self.get_system_data(system_name)[0]
         if registered_name is not None:
             system.register(registered_name)
         else:
@@ -634,7 +669,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              "Setting found")
 
         for system in system_list:
-            if not isinstance(system, str):
+            if not isinstance(system, basestring):
                 self.register_system(*system)
             else:
                 self.register_system(system)
@@ -656,6 +691,18 @@ class RPGApplication(FifeManager, ApplicationBase):
         for name, path in yaml.load(behaviours_file)["Behaviours"].iteritems():
             self._behaviours[name] = path
 
+    def get_behaviour_data(self, behaviour_name):
+        """Returns the class and module of the given behaviour
+
+        Args:
+
+            behaviour_name: The name of the behaviour
+        """
+        behaviour_path = self._behaviours[behaviour_name]
+        module = __import__(behaviour_path, fromlist=[behaviour_path])
+        behaviour = getattr(module, behaviour_name)
+        return behaviour, module
+
     def register_behaviour(self, behaviour_name, registered_name=None):
         """Calls the behaviours register method.
 
@@ -665,9 +712,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             registered_name: Name under which the behaviour should be
             registered
         """
-        behaviour_path = self._behaviours[behaviour_name]
-        module = __import__(behaviour_path, fromlist=[behaviour_path])
-        behaviour = getattr(module, behaviour_name)
+        behaviour = self.get_behaviour_data(behaviour_name)[0]
         if registered_name is not None:
             behaviour.register(registered_name)
         else:
@@ -690,7 +735,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              " \"Behaviours\" Setting found")
 
         for behaviour in behaviour_list:
-            if not isinstance(behaviour, str):
+            if not isinstance(behaviour, basestring):
                 self.register_behaviour(*behaviour)
             else:
                 self.register_behaviour(behaviour)
