@@ -28,10 +28,13 @@ STACK_POSITION = {"actor": 2, "item": 1, "ground_object": 0}
 
 
 class Agent(Base):
+
     """Component that stores the general values of an agent
 
     Fields:
         gfx: The name of the graphical representation
+
+        namespace: The entity specific namespace of the gfx
 
         map: On what map the agent is
 
@@ -59,7 +62,7 @@ class Agent(Base):
     """
 
     def __init__(self):
-        Base.__init__(self, gfx=str, map=str, new_map=object,
+        Base.__init__(self, gfx=str, namespace=str, map=str, new_map=object,
                       layer=str, new_layer=object, type=str,
                       position=DoublePoint3DYaml, new_position=object,
                       rotation=int,

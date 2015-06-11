@@ -241,8 +241,9 @@ class RPGApplication(FifeManager, ApplicationBase):
         fife_model = self.engine.getModel()
         for entity in game_map.entities:
             agent = getattr(entity, Agent.registered_as)
+            namespace = agent.namespace or object_namespace
             map_object = fife_model.getObject(agent.gfx,
-                                              object_namespace)
+                                              namespace)
             general = getattr(entity, General.registered_as)
             layer = game_map.get_layer(agent.layer)
             fife_instance = layer.getInstance(general.identifier)
@@ -558,7 +559,8 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          filename)
         self._actions = {}
         actions_file = self.engine.getVFS().open(filename)
-        for name, path in yaml.load(actions_file)["Actions"].iteritems():
+        file_data = yaml.load(actions_file)
+        for name, path in file_data["Actions"].iteritems():
             self._actions[name] = path
 
     def get_action_data(self, action_name):
