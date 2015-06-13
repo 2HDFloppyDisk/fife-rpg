@@ -244,6 +244,9 @@ class RPGApplication(FifeManager, ApplicationBase):
             namespace = agent.namespace or object_namespace
             map_object = fife_model.getObject(agent.gfx,
                                               namespace)
+            if not map_object:
+                raise RuntimeError("There is no object %s in the namespace %s"
+                                   % (agent.gfx, namespace))
             general = getattr(entity, General.registered_as)
             layer = game_map.get_layer(agent.layer)
             fife_instance = layer.getInstance(general.identifier)
@@ -262,6 +265,9 @@ class RPGApplication(FifeManager, ApplicationBase):
                 fifeagent = getattr(entity, FifeAgent.registered_as)
                 behaviour_class = BehaviourManager.get_behaviour(
                     agent.behaviour_type)
+                if behaviour_class is None:
+                    raise RuntimeError("There is no registered behaviour %s"
+                                       % agent.behaviour_type)
                 behaviour = behaviour_class(**agent.behaviour_args)
                 behaviour.agent = fife_instance
                 fifeagent.behaviour = behaviour
