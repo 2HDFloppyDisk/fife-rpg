@@ -250,6 +250,13 @@ class RPGApplication(FifeManager, ApplicationBase):
             general = getattr(entity, General.registered_as)
             layer = game_map.get_layer(agent.layer)
             fife_instance = layer.getInstance(general.identifier)
+            if fife_instance:
+                fife_object = fife_instance.getObject()
+                if (fife_object.getId() != map_object.getId() or
+                        fife_object.getNamespace() !=
+                        map_object.getNamespace()):
+                    layer.deleteInstance(fife_instance)
+                    fife_instance = None
             if not fife_instance:
                 position = agent.position
                 fife_instance = layer.createInstance(
