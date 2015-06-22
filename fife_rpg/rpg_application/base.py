@@ -243,7 +243,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             agent = getattr(entity, Agent.registered_as)
             namespace = agent.namespace or object_namespace
             map_object = fife_model.getObject(agent.gfx,
-                                              namespace)
+                                              namespace.encode())
             if not map_object:
                 raise RuntimeError("There is no object %s in the namespace %s"
                                    % (agent.gfx, namespace))
