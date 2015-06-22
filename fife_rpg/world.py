@@ -216,7 +216,7 @@ class RPGWorld(World):
                            self.engine.getVFS(),
                            self.engine.getImageManager(),
                            self.engine.getRenderBackend())
-        loader.loadImportDirectory(object_path)
+        loader.loadImportDirectory(object_path.encode())
 
     def read_object_db(self, db_filename=None):
         """Reads the Object Information Database from a file
