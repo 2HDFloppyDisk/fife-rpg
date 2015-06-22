@@ -206,6 +206,8 @@ class Map(object):
                 raise RuntimeError("Can't load mapfile %s" % str(self.__map))
             self.update_entities()
             self.__application.map_loded(self.__map.getId())
+        else:
+            self.__application.update_agents(self.__map.getId())
         self.camera.setEnabled(True)
 
     def deactivate(self):
