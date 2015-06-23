@@ -88,6 +88,7 @@ class RPGWorld(World):
         self.entities = RPGWorldEntitySet(self)
         self._full_extent = EntityExtent(self, self.entities)
         self._entity_delete_callbacks = set()
+        self.__entity_cache = {}
 
     def register_mandatory_components(self):
         """Registers the mandatory components"""
@@ -107,10 +108,8 @@ class RPGWorld(World):
         Returns:
             The entity with the identifier or None
         """
-        extent = getattr(self[RPGEntity], General.registered_as)
-        entities = extent.identifier == identifier
-        if len(entities) > 0:
-            return entities.pop()
+        if self.is_identifier_used(identifier):
+            return self.__entity_cache[identifier]
         return None
 
     def is_identifier_used(self, identifier):
@@ -122,8 +121,7 @@ class RPGWorld(World):
         Returns:
             True if the identifier is used, false if not
         """
-        entity = self.get_entity(identifier)
-        return entity is not None
+        return identifier in self.__entity_cache
 
     def create_unique_identifier(self, identifier):
         """Returns an unused identifier based on the given identifier
@@ -185,6 +183,7 @@ class RPGWorld(World):
                 comp_obj = getattr(new_ent, component)
                 for key, value in data.items():
                     setattr(comp_obj, key, value)
+            self.__entity_cache[identifier] = new_ent
             return new_ent
         else:
             return None
@@ -372,6 +371,7 @@ class RPGWorld(World):
             entity:
                 The entity that should be deleted.
         """
+        del self.__entity_cache[entity.identifier]
         for callback in self._entity_delete_callbacks:
             callback(entity)
 
