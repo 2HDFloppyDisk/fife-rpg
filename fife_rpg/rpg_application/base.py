@@ -811,9 +811,15 @@ class RPGApplication(FifeManager, ApplicationBase):
 
     def check_agent_changes(self):
         """Checks all agents for changes"""
-        for agent in self.world.components.join(Agent.registered_as):
-            agent = agent[0]
-            if agent.map == self.current_map.name:
+        for agent, fifeagent in self.world.components.join(
+                Agent.registered_as,
+                FifeAgent.registered_as):
+            map_test = agent.map == self.current_map.name
+
+            fife_object = fifeagent.instance.getObject()
+            gfx_test = (fife_object.getNamespace() == agent.namespace and
+                        fife_object.getId() == agent.gfx)
+            if map_test and gfx_test:
                 continue
             agent.map = agent.new_map or agent.map
             agent.layer = agent.new_layer or agent.layer
