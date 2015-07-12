@@ -835,14 +835,8 @@ class RPGApplication(FifeManager, ApplicationBase):
             agent.new_layer = None
             agent.new_position = None
             agent.new_rotation = None
-            if agent.map:
-                if agent.map in self.maps:
-                    game_map = self.maps[agent.map]
-                    if not isinstance(game_map, str):
-                        self.update_agents(game_map)
-                else:
-                    raise KeyError("Tried to access map `%s`,"
-                                   " which does not exist" % (agent.map))
+
+        self.update_agents(self.current_map)
 
     def set_global_lighting(self, red, green, blue):
         """Sets the color of the current maps lighting
