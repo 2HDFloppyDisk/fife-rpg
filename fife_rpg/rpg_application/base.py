@@ -239,6 +239,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         object_namespace = self.settings.get("fife-rpg", "ObjectNamespace",
                                              "fife-rpg")
         fife_model = self.engine.getModel()
+        game_map.update_entities()
         for entity in game_map.entities:
             agent = getattr(entity, Agent.registered_as)
             namespace = agent.namespace or object_namespace
@@ -826,7 +827,6 @@ class RPGApplication(FifeManager, ApplicationBase):
                 if agent.map in self.maps:
                     game_map = self.maps[agent.map]
                     if not isinstance(game_map, str):
-                        game_map.update_entities()
                         self.update_agents(game_map)
                 else:
                     raise KeyError("Tried to access map `%s`,"
