@@ -180,6 +180,7 @@ class RPGWorld(World):
 
             new_ent = RPGEntity(self, identifier)
             for component, data in info.items():
+                setattr(new_ent, component, None)
                 comp_obj = getattr(new_ent, component)
                 for key, value in data.items():
                     setattr(comp_obj, key, value)
