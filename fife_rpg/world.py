@@ -63,7 +63,10 @@ class RPGWorld(World):
         object_db: Stores the template data
     """
 
-    MAX_ID_NUMBER = sys.maxint
+    try:
+        MAX_ID_NUMBER = sys.maxint
+    except AttributeError:
+        MAX_ID_NUMBER = -1
 
     def __init__(self, application):
         self.application = application
@@ -137,7 +140,7 @@ class RPGWorld(World):
         id_number = 0
         while self.is_identifier_used(identifier + "_" + str(id_number)):
             id_number += 1
-            if id_number > self.MAX_ID_NUMBER:
+            if id_number > self.MAX_ID_NUMBER and self.MAX_ID_NUMBER >= 0:
                 raise ValueError(
                     "Number exceeds MAX_ID_NUMBER:" +
                     str(self.MAX_ID_NUMBER)
@@ -218,7 +221,7 @@ class RPGWorld(World):
                            self.engine.getVFS(),
                            self.engine.getImageManager(),
                            self.engine.getRenderBackend())
-        loader.loadImportDirectory(object_path.encode())
+        loader.loadImportDirectory(object_path)
 
     def read_object_db(self, db_filename=None):
         """Reads the Object Information Database from a file

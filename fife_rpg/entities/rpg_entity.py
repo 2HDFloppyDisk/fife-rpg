@@ -37,12 +37,12 @@ class RPGEntity(Entity):
             identifier: A unique identifier
     """
 
-    def __init__(self, world, identifier):
-
-        Entity.__init__(self, world)
+    def __new__(cls, world, identifier, *args, **kw):
+        entity = Entity.__new__(cls, world)
         if not General.registered_as:
             General.register()
-        getattr(self, General.registered_as).identifier = identifier
+        getattr(entity, General.registered_as).identifier = identifier
+        return entity
 
     @property
     def identifier(self):
