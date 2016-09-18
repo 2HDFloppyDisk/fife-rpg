@@ -254,12 +254,12 @@ class DialogueController(ControllerBase):
         """
         return self.dialogue.select_response(response_name)
 
-    def pump(self, time_delta):
+    def step(self, time_delta):
         """Performs actions every frame
 
         Args:
             time_delta: Time that passed since the last call
         """
-        ControllerBase.pump(self, time_delta)
+        ControllerBase.step(self, time_delta)
         if self.is_dialogue_finished:
             self.manager.remove_mode(self)

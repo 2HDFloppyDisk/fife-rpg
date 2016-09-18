@@ -857,7 +857,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.current_map.camera.getLightingColor()
         return (1.0, 1.0, 1.0)
 
-    def pump(self, time_delta):
+    def step(self, time_delta):
         """Performs actions every frame.
 
         Args:
@@ -869,8 +869,8 @@ class RPGApplication(FifeManager, ApplicationBase):
             self.current_map.update_entities()
             self.current_map.update_entitities_agent()
         if self.world:
-            self.world.pump(time_delta)
-        FifeManager.pump(self, time_delta)
+            self.world.step(time_delta)
+        FifeManager.step(self, time_delta)
 
 
 class BaseEventListener(fife.IKeyListener, fife.ICommandListener):

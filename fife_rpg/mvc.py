@@ -53,10 +53,10 @@ class ControllerBase(Mode):
         self.view = view
         self.application = application
 
-    def pump(self, time_delta):
+    def step(self, time_delta):
         """Performs actions every frame
 
         Args:
             time_delta: Time that passed since the last call
         """
-        Mode.pump(self, time_delta)
+        Mode.step(self, time_delta)

@@ -376,13 +376,13 @@ class RPGWorld(World):
         for callback in self._entity_delete_callbacks:
             callback(entity)
 
-    def pump(self, time_delta):
+    def step(self, time_delta):
         """Performs actions every frame
 
         Args:
             time_delta: Time that passed since the last call
         """
-        World.pump(self, time_delta)
+        World.step(self, time_delta)
         checkers = ComponentManager.get_checkers()
         for names, callback in checkers:
             for components in self.components.join(*names):
