@@ -22,6 +22,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from fife_rpg.behaviours import behaviour_manager as BehaviourManager
 from fife_rpg.helpers import Enum
 

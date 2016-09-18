@@ -20,12 +20,14 @@
     :synopsis: Manages the character statistics
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
 import yaml
 
 from fife_rpg.systems import Base
 from fife_rpg.entities import RPGEntity
 from fife_rpg.components.character_statistics import CharacterStatistics
 from fife_rpg.exceptions import AlreadyRegisteredError
+import six
 
 
 def get_stat_cost(offset):
@@ -213,15 +215,15 @@ class CharacterStatisticSystem(Base):
         Args:
             filename: The path to the file
         """
-        statistics_file = file(filename, "r")
+        statistics_file = open(filename, "r")
         statistics_data = yaml.load(statistics_file)
-        for name, primary_data in statistics_data["primary"].iteritems():
+        for name, primary_data in six.iteritems(statistics_data["primary"]):
             view_name = primary_data["name"]
             desc = primary_data["description"]
             self.add_primary_statistic(name,
                                        view_name,
                                        desc)
-        for name, secondary_data in statistics_data["secondary"].iteritems():
+        for name, secondary_data in six.iteritems(statistics_data["secondary"]):
             view_name = secondary_data["name"]
             desc = secondary_data["description"]
             influences = secondary_data["influences"]
@@ -275,7 +277,7 @@ class CharacterStatisticSystem(Base):
         if not getattr(entity, CharacterStatistics.registered_as):
             raise NoStatisticComponentError(entity)
         primary_statistics = {}
-        for statistic in self.primary_statistics.iterkeys():
+        for statistic in six.iterkeys(self.primary_statistics):
             value = self.get_statistic_value(entity, statistic)
             primary_statistics[statistic] = value
         return primary_statistics
@@ -297,7 +299,7 @@ class CharacterStatisticSystem(Base):
         if not getattr(entity, CharacterStatistics.registered_as):
             raise NoStatisticComponentError(entity)
         secondary_statistics = {}
-        for statistic in self.secondary_statistics.iterkeys():
+        for statistic in six.iterkeys(self.secondary_statistics):
             value = self.get_statistic_value(entity, statistic)
             secondary_statistics[statistic] = value
         return secondary_statistics
@@ -461,9 +463,9 @@ class CharacterStatisticSystem(Base):
             stats_component = getattr(entity, comp_name)
             comp_secondary_stats = stats_component.secondary_stats
             for statistic_name, statistic in (
-                    self.secondary_statistics.iteritems()):
+                    six.iteritems(self.secondary_statistics)):
                 total = 0
-                for name, influence in statistic.influences.iteritems():
+                for name, influence in six.iteritems(statistic.influences):
                     value = self.get_statistic_value(entity, name)
                     total += value * influence
                 comp_secondary_stats[statistic_name] = total

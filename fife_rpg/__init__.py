@@ -3,6 +3,7 @@
 and bGrease. It will use the source of PARPG as a basis and build upon it.
 """
 
+from __future__ import absolute_import
 from fife_rpg.map import Map
 from fife_rpg.map import NoSuchRegionError
 from fife_rpg.mvc import ViewBase

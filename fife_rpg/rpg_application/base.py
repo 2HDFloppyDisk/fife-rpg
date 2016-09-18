@@ -20,6 +20,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from copy import copy
 import gettext
 import imp
@@ -39,6 +40,7 @@ from fife_rpg.systems.scriptingsystem import ScriptingSystem
 from fife_rpg.world import RPGWorld
 import yaml
 from xml.etree import cElementTree as etree
+import six
 
 _SCRIPTING_MODULE = "application"
 
@@ -394,7 +396,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         camera = self.settings.get(
             "fife-rpg", "Camera", "main")
 
-        for name, filename in maps_doc["Maps"].iteritems():
+        for name, filename in six.iteritems(maps_doc["Maps"]):
             filepath = os.path.join(maps_path, filename + '.xml')
             identifier = etree.parse(filepath).getroot().attrib["id"]
             regions_filename = ("%s_regions.yaml" %
@@ -408,7 +410,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                 regions_data = yaml.load(regions_file)
                 if regions_data is not None:
                     for region_name, region_data in (
-                            regions_data.iteritems()):
+                            six.iteritems(regions_data)):
                         region = fife.DoubleRect(x=region_data[0],
                                                  y=region_data[1],
                                                  width=region_data[2],
@@ -481,7 +483,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          filename)
         self._components = {}
         components_file = self.engine.getVFS().open(filename)
-        for name, path in yaml.load(components_file)["Components"].iteritems():
+        for name, path in six.iteritems(yaml.load(components_file)["Components"]):
             self._components[name] = path
 
     def get_component_data(self, component_name):
@@ -548,7 +550,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              " \"Components\" Setting found")
 
         for component in component_list:
-            if not isinstance(component, basestring):
+            if not isinstance(component, six.string_types):
                 self.register_component(
                     *component,
                     register_checkers=register_checkers,
@@ -574,7 +576,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         self._actions = {}
         actions_file = self.engine.getVFS().open(filename)
         file_data = yaml.load(actions_file)
-        for name, path in file_data["Actions"].iteritems():
+        for name, path in six.iteritems(file_data["Actions"]):
             self._actions[name] = path
 
     def get_action_data(self, action_name):
@@ -620,7 +622,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              "Setting found")
 
         for action in action_list:
-            if not isinstance(action, basestring):
+            if not isinstance(action, six.string_types):
                 self.register_action(*action)
             else:
                 self.register_action(action)
@@ -639,7 +641,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          filename)
         self._systems = {}
         systems_file = self.engine.getVFS().open(filename)
-        for name, path in yaml.load(systems_file)["Systems"].iteritems():
+        for name, path in six.iteritems(yaml.load(systems_file)["Systems"]):
             self._systems[name] = path
 
     def get_system_data(self, system_name):
@@ -685,7 +687,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              "Setting found")
 
         for system in system_list:
-            if not isinstance(system, basestring):
+            if not isinstance(system, six.string_types):
                 self.register_system(*system)
             else:
                 self.register_system(system)
@@ -704,7 +706,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          filename)
         self._behaviours = {}
         behaviours_file = self.engine.getVFS().open(filename)
-        for name, path in yaml.load(behaviours_file)["Behaviours"].iteritems():
+        for name, path in six.iteritems(yaml.load(behaviours_file)["Behaviours"]):
             self._behaviours[name] = path
 
     def get_behaviour_data(self, behaviour_name):
@@ -751,7 +753,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              " \"Behaviours\" Setting found")
 
         for behaviour in behaviour_list:
-            if not isinstance(behaviour, basestring):
+            if not isinstance(behaviour, six.string_types):
                 self.register_behaviour(*behaviour)
             else:
                 self.register_behaviour(behaviour)

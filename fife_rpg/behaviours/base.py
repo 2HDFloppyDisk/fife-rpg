@@ -22,6 +22,8 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 from collections import deque
 
 from fife import fife
@@ -200,7 +202,7 @@ class Base(fife.InstanceActionListener):
                     dependency.register()
             return True
         except AlreadyRegisteredError as error:
-            print error
+            print(error)
             return False
 
     @classmethod
@@ -214,5 +216,5 @@ class Base(fife.InstanceActionListener):
             BehaviourManager.unregister_behaviour(cls.__registered_as)
             cls.__registered_as = None
         except NotRegisteredError as error:
-            print error
+            print(error)
             return False

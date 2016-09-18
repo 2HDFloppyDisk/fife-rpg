@@ -20,12 +20,14 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
 import yaml
 
 from fife_rpg.systems import GameVariables
 from fife_rpg import ControllerBase
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
 from fife_rpg.exceptions import NotRegisteredError
+import six
 
 
 class DialogueSection(object):
@@ -184,7 +186,7 @@ class Dialogue(object):
         Args:
             sections_data: A dictionary containing the data of the sections
         """
-        for section_name, section_data in sections_data.iteritems():
+        for section_name, section_data in six.iteritems(sections_data):
             section = self.create_section(section_data)
             self.sections[section_name] = section
 

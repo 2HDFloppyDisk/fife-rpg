@@ -19,6 +19,8 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
+from __future__ import print_function
 from fife import fife
 from fife.extensions import pychan
 from fife.extensions.pychan.pychanbasicapplication import PychanApplicationBase
@@ -75,7 +77,7 @@ class PychanListener(BaseEventListener, fife.ConsoleExecuter):
 
     def onToolsClick(self):  # pylint: disable=C0103,W0221
         """Gets called when the the 'tool' button on the console is clicked"""
-        print "No tools set up yet"
+        print("No tools set up yet")
 
 
 class RPGApplicationPychan(RPGApplication, PychanApplicationBase):

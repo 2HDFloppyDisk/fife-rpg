@@ -20,6 +20,8 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 from fife_rpg.exceptions import (NoSuchCommandError, AlreadyRegisteredError,
                                  NotRegisteredError)
 from fife_rpg.actions import ActionManager
@@ -83,7 +85,7 @@ class BaseAction(object):
                     dependency.register()
             return True
         except AlreadyRegisteredError as error:
-            print error
+            print(error)
             return False
 
     @classmethod
@@ -98,7 +100,7 @@ class BaseAction(object):
             cls.__registered_as = None
             return True
         except NotRegisteredError as error:
-            print error
+            print(error)
             return False
 
     @ClassProperty

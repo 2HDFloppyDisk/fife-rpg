@@ -20,6 +20,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.components.base import Base
 from ..helpers import DoublePoint3DYaml
@@ -78,7 +79,7 @@ class Agent(Base):
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
-        fields = self.fields.keys()
+        fields = list(self.fields.keys())
         fields.remove("new_map")
         fields.remove("new_layer")
         fields.remove("new_position")

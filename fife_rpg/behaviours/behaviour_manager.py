@@ -21,9 +21,11 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
 from copy import copy
 
 from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
+import six
 
 _BEHAVIOURS = {}
 
@@ -71,5 +73,5 @@ def unregister_behaviour(behaviour_name):
 
 def clear_behaviours():
     """Removes all registered behaviours"""
-    for behaviour in get_behaviours().itervalues():
+    for behaviour in six.itervalues(get_behaviours()):
         behaviour.unregister()

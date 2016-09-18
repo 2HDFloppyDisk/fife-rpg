@@ -20,6 +20,8 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import inspect
 
 import bGrease
@@ -56,7 +58,7 @@ class Base(Component):
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
-        return self.fields.keys()
+        return list(self.fields.keys())
 
     @classmethod
     def register(cls, name, auto_register=True):
@@ -87,7 +89,7 @@ class Base(Component):
                     dependency.register()
             return True
         except AlreadyRegisteredError as error:
-            print error
+            print(error)
             return False
 
     @classmethod
@@ -113,5 +115,5 @@ class Base(Component):
                         # pylint: enable=W0212
             return True
         except NotRegisteredError as error:
-            print error
+            print(error)
             return False

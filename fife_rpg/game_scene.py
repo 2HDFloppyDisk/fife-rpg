@@ -22,6 +22,7 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod
 
 from fife import fife
@@ -29,13 +30,12 @@ from fife.fife import InstanceRenderer
 
 from fife_rpg import ViewBase
 from fife_rpg import ControllerBase
+import six
 
 
-class BaseOutliner(object):
+class BaseOutliner(six.with_metaclass(ABCMeta, object)):
 
     """Determines the outline of an instance"""
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def get_outlines(self, world, instances):

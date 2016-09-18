@@ -20,9 +20,11 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from copy import copy
 
 from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
+import six
 
 _COMPONENTS = {}
 _CHECKERS = []
@@ -61,7 +63,7 @@ def unregister_component(component_name):
 
 def clear_components():
     """Removes all registered components"""
-    for component in get_components().itervalues():
+    for component in six.itervalues(get_components()):
         component.unregister()
 
 

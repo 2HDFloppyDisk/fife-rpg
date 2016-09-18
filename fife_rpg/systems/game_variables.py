@@ -18,6 +18,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from copy import copy
 
 from fife_rpg.systems import Base

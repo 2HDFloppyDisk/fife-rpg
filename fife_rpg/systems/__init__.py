@@ -20,6 +20,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from fife_rpg.systems import system_manager as SystemManager
 from fife_rpg.systems.base import Base
 from fife_rpg.systems.game_variables import GameVariables

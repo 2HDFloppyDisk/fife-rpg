@@ -21,6 +21,7 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
 from copy import copy
 import sys
 import imp
@@ -37,6 +38,7 @@ from fife_rpg.systems import GameVariables
 from fife_rpg.components.agent import Agent
 from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.components.general import General
+import six
 
 
 class RPGWorldEntitySet(WorldEntitySet):
@@ -147,10 +149,10 @@ class RPGWorld(World):
         """Configure the worlds components and systems"""
         World.configure(self)
         components = ComponentManager.get_components()
-        for name, component in components.iteritems():
+        for name, component in six.iteritems(components):
             setattr(self.components, name, component)
         systems = SystemManager.get_systems()
-        for name, system in systems.iteritems():
+        for name, system in six.iteritems(systems):
             setattr(self.systems, name, system)
         if not General.registered_as:
             General.register()
@@ -270,8 +272,8 @@ class RPGWorld(World):
         entities_file = vfs.open(entities_file_name)
         entities = yaml.safe_load_all(entities_file)
         try:
-            while entities.next():
-                entities.next()
+            while next(entities):
+                next(entities)
         except StopIteration:
             pass
 
@@ -291,7 +293,7 @@ class RPGWorld(World):
         entity_dict = {}
         components_data = entity_dict["Components"] = {}
         components = ComponentManager.get_components()
-        for name, component in components.iteritems():
+        for name, component in six.iteritems(components):
             component_values = getattr(entity, name)
             if component_values:
                 component_data = None

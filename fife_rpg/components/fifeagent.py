@@ -18,6 +18,7 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
 from fife import fife
 
 from fife_rpg.components.base import Base
@@ -44,7 +45,7 @@ class FifeAgent(Base):
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
-        fields = self.fields.keys()
+        fields = list(self.fields.keys())
         fields.remove("layer")
         fields.remove("behaviour")
         fields.remove("instance")

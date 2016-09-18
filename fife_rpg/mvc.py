@@ -22,6 +22,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from bGrease.grease_fife.mode import Mode
 
 

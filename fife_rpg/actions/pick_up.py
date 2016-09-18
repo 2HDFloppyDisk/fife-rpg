@@ -21,6 +21,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from fife_rpg.actions.entity_action import EntityAction
 from fife_rpg.components.general import General
 from fife_rpg.components.agent import Agent

@@ -21,10 +21,12 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from operator import attrgetter
 
 from fife_rpg.components.base import Base
 from fife_rpg.components.containable import Containable
+from six.moves import range
 
 
 class Container(Base):
@@ -46,7 +48,7 @@ class Container(Base):
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
 
-        fields = self.fields.keys()
+        fields = list(self.fields.keys())
         return fields
 
     @classmethod
@@ -230,7 +232,7 @@ def remove_item(container, slot_or_type):
                 for entity in entities:
                     items.append(getattr(entity, Containable.registered_as))
                 items = sorted(items, key=attrgetter("slot"))
-                for x in xrange(len(items)):
+                for x in range(len(items)):
                     item = items[x]
                     item.slot = x
 

@@ -21,6 +21,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from copy import copy
 
 import yaml
@@ -30,6 +31,7 @@ from fife_rpg.systems import GameVariables
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.helpers import ClassProperty
 import imp
+import six
 
 
 class ScriptingSystem(Base):
@@ -118,7 +120,7 @@ class ScriptingSystem(Base):
             script_globals.update(game_variables.get_variables())
         script_globals.update(self.globals)
         script_globals.update(self.commands[""])
-        for name, module_commands in self.commands.iteritems():
+        for name, module_commands in six.iteritems(self.commands):
             if name == "":
                 continue
             if name not in script_globals:
@@ -135,7 +137,7 @@ class ScriptingSystem(Base):
         Args:
             time_delta: Time since last step invocation
         """
-        for script in self.__scripts.itervalues():
+        for script in six.itervalues(self.__scripts):
             if "step" not in script.__dict__:
                 continue
             script_globals = self.prepare_globals()
@@ -156,9 +158,9 @@ class ScriptingSystem(Base):
 
                 filename: Path to the script file
         """
-        script_file = file(filename, "r")
+        script_file = open(filename, "r")
         script_module = imp.new_module(name)
-        exec script_file in script_module.__dict__  # pylint: disable=W0122
+        exec(script_file, script_module.__dict__)  # pylint: disable=W0122
         self.__scripts[name] = script_module
         script_file.close()
 
@@ -194,7 +196,7 @@ class ScriptingSystem(Base):
         """
         if GameVariables.registered_as:
             getattr(self.world.systems, GameVariables.registered_as).step(0)
-        for script in self.__scripts.itervalues():
+        for script in six.itervalues(self.__scripts):
             if "map_switched" not in script.__dict__:
                 continue
             script_globals = self.prepare_globals()

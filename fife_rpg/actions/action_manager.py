@@ -25,9 +25,11 @@ for example, in menus,
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from copy import copy
 
 from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
+import six
 
 _ACTIONS = {}
 _COMMANDS = {}
@@ -54,7 +56,7 @@ def get_possible_actions(performer, target):
     from fife_rpg.actions.entity_action import EntityAction
     actions = get_actions()
     possible_actions = {}
-    for name, action in actions.iteritems():
+    for name, action in six.iteritems(actions):
         if not issubclass(action, EntityAction):
             continue
         if action.check_performer(performer) and action.check_target(target):
@@ -94,7 +96,7 @@ def unregister_action(action_name):
 
 def clear_actions():
     """Removes all actions"""
-    for action in get_actions().itervalues():
+    for action in six.itervalues(get_actions()):
         action.unregister()
 
 

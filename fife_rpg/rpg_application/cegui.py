@@ -19,6 +19,7 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
 from fife.extensions.cegui.ceguibasicapplication import CEGUIApplicationBase
 from fife_rpg.rpg_application.base import BaseEventListener
 from fife_rpg.rpg_application.base import RPGApplication

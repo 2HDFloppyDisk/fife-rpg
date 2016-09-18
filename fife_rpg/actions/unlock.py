@@ -21,6 +21,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from fife_rpg.actions.entity_action import EntityAction
 from fife_rpg.components.lockable import Lockable
 from fife_rpg.components.lockable import unlock_lock

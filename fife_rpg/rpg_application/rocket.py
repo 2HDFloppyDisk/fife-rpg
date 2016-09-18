@@ -19,6 +19,7 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import absolute_import
 from fife import fife
 from fife.extensions.librocket.rocketbasicapplication \
     import RocketApplicationBase

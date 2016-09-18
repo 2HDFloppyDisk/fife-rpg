@@ -19,6 +19,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from bGrease import Entity
 
 from fife_rpg.components.general import General

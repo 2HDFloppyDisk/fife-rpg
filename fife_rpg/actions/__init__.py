@@ -22,6 +22,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 import sys
 
 from fife_rpg.actions import action_manager as ActionManager

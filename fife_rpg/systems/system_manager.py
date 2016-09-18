@@ -20,9 +20,11 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from __future__ import absolute_import
 from copy import deepcopy
 
 from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
+import six
 
 _SYSTEMS = {}
 
@@ -60,5 +62,5 @@ def unregister_system(system_name):
 
 def clear_systems():
     """Removes all registered systems"""
-    for system in get_systems().itervalues():
+    for system in six.itervalues(get_systems()):
         system.unregister()
