@@ -235,10 +235,10 @@ class GameSceneController(ControllerBase):
         """Being called when the Mode is deactivated"""
         self.listener.deactivate()
 
-    def pump(self, time_delta):
+    def step(self, time_delta):
         """Performs actions every frame
 
         Args:
             time_delta: Time that passed since the last call
         """
-        ControllerBase.pump(self, time_delta)
+        ControllerBase.step(self, time_delta)

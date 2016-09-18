@@ -318,13 +318,13 @@ class RPGWorld(World):  # pylint: disable=R0924
             raise ValueError("There is no identifier and no Template set."
                              "Can't create an Entity without an identifier.")
 
-    def pump(self, time_delta):
+    def step(self, time_delta):
         """Performs actions every frame
 
         Args:
             time_delta: Time that passed since the last call
         """
-        World.pump(self, time_delta)
+        World.step(self, time_delta)
         checkers = ComponentManager.get_checkers()
         for names, callback in checkers:
             for components in self.components.join(*names):
