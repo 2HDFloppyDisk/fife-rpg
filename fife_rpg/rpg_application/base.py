@@ -268,6 +268,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                               position.y,
                                               position.z),
                     general.identifier)
+                fife_instance.setRotation(agent.rotation)
                 visual = fife.InstanceVisual.create(fife_instance)
                 if map_object.getAction('default'):
                     target = fife.Location(game_map.actor_layer)
@@ -287,7 +288,6 @@ class RPGApplication(FifeManager, ApplicationBase):
                 fifeagent.behaviour.idle()
             else:
                 visual = fife_instance.get2dGfxVisual()
-            fife_instance.setRotation(agent.rotation)
             visual.setStackPosition(STACK_POSITION[agent.type])
 
     def map_loded(self, identifier):
