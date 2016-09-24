@@ -21,14 +21,19 @@
 """
 
 from __future__ import absolute_import
-from copy import copy
+
 import gettext
 import imp
 import os
+from copy import copy
+from xml.etree import cElementTree as etree
 
+import six
+import yaml
 from bGrease.grease_fife.mode import FifeManager
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
+
 from fife_rpg import Map
 from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.components.agent import Agent, STACK_POSITION
@@ -38,9 +43,6 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.systems import GameVariables
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
 from fife_rpg.world import RPGWorld
-import yaml
-from xml.etree import cElementTree as etree
-import six
 
 _SCRIPTING_MODULE = "application"
 
@@ -285,16 +287,9 @@ class RPGApplication(FifeManager, ApplicationBase):
                 fifeagent.instance = fife_instance
                 setup_behaviour(fifeagent)
                 fifeagent.behaviour.idle()
+                fife_instance.setRotation(agent.rotation)
             else:
                 visual = fife_instance.get2dGfxVisual()
-                location = fife_instance.getLocation()
-                position = agent.position
-                location.setExactLayerCoordinates(fife.ExactModelCoordinate(
-                    position.x,
-                    position.y,
-                    position.z))
-                fife_instance.setLocation(location)
-            fife_instance.setRotation(agent.rotation)
             visual.setStackPosition(STACK_POSITION[agent.type])
 
     def map_loded(self, identifier):
