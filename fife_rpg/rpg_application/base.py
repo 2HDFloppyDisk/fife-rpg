@@ -287,13 +287,6 @@ class RPGApplication(FifeManager, ApplicationBase):
                 fifeagent.behaviour.idle()
             else:
                 visual = fife_instance.get2dGfxVisual()
-                location = fife_instance.getLocation()
-                position = agent.position
-                location.setExactLayerCoordinates(fife.ExactModelCoordinate(
-                    position.x,
-                    position.y,
-                    position.z))
-                fife_instance.setLocation(location)
             fife_instance.setRotation(agent.rotation)
             visual.setStackPosition(STACK_POSITION[agent.type])
 
