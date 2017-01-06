@@ -395,7 +395,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             regions = {}
             try:
                 regions_file = self.engine.getVFS().open(regions_filename)
-            except RuntimeError:
+            except fife.NotFound:
                 regions_file = None
             if regions_file is not None:
                 regions_data = yaml.load(regions_file)
