@@ -29,6 +29,7 @@ from fife_rpg.exceptions import NotRegisteredError
 
 
 class DialogueSection(object):
+
     """Represents a section of a dialogue
 
     Properties:
@@ -54,6 +55,7 @@ class DialogueSection(object):
 
 
 class Dialogue(object):
+
     """Represents a single dialogue
 
     Properties:
@@ -94,7 +96,7 @@ class Dialogue(object):
             used to get dialogue variables
         """
         game_variables = getattr(self.world.systems,
-                                   "game_variables")
+                                 "game_variables")
         variables = game_variables.get_variables()
         variables["DialogueTalker"] = self.world.get_entity(section.talker)
         return variables
@@ -109,7 +111,7 @@ class Dialogue(object):
         for response_name in self.current_section.responses:
             response = self.sections[response_name]
             if (response.conditions is None or
-                self.__scripting.eval(response.conditions)):
+                    self.__scripting.eval(response.conditions)):
                 possible_responses[response_name] = response
         return possible_responses
 
@@ -141,10 +143,10 @@ class Dialogue(object):
         Args:
             response_name: The name of the response
         """
-        if (not response_name in self.sections or
-            not response_name in self.possible_responses):
+        if (response_name not in self.sections or
+                response_name not in self.possible_responses):
             raise KeyError("There is no '%s' response available" % (
-                                                                response_name))
+                response_name))
         response = self.sections[response_name]
         self.current_section = response
         self.run_section(response)
@@ -195,13 +197,14 @@ class Dialogue(object):
         for greeting_data in greetings_data:
             greeting = self.create_section(greeting_data)
             if (greeting.conditions is None or
-                self.__scripting.eval(greeting.conditions)):
+                    self.__scripting.eval(greeting.conditions)):
                 self.current_section = greeting
                 self.run_section(greeting)
                 break
 
 
 class DialogueController(ControllerBase):
+
     """Controller that handles Dialogues
 
     Properties:
@@ -219,10 +222,10 @@ class DialogueController(ControllerBase):
             with the name of a file to load, or a |Dialogue| instance.
         """
         ControllerBase.__init__(self, view, application)
-        if(isinstance(dialogue, str)):
+        if isinstance(dialogue, str):
             dialogue_file = self.application.engine.getVFS().open(dialogue)
             dialogue = yaml.load(dialogue_file)
-        if(isinstance(dialogue, dict)):
+        if isinstance(dialogue, dict):
             self.dialogue = Dialogue(self.application.world, dialogue)
         else:
             self.dialogue = dialogue

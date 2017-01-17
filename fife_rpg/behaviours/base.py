@@ -32,7 +32,8 @@ from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.behaviours import AGENT_STATES
 
 
-class Base (fife.InstanceActionListener):
+class Base(fife.InstanceActionListener):
+
     """Behaviour that contains the basic methods for actors
 
     Properties:
@@ -48,10 +49,11 @@ class Base (fife.InstanceActionListener):
         registered_as: Class property that sets under what name the class is
         registered
 
-        dependencies: Class property that sets the classes this System depends
-        on
+        dependencies: Class property that sets the classes this Behaviour
+        depends on
     """
     __registered_as = None
+    dependencies = []
 
     def __init__(self):
         fife.InstanceActionListener.__init__(self)
@@ -129,6 +131,17 @@ class Base (fife.InstanceActionListener):
         """
         pass
 
+    def onInstanceActionCancelled(self, instance, action):
+        # pylint: disable=C0103,W0613,W0221
+        """Called by FIFE when an action of an agent is cancelled
+
+        Args:
+            instance: The agent instance
+
+            action: The action that the agent was doing
+        """
+        pass
+
     def talk(self):
         """Set the agent to their talking action"""
         self.state = AGENT_STATES.TALK
@@ -146,7 +159,10 @@ class Base (fife.InstanceActionListener):
             repeating: Whether to repeat the action or not
         """
         direction = direction or self.agent.instance.getFacingLocation()
-        self.agent.instance.act(action, direction, repeating)
+        if repeating:
+            self.agent.instance.actRepeat(action, direction)
+        else:
+            self.agent.instance.actOnce(action, direction)
 
     def queue_action(self, action, direction=None, repeating=False):
         """Add an action to the queue
@@ -159,7 +175,7 @@ class Base (fife.InstanceActionListener):
             repeating: Whether to repeat the action or not
         """
         self.action_queue.append({"action": action,
-                                     "direction": direction,
+                                  "direction": direction,
                                   "repeating": repeating})
 
     def clear_actions(self):
@@ -179,7 +195,24 @@ class Base (fife.InstanceActionListener):
         try:
             BehaviourManager.register_behaviour(name, cls)
             cls.__registered_as = name
+            for dependency in cls.dependencies:
+                if not dependency.registered_as:
+                    dependency.register()
             return True
         except AlreadyRegisteredError as error:
+            print error
+            return False
+
+    @classmethod
+    def unregister(cls):
+        """Unregister a behaviour class
+
+        Returns:
+            True if the behaviour was unregistered, false if Not
+        """
+        try:
+            BehaviourManager.unregister_behaviour(cls.__registered_as)
+            cls.__registered_as = None
+        except NotRegisteredError as error:
             print error
             return False

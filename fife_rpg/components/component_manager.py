@@ -22,7 +22,7 @@
 
 from copy import copy
 
-from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
 
 _COMPONENTS = {}
 _CHECKERS = []
@@ -34,17 +34,35 @@ def get_components():
 
 
 def register_component(component_name, component_object):
-    """Registers an component
+    """Registers a component
 
     Args:
         component_name: The name of the component_object
 
         component_object: A bGrease component object
     """
-    if not component_name in _COMPONENTS:
+    if component_name not in _COMPONENTS:
         _COMPONENTS[component_name] = component_object
     else:
         raise AlreadyRegisteredError(component_name, "component")
+
+
+def unregister_component(component_name):
+    """Unregister a component
+
+    Args:
+        component_name: The name of the component
+    """
+    if component_name in _COMPONENTS:
+        del _COMPONENTS[component_name]
+    else:
+        raise NotRegisteredError("component")
+
+
+def clear_components():
+    """Removes all registered components"""
+    for component in get_components().itervalues():
+        component.unregister()
 
 
 def get_checkers():
@@ -62,3 +80,8 @@ def register_checker(component_names, callback):
         callback: The checker function
     """
     _CHECKERS.append((component_names, callback))
+
+
+def clear_checkers():
+    """Removes all checkers"""
+    del _CHECKERS[:]

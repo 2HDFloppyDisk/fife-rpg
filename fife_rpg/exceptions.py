@@ -22,6 +22,7 @@
 
 
 class AlreadyRegisteredError(Exception):
+
     """Exception that gets raised when an object with the name is already
     registered
 
@@ -38,10 +39,12 @@ class AlreadyRegisteredError(Exception):
 
     def __str__(self):
         """Returns the message of the Exception"""
-        return ("An %s with the name '%s' already exists" %
-                    (self.type, self.name))
+        return ("A(n) %s with the name '%s' already exists" %
+                (self.type, self.name))
+
 
 class NotRegisteredError(Exception):
+
     """Exception that gets raised when a class is not registered
 
     Properties:
@@ -55,9 +58,11 @@ class NotRegisteredError(Exception):
     def __str__(self):
         """Returns the message of the Exception"""
         return ("%s class not registered." %
-                    (self.type))
+                (self.type))
+
 
 class NoSuchCommandError(Exception):
+
     """Exception that gets raised when the command is not found
 
     Properties:

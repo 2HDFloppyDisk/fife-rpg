@@ -25,6 +25,7 @@ from fife_rpg.components.equipable import Equipable
 
 
 class Equip(Base):
+
     """Basic equipment container component
 
     Fields:
@@ -54,10 +55,11 @@ class Equip(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Equip, cls).register(name, auto_register))
+        return super(Equip, cls).register(name, auto_register)
 
 
 class RPGEquip(Equip):
+
     """Example component for storing equipped items
     (what is being worn/wielded).
 
@@ -86,7 +88,7 @@ class RPGEquip(Equip):
         self.fields["r_arm"].default = lambda: None
 
     @classmethod
-    def register(cls, name="equip", auto_register=True):
+    def register(cls, name="Equip", auto_register=True):
         """Registers the class as a component
 
         Args:
@@ -99,10 +101,11 @@ class RPGEquip(Equip):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(RPGEquip, cls).register(name, auto_register))
+        return super(RPGEquip, cls).register(name, auto_register)
 
 
 class SlotInvalidError(Exception):
+
     """Error that gets raised when the slot is invalid
 
     Properties:
@@ -119,6 +122,7 @@ class SlotInvalidError(Exception):
 
 
 class AlreadyEquippedError(Exception):
+
     """Error that gets raised when the equipable already has a wearer"""
 
     def __str__(self):
@@ -127,6 +131,7 @@ class AlreadyEquippedError(Exception):
 
 
 class CannotBeEquippedInSlot(Exception):
+
     """Error that gets raised when the equipable can't be equiped in that
     slot
 
@@ -144,8 +149,7 @@ class CannotBeEquippedInSlot(Exception):
     def __str__(self):
         """Returns the string representing the exception"""
         return ("%s is not in the equipables slots. (%s)" %
-                (self.slot, ', '.join(self.equipable.possible_slots))
-                )
+                (self.slot, ', '.join(self.equipable.possible_slots)))
 
 
 def equip(wearer, equipable, slot):

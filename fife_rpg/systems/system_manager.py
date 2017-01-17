@@ -22,7 +22,7 @@
 
 from copy import deepcopy
 
-from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
 
 _SYSTEMS = {}
 
@@ -40,7 +40,25 @@ def register_system(system_name, system_object):
 
         system_object: A bGrease system object
     """
-    if not system_name in _SYSTEMS:
+    if system_name not in _SYSTEMS:
         _SYSTEMS[system_name] = system_object
     else:
         raise AlreadyRegisteredError(system_name, "system")
+
+
+def unregister_system(system_name):
+    """Unregister a system
+
+    Args:
+        system_name: The name of the system
+    """
+    if system_name in _SYSTEMS:
+        del _SYSTEMS[system_name]
+    else:
+        raise NotRegisteredError("system")
+
+
+def clear_systems():
+    """Removes all registered systems"""
+    for system in get_systems().itervalues():
+        system.unregister()

@@ -25,10 +25,11 @@ from copy import copy
 import sys
 import imp
 
-from bGrease.grease_fife.world import World
+from bGrease.grease_fife.world import World, WorldEntitySet, EntityExtent
 from fife.fife import MapLoader
 import yaml
 
+from fife_rpg import helpers
 from fife_rpg.components import ComponentManager
 from fife_rpg.systems import SystemManager
 from fife_rpg.entities.rpg_entity import RPGEntity
@@ -38,7 +39,17 @@ from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.components.general import General
 
 
-class RPGWorld(World):  # pylint: disable=R0924
+class RPGWorldEntitySet(WorldEntitySet):
+
+    """Specialized World entity set"""
+
+    def remove(self, entity):
+        self.world.on_entity_delete(entity)
+        WorldEntitySet.remove(self, entity)
+
+
+class RPGWorld(World):
+
     """The Base world for all rpgs.
 
     Sets up the generic systems and components
@@ -56,16 +67,37 @@ class RPGWorld(World):  # pylint: disable=R0924
         self.application = application
         self.object_db = {}
         GameVariables.add_callback(self.update_game_variables)
+        self.register_mandatory_components()
+        yaml.add_representer(RPGEntity, self.entity_representer,
+                             yaml.SafeDumper)
+        yaml.add_constructor('!Entity', self.entity_constructor,
+                             yaml.SafeLoader)
+        yaml.add_representer(helpers.DoublePointYaml,
+                             helpers.double_point_representer,
+                             yaml.SafeDumper)
+        yaml.add_constructor("!DoublePoint",
+                             helpers.double_point_constructor,
+                             yaml.SafeLoader)
+        yaml.add_representer(helpers.DoublePoint3DYaml,
+                             helpers.double_point_3d_representer,
+                             yaml.SafeDumper)
+        yaml.add_constructor("!DoublePoint3D",
+                             helpers.double_point_3d_constructor,
+                             yaml.SafeLoader)
+        World.__init__(self, application.engine)
+        self.entities = RPGWorldEntitySet(self)
+        self._full_extent = EntityExtent(self, self.entities)
+        self._entity_delete_callbacks = set()
+        self.__entity_cache = {}
+
+    def register_mandatory_components(self):
+        """Registers the mandatory components"""
         if not Agent.registered_as:
             Agent.register()
         if not FifeAgent.registered_as:
             FifeAgent.register()
         if not General.registered_as:
             General.register()
-        yaml.add_representer(RPGEntity, self.entity_representer)
-        yaml.add_constructor('!Entity', self.entity_constructor,
-                             yaml.SafeLoader)
-        World.__init__(self, application.engine)
 
     def get_entity(self, identifier):
         """Returns the entity with the identifier
@@ -76,10 +108,8 @@ class RPGWorld(World):  # pylint: disable=R0924
         Returns:
             The entity with the identifier or None
         """
-        extent = getattr(self[RPGEntity], General.registered_as)
-        entities = extent.identifier == identifier
-        if len(entities) > 0:
-            return entities.pop()
+        if self.is_identifier_used(identifier):
+            return self.__entity_cache[identifier]
         return None
 
     def is_identifier_used(self, identifier):
@@ -91,8 +121,7 @@ class RPGWorld(World):  # pylint: disable=R0924
         Returns:
             True if the identifier is used, false if not
         """
-        entity = self.get_entity(identifier)
-        return not entity is None
+        return identifier in self.__entity_cache
 
     def create_unique_identifier(self, identifier):
         """Returns an unused identifier based on the given identifier
@@ -151,9 +180,11 @@ class RPGWorld(World):  # pylint: disable=R0924
 
             new_ent = RPGEntity(self, identifier)
             for component, data in info.items():
+                setattr(new_ent, component, None)
                 comp_obj = getattr(new_ent, component)
                 for key, value in data.items():
                     setattr(comp_obj, key, value)
+            self.__entity_cache[identifier] = new_ent
             return new_ent
         else:
             return None
@@ -182,10 +213,10 @@ class RPGWorld(World):  # pylint: disable=R0924
             object_path = self.application.settings.get(
                 "fife-rpg", "AgentObjectsPath", "objects/agents")
         loader = MapLoader(self.engine.getModel(),
-                                self.engine.getVFS(),
-                                self.engine.getImageManager(),
-                                self.engine.getRenderBackend())
-        loader.loadImportDirectory(object_path)
+                           self.engine.getVFS(),
+                           self.engine.getImageManager(),
+                           self.engine.getRenderBackend())
+        loader.loadImportDirectory(object_path.encode())
 
     def read_object_db(self, db_filename=None):
         """Reads the Object Information Database from a file
@@ -218,11 +249,11 @@ class RPGWorld(World):  # pylint: disable=R0924
             template_data = copy(self.object_db[template_name])
             for key in template_data.keys():
                 if key in entity_data:
-                    tmp_attributes = template_data[key]
+                    tmp_attributes = template_data[key].copy()
                     tmp_attributes.update(entity_data[key])
                     entity_data[key] = tmp_attributes
                 else:
-                    entity_data[key] = template_data[key]
+                    entity_data[key] = template_data[key].copy()
         return entity_data
 
     def load_and_create_entities(self, entities_file_name=None):
@@ -245,26 +276,33 @@ class RPGWorld(World):  # pylint: disable=R0924
             pass
 
     @classmethod
-    def create_entity_dictionary(cls, entity):
+    def create_entity_dictionary(cls, entity, remove_default=True):
         """Creates a dictionary containing the values of the Entity
 
         Args:
             entity: The Entity instance
 
+            remove_default: Skips fields whose value is the same as the
+            default value.
+
         Returns:
             The created dictionary
         """
         entity_dict = {}
-        components_data = entity_dict["components"] = {}
+        components_data = entity_dict["Components"] = {}
         components = ComponentManager.get_components()
         for name, component in components.iteritems():
             component_values = getattr(entity, name)
             if component_values:
                 component_data = None
                 for field in component.saveable_fields:
+                    fields = component.fields
                     if not component_data:
                         component_data = components_data[name] = {}
-                    component_data[field] = getattr(component_values, field)
+                    value = getattr(component_values, field)
+                    if remove_default and value == fields[field].default():
+                        continue
+                    component_data[field] = value
         return entity_dict
 
     def entity_representer(self, dumper, data):
@@ -303,7 +341,7 @@ class RPGWorld(World):  # pylint: disable=R0924
                 self.update_from_template(components_data, template)
             general_name = General.registered_as
             identifier = None
-            if not general_name in components_data:
+            if general_name not in components_data:
                 identifier = self.create_unique_identifier(template)
             else:
                 general_data = components_data[General.registered_as]
@@ -317,6 +355,26 @@ class RPGWorld(World):  # pylint: disable=R0924
         else:
             raise ValueError("There is no identifier and no Template set."
                              "Can't create an Entity without an identifier.")
+
+    def clear(self):
+        """Clear the world, remove all entities"""
+        self.object_db = {}
+
+    def add_entity_delete_callback(self, func):
+        """Adds a callback to the entity delete callbacks"""
+        self._entity_delete_callbacks.add(func)
+
+    def on_entity_delete(self, entity):
+        """Calls the callbacks for deletion of an entity.
+
+        Args:
+
+            entity:
+                The entity that should be deleted.
+        """
+        del self.__entity_cache[entity.identifier]
+        for callback in self._entity_delete_callbacks:
+            callback(entity)
 
     def step(self, time_delta):
         """Performs actions every frame

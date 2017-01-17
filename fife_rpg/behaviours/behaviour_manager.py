@@ -23,7 +23,7 @@
 """
 from copy import copy
 
-from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
 
 _BEHAVIOURS = {}
 
@@ -40,7 +40,7 @@ def register_behaviour(name, behaviour):
         AlreadyRegisteredError if there is already a behaviour with that name
     """
     if name in _BEHAVIOURS:
-        raise AlreadyRegisteredError("behaviour", name)
+        raise AlreadyRegisteredError(name, "behaviour")
     else:
         _BEHAVIOURS[name] = behaviour
 
@@ -55,3 +55,21 @@ def get_behaviour(name):
     if name in _BEHAVIOURS:
         return _BEHAVIOURS[name]
     return None
+
+
+def unregister_behaviour(behaviour_name):
+    """Unregister a behaviour
+
+    Args:
+        behaviour_name: The name of the behaviour
+    """
+    if behaviour_name in _BEHAVIOURS:
+        del _BEHAVIOURS[behaviour_name]
+    else:
+        raise NotRegisteredError("behaviour")
+
+
+def clear_behaviours():
+    """Removes all registered behaviours"""
+    for behaviour in get_behaviours().itervalues():
+        behaviour.unregister()

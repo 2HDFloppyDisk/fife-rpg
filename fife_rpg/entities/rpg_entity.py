@@ -26,6 +26,7 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 
 
 class RPGEntity(Entity):
+
     """The Base for all fife-rpg entities
 
     Properties:
@@ -68,7 +69,6 @@ try:
     register_command("SetComponentValue",
                      lambda application, entity_name, *args:
                      set_component_value(application.world.get_entity(
-                                                                entity_name),
-                                         *args))
+                         entity_name), *args))
 except AlreadyRegisteredError:
     pass

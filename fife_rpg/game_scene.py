@@ -32,26 +32,28 @@ from fife_rpg import ControllerBase
 
 
 class BaseOutliner(object):
+
     """Determines the outline of an instance"""
 
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def get_data(self, world, identifier):
+    def get_outlines(self, world, instances):
         """Determines whether an instance should be outline and the data
         used for the outline.
 
         Args:
             world: The world
 
-            identifier: The name of the instance
+            instances: A list of instances
 
-        Returns: The data as a list, if the instance should be
-        outlined. None, if it should not.
+        Returns: A list with 2 tuple values: The instance that are to be
+        outlined, and their outline data.
         """
 
 
 class SimpleOutliner(BaseOutliner):
+
     """Outliner that determines the outline based on a list of identifiers
     to ignore and a single data element for instances that should be outlined.
 
@@ -71,24 +73,28 @@ class SimpleOutliner(BaseOutliner):
         """Returns outline_ignore"""
         return self.__outline_ignore
 
-    def get_data(self, world, identifier):
+    def get_outlines(self, world, instances):
         """Determines whether an instance should be outline and the data
         used for the outline.
 
         Args:
             world: The world
 
-            identifier: The name of the instance
+            instances: A list of instances
 
-        Returns: The data as a list, if the instance should be
-        outlined. None, if it should not.
+        Returns: A list with 2 tuple values: The instance that are to be
+        outlined, and their outline data.
         """
-        if identifier in self.outline_ignore:
-            return None
-        return self.outline_data
+        outlines = []
+        for instance in instances:
+            if instance.getId() in self.outline_ignore:
+                continue
+            outlines.append((instance, self.outline_data))
+        return outlines
 
 
 class GameSceneListener(fife.IMouseListener):
+
     """The game listener.
 
     Handle mouse events in relation
@@ -125,7 +131,7 @@ class GameSceneListener(fife.IMouseListener):
         """Makes the listener receive events"""
         self.eventmanager.removeMouseListener(self)
 
-    def mousePressed(self, event):  # pylint: disable-msg=C0103,W0221
+    def mousePressed(self, event):  # pylint: disable=C0103,W0221
         """Called when a mouse button was pressed.
 
         Args:
@@ -133,7 +139,7 @@ class GameSceneListener(fife.IMouseListener):
         """
         pass
 
-    def mouseMoved(self, event):  # pylint: disable-msg=C0103,W0221
+    def mouseMoved(self, event):  # pylint: disable=C0103,W0221
         """Called when the mouse was moved.
 
         Args:
@@ -150,19 +156,17 @@ class GameSceneListener(fife.IMouseListener):
                 renderer.removeAllOutlines()
 
                 point = fife.ScreenPoint(event.getX(), event.getY())
-                actor_instances = game_map.get_instances_at(
-                                                point,
-                                                game_map.get_layer("actors"))
+                instances = []
+                for layer in game_map.fife_map.getLayers():
+                    instances.extend(game_map.get_instances_at(
+                        point,
+                        layer))
+                world = controller.application.world
+                outlines = controller.outliner.get_outlines(world, instances)
+                for instance, outline_data in outlines:
+                    renderer.addOutlined(instance, *outline_data)
 
-                for instance in actor_instances:
-                    data = controller.outliner.get_data(
-                                                controller.application.world,
-                                                instance.getId()
-                                            )
-                    if data is not None:
-                        renderer.addOutlined(instance, *data)
-
-    def mouseReleased(self, event):  # pylint: disable-msg=C0103,W0221
+    def mouseReleased(self, event):  # pylint: disable=C0103,W0221
         """Called when a mouse button was released.
 
         Args:
@@ -170,7 +174,7 @@ class GameSceneListener(fife.IMouseListener):
         """
         pass
 
-    def mouseDragged(self, event):  # pylint: disable-msg=C0103,W0221
+    def mouseDragged(self, event):  # pylint: disable=C0103,W0221
         """Called when the mouse is moved while a button is being pressed.
 
         Args:
@@ -178,7 +182,7 @@ class GameSceneListener(fife.IMouseListener):
         """
         pass
 
-    def mouseWheelMovedUp(self, event):  # pylint: disable-msg=W0221, C0103
+    def mouseWheelMovedUp(self, event):  # pylint: disable=W0221, C0103
         """Called when the mouse wheel is moved upwards
 
         Args:
@@ -186,7 +190,7 @@ class GameSceneListener(fife.IMouseListener):
         """
         pass
 
-    def mouseWheelMovedDown(self, event):  # pylint: disable-msg=W0221, C0103
+    def mouseWheelMovedDown(self, event):  # pylint: disable=W0221, C0103
         """Called when the mouse wheel is moved downwards
 
         Args:
@@ -196,6 +200,7 @@ class GameSceneListener(fife.IMouseListener):
 
 
 class GameSceneView(ViewBase):
+
     """The view responsible for showing the in-game gui
 
     Properties:
@@ -208,6 +213,7 @@ class GameSceneView(ViewBase):
 
 
 class GameSceneController(ControllerBase):
+
     """Handles the input for a game scene
 
     Properties:

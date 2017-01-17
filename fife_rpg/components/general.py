@@ -46,4 +46,4 @@ class General(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(General, cls).register(name, auto_register))
+        return super(General, cls).register(name, auto_register)

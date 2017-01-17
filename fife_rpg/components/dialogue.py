@@ -47,4 +47,4 @@ class Dialogue(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Dialogue, cls).register(name, auto_register))
+        return super(Dialogue, cls).register(name, auto_register)

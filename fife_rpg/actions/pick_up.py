@@ -30,6 +30,7 @@ from fife_rpg.components.container import put_item
 
 
 class PickUp(EntityAction):
+
     """Action for picking up items from a map"""
 
     dependencies = [General, Agent, Containable, Container]
@@ -45,7 +46,7 @@ class PickUp(EntityAction):
         game_map = self.application.maps[agent.map]
         general = getattr(self.target, General.registered_as)
         game_map.remove_entity(general.identifier)
-
+        game_map.update_entities()
         put_item(self.performer, self.target)
         super(PickUp, self).execute()
 
@@ -55,7 +56,7 @@ class PickUp(EntityAction):
         return "Pick up"
 
     @classmethod
-    def check_performer(cls, entity):  # pylint: disable-msg=W0613
+    def check_performer(cls, entity):  # pylint: disable=W0613
         """Checks whether the entity qualifies as an performer for this action
 
         Args:
@@ -67,7 +68,7 @@ class PickUp(EntityAction):
         return bool(getattr(entity, Container.registered_as))
 
     @classmethod
-    def check_target(cls, entity):  # pylint: disable-msg=W0613
+    def check_target(cls, entity):  # pylint: disable=W0613
         """Checks whether the entity qualifies as a target for this action
 
         Args:

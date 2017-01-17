@@ -24,6 +24,7 @@ from fife_rpg.components.base import Base
 
 
 class Containable(Base):
+
     """Component that allows an entity to be contained by Container entity.
 
     Fields:
@@ -38,11 +39,19 @@ class Containable(Base):
         container: The container in which the containable currently is
 
         slot: The slot in which the containable currently is
+
+        max_stack: The maximum stack size for this containable
+
+        current_stack: The current stack size for this containable
     """
 
     def __init__(self):
-        Base.__init__(self, bulk=int, weight=int, item_type=str, image=str,
-                            container=object, slot=int)
+        Base.__init__(self, bulk=float, weight=int, item_type=str, image=str,
+                      container=str, slot=int, max_stack=int,
+                      current_stack=int)
+        self.fields['slot'].default = lambda: -1
+        self.fields['max_stack'].default = lambda: 1
+        self.fields['current_stack'].default = lambda: 1
 
     @property
     def saveable_fields(self):
@@ -64,4 +73,4 @@ class Containable(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Containable, cls).register(name, auto_register))
+        return super(Containable, cls).register(name, auto_register)

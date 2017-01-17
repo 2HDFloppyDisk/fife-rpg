@@ -22,15 +22,19 @@
 
 from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.components.base import Base
+from ..helpers import DoublePoint3DYaml
 
 STACK_POSITION = {"actor": 2, "item": 1, "ground_object": 0}
 
 
 class Agent(Base):
+
     """Component that stores the general values of an agent
 
     Fields:
         gfx: The name of the graphical representation
+
+        namespace: The entity specific namespace of the gfx
 
         map: On what map the agent is
 
@@ -42,10 +46,9 @@ class Agent(Base):
 
         type: The type of the agent. actor, ground_object or item
 
-        position: The position of the agent as a 2 or 3 item list or tuple
+        position: The position of the agent
 
         new_position: The position the agent should be moved to
-        as a 2 or 3 item list or  tuple
 
         rotation: The rotation of the agent in degrees
 
@@ -59,9 +62,10 @@ class Agent(Base):
     """
 
     def __init__(self):
-        Base.__init__(self, gfx=str, map=str, new_map=object,
+        Base.__init__(self, gfx=str, namespace=str, map=str, new_map=object,
                       layer=str, new_layer=object, type=str,
-                      position=list, new_position=object, rotation=int,
+                      position=DoublePoint3DYaml, new_position=object,
+                      rotation=int,
                       new_rotation=object, behaviour_type=str,
                       behaviour_args=dict, knows=set)
         self.fields["type"].default = lambda: "actor"
@@ -70,6 +74,16 @@ class Agent(Base):
         self.fields["new_layer"].default = lambda: None
         self.fields["new_position"].default = lambda: None
         self.fields["new_rotation"].default = lambda: None
+
+    @property
+    def saveable_fields(self):
+        """Returns the fields of the component that can be saved."""
+        fields = self.fields.keys()
+        fields.remove("new_map")
+        fields.remove("new_layer")
+        fields.remove("new_position")
+        fields.remove("new_rotation")
+        return fields
 
     @classmethod
     def register(cls, name="Agent", auto_register=True):
@@ -85,7 +99,7 @@ class Agent(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Agent, cls).register(name, auto_register))
+        return super(Agent, cls).register(name, auto_register)
 
 
 def knows(agent, knowledge):

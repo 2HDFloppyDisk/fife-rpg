@@ -29,6 +29,7 @@ from fife_rpg.components.general import General
 
 
 class NoSuchRegionError(Exception):
+
     """Gets thrown when the code tried to access a region that does not exits
     on the map.
 
@@ -46,16 +47,19 @@ class NoSuchRegionError(Exception):
     def __str__(self):
         """Returns a string representing the exception"""
         return ("The map '%s' has no region called '%s'." %
-                    (self.map, self.region))
+                (self.map, self.region))
 
 
-class Map(object):  # pylint: disable=R0924
+class Map(object):
+
     """Contains the data of a map
 
     Properties:
         fife_map: A fife.Map instance, representing the fife_map
 
-        name: The name of the fife_map.
+        name: The internal name of the fife_map.
+
+        view_name: The name of the map that should be displayed
 
         camera: The name of the default camera
 
@@ -65,12 +69,15 @@ class Map(object):  # pylint: disable=R0924
         is_active: Whether the map is currently active or nor
     """
 
-    def __init__(self, fife_map, name, camera, regions, application):
-        self.__map = fife_map
-        self.__name = name
+    def __init__(self, fife_map_or_filename, view_name, camera, regions,
+                 application):
+        self.__map = fife_map_or_filename
+        self.__camera = camera
+        if self.is_loaded:
+            self.__setup_map_data()
+        self.__view_name = view_name
         self.__regions = regions
         self.__entities = {}
-        self.__camera = fife_map.getCamera(camera)
         self.__application = application
         if not FifeAgent.registered_as:
             FifeAgent.register()
@@ -86,8 +93,16 @@ class Map(object):  # pylint: disable=R0924
 
     @property
     def name(self):
-        """Returns the name of the map"""
-        return self.__name
+        """Returns the internal name of the map"""
+        if self.is_loaded:
+            return self.__map.getId()
+        else:
+            return None
+
+    @property
+    def view_name(self):
+        """Returns the name of the map that is being displayed"""
+        return self.__view_name
 
     @property
     def regions(self):
@@ -108,6 +123,11 @@ class Map(object):  # pylint: disable=R0924
     def is_active(self):
         """Returns wheter the map is active or not"""
         return self.camera.isEnabled()
+
+    @property
+    def is_loaded(self):
+        """Returns whether the map is loaded or not"""
+        return isinstance(self.__map, fife.Map)
 
     def __getitem__(self, name):
         """Returns the entity with the given name
@@ -136,7 +156,10 @@ class Map(object):  # pylint: disable=R0924
             point: A :class:`fife.ScreenPoint`
 
             layer: The :class:`fife.Layer` from which we want the instances
+            or the name of the layer
         """
+        if not isinstance(layer, fife.Layer):
+            layer = self.get_layer(layer)
         return self.camera.getMatchingInstances(point, layer)
 
     def is_in_region(self, location, region):
@@ -153,13 +176,38 @@ class Map(object):  # pylint: disable=R0924
         """
         if isinstance(location, tuple) or isinstance(location, list):
             location = fife.DoublePoint(location[0], location[1])
-        if not region in self.regions:
+        if region not in self.regions:
             raise NoSuchRegionError(self.name, region)
         else:
             return self.regions[region].contains(location)
 
+    def __setup_map_data(self):
+        """Sets up the map data after the map was loaded"""
+        self.__camera = self.__map.getCamera(self.__camera)
+        cameras = self.__map.getCameras()
+        for camera in cameras:
+            camera.setEnabled(False)
+
     def activate(self):
         """Activates the map"""
+        self.__application.world.add_entity_delete_callback(
+            self.cb_entity_delete)
+        if not self.is_loaded:
+            engine = self.__application.engine
+            loader = fife.MapLoader(engine.getModel(),
+                                    engine.getVFS(),
+                                    engine.getImageManager(),
+                                    engine.getRenderBackend())
+
+            if loader.isLoadable(self.__map):
+                self.__map = loader.load(self.__map)
+                self.__setup_map_data()
+            else:
+                raise RuntimeError("Can't load mapfile %s" % str(self.__map))
+            self.update_entities()
+            self.__application.map_loded(self.__map.getId())
+        else:
+            self.__application.update_agents(self.__map.getId())
         self.camera.setEnabled(True)
 
     def deactivate(self):
@@ -177,10 +225,10 @@ class Map(object):  # pylint: disable=R0924
         """Updates the fife instances to the values of the agent"""
         old_entities = self.entities.copy()
         for entity in old_entities:
-            if hasattr(entity, FifeAgent.registered_as):
-                fifeagent = getattr(entity, FifeAgent.registered_as)
+            fifeagent = getattr(entity, FifeAgent.registered_as)
+            if fifeagent:
                 agent = getattr(entity, Agent.registered_as)
-                if agent.new_map  is not None and agent.new_map != self.name:
+                if agent.new_map is not None and agent.new_map != self.name:
                     self.remove_entity(entity.identifier)
                     continue
                 location = fifeagent.instance.getLocation()
@@ -188,8 +236,8 @@ class Map(object):  # pylint: disable=R0924
                     location.setLayer(self.get_layer(agent.layer))
                 if agent.new_position is not None:
                     location.setExactLayerCoordinates(
-                                                    fife.ExactModelCoordinate(
-                                                        *agent.new_position))
+                        fife.ExactModelCoordinate(
+                            *agent.new_position))
                 fifeagent.instance.setLocation(location)
                 if agent.new_rotation is not None:
                     fifeagent.instance.setRotation(agent.rotation)
@@ -201,8 +249,8 @@ class Map(object):  # pylint: disable=R0924
     def update_entitities_agent(self):
         """Update the values of the agent component of the maps entities"""
         for entity in self.entities:
-            if hasattr(entity, FifeAgent.registered_as):
-                fifeagent = getattr(entity, FifeAgent.registered_as)
+            fifeagent = getattr(entity, FifeAgent.registered_as)
+            if fifeagent:
                 agent = getattr(entity, Agent.registered_as)
                 location = fifeagent.behaviour.location
                 agent.position = (location.x, location.y, location.z)
@@ -314,8 +362,8 @@ class Map(object):  # pylint: disable=R0924
             arguments.append(point)
         if not arguments:
             raise TypeError("A light needs either an agent"
-                ", a location and a layer"
-                ", or a point")
+                            ", a location and a layer"
+                            ", or a point")
         node = fife.RendererNode(*arguments)
         return node
 
@@ -431,8 +479,8 @@ class Map(object):  # pylint: disable=R0924
         return light_renderer.getLightInfo(group)[-1]
 
     def add_light_from_animation(self, group, animation, agent=None,
-                                layer=None, location=None, point=None,
-                                blend_mode=(-1, -1)):
+                                 layer=None, location=None, point=None,
+                                 blend_mode=(-1, -1)):
         """Adds a light that uses an animation lightmap.
 
         Arguments:
@@ -470,8 +518,63 @@ class Map(object):  # pylint: disable=R0924
         node = self.__create_render_node(agent, layer, location, point)
         if not isinstance(animation, fife.Animation):
             animation = xmlanimation.loadXMLAnimation(
-                                                    self.__application.engine,
-                                                    animation)
+                self.__application.engine,
+                animation)
         light_renderer = self.get_light_renderer()
         light_renderer.addAnimation(group, node, animation, *blend_mode)
         return light_renderer.getLightInfo(group)[-1]
+
+    def enable_camera(self, name):
+        """Enables the camera with the given name
+
+        Args:
+
+            name: The name of the camera
+        """
+        try:
+            self.fife_map.getCamera(name).setEnabled(True)
+        except:  # pylint: disable=bare-except
+            pass
+
+    def disable_camera(self, name):
+        """Enables the camera with the given name
+
+        Args:
+
+            name: The name of the camera
+        """
+        try:
+            self.fife_map.getCamera(name).setEnabled(False)
+        except:  # pylint: disable=bare-except
+            pass
+
+    def move_camera_to(self, position):
+        """Move the current camera to the given position
+
+        Args:
+
+            position: Position on the map to move the camera to
+        """
+        location = self.camera.getLocation()
+        coords = fife.ExactModelCoordinate(*position)
+        location.setMapCoordinates(coords)
+        self.camera.setLocation(location)
+
+    def move_camera_by(self, vector):
+        """Move the current camera by the amount given by the vector
+
+        Args:
+
+            vector: A list of 2 numbers that determine the movement vector
+        """
+        location = self.camera.getLocation()
+        coords = location.getMapCoordinates()
+        position_offset = fife.DoublePoint3D(*vector)
+        coords += position_offset
+        location.setMapCoordinates(coords)
+        self.camera.setLocation(location)
+
+    def cb_entity_delete(self, entity):
+        """Called when an entiy is about to be deleted"""
+        if entity in self.entities:
+            self.remove_entity(entity.identifier)

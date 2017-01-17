@@ -70,7 +70,7 @@ class Lockable(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Lockable, cls).register(name, auto_register))
+        return super(Lockable, cls).register(name, auto_register)
 
 
 class LockedError(Exception):
@@ -112,7 +112,7 @@ def unlock_lock(lockable):
     lockable.locked = False
 
 
-def open_lock(lockable):  # pylint: disable-msg=W0622
+def open_lock(lockable):  # pylint: disable=W0622
     """Open the lockable, if its unlocked.
 
     Args:

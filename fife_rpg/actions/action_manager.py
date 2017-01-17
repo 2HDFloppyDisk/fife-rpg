@@ -27,7 +27,7 @@ for example, in menus,
 
 from copy import copy
 
-from fife_rpg.exceptions import AlreadyRegisteredError
+from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
 
 _ACTIONS = {}
 _COMMANDS = {}
@@ -74,15 +74,28 @@ def register_action(action_name, action_class):
         :class:`fife_rpg.exceptions.AlreadyRegisteredError`
         if the action already exists.
     """
-    if not action_name in _ACTIONS:
+    if action_name not in _ACTIONS:
         _ACTIONS[action_name] = action_class
     else:
         raise AlreadyRegisteredError(action_name, "action")
 
 
+def unregister_action(action_name):
+    """Unregister an action
+
+    Args:
+        action_name: The name of the action
+    """
+    if action_name in _ACTIONS:
+        del _ACTIONS[action_name]
+    else:
+        raise NotRegisteredError("action")
+
+
 def clear_actions():
     """Removes all actions"""
-    _ACTIONS.clear()
+    for action in get_actions().itervalues():
+        action.unregister()
 
 
 def get_commands():
@@ -102,7 +115,7 @@ def register_command(command_name, function):
         :class:`fife_rpg.exceptions.AlreadyRegisteredError`
         if the command already exists.
     """
-    if not command_name in _COMMANDS:
+    if command_name not in _COMMANDS:
         _COMMANDS[command_name] = function
     else:
         raise AlreadyRegisteredError(command_name, "command")

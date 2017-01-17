@@ -28,6 +28,7 @@ from fife_rpg.components.fifeagent import FifeAgent
 
 
 class Open(EntityAction):
+
     """Action for opening unlocked lockables"""
 
     dependencies = [Lockable]
@@ -46,13 +47,12 @@ class Open(EntityAction):
             if fifeagent_data:
                 behaviour = fifeagent_data.behaviour
                 behaviour.act(lockable.open_action)
-                behaviour.queue_action(lockable.opened_action,
-                                          repeating=True)
+                behaviour.queue_action(lockable.opened_action, repeating=True)
 
         EntityAction.execute(self)
 
     @classmethod
-    def check_performer(cls, entity):  # pylint: disable-msg=W0613
+    def check_performer(cls, entity):  # pylint: disable=W0613
         """Checks whether the entity qualifies as an performer for this action
 
         Args:
@@ -64,7 +64,7 @@ class Open(EntityAction):
         return True
 
     @classmethod
-    def check_target(cls, entity):  # pylint: disable-msg=W0613
+    def check_target(cls, entity):  # pylint: disable=W0613
         """Checks whether the entity qualifies as a target for this action
 
         Args:

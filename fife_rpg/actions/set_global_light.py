@@ -56,4 +56,4 @@ class SetGlobalLight(BaseAction):
         Returns:
             True if the action was registered, False if not.
         """
-        return (super(SetGlobalLight, cls).register(name))
+        return super(SetGlobalLight, cls).register(name)

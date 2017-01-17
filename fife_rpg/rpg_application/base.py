@@ -12,44 +12,42 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module contains the main application class.
+"""This module contains the base application class.
 
-.. module:: rpg_application
-    :synopsis: Contains the main application class.
+.. module:: base
+    :synopsis: Contains the base application class.
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
-import time
-import os
 from copy import copy
 import gettext
 import imp
+import os
 
-import yaml
 from bGrease.grease_fife.mode import FifeManager
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
-from fife.extensions.pychan.internal import get_manager
-
-from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg import Map
-from fife_rpg.world import RPGWorld
+from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.components.agent import Agent, STACK_POSITION
 from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
 from fife_rpg.components.general import General
-from fife_rpg.behaviours import BehaviourManager
+from fife_rpg.exceptions import AlreadyRegisteredError
 from fife_rpg.systems import GameVariables
 from fife_rpg.systems.scriptingsystem import ScriptingSystem
-from fife_rpg.console_commands import get_commands
+from fife_rpg.world import RPGWorld
+import yaml
+from xml.etree import cElementTree as etree
 
 _SCRIPTING_MODULE = "application"
 
 
 class KeyFilter(fife.IKeyFilter):
+
     """This is the implementation of the fife.IKeyFilter class.
 
-    Prevents any filtered keys from being consumed by guichan.
+    Prevents any filtered keys from being consumed by pychan.
     """
 
     def __init__(self, keys):
@@ -61,7 +59,7 @@ class KeyFilter(fife.IKeyFilter):
         fife.IKeyFilter.__init__(self)
         self._keys = keys
 
-    def isFiltered(self, event):  # pylint: disable-msg=W0221, C0103
+    def isFiltered(self, event):  # pylint: disable=W0221, C0103
         """Checks whether the key is filtered or not.
 
         Args:
@@ -73,126 +71,8 @@ class KeyFilter(fife.IKeyFilter):
         return event.getKey().getValue() in self._keys
 
 
-class ApplicationListener(
-    fife.IKeyListener, fife.ICommandListener, fife.ConsoleExecuter):
-    """A basic listener for window commands, console commands and keyboard
-    inputs.
-
-    Does not process game related input.
-
-    Properties:
-        quit: Sets whether to quit the application on the next pump or not.
-    """
-
-    def __init__(self, engine, application):
-        """Initializes all listeners and registers itself with the
-        eventmanager.
-
-        Args:
-            engine: A fife.Engine instance
-
-            application: A RPGApplication instance
-        """
-        self._engine = engine
-        self._application = application
-        self._eventmanager = self._engine.getEventManager()
-
-        fife.IKeyListener.__init__(self)
-        self._eventmanager.addKeyListener(self)
-
-        fife.ICommandListener.__init__(self)
-        self._eventmanager.addCommandListener(self)
-
-        fife.ConsoleExecuter.__init__(self)
-        get_manager().getConsole().setConsoleExecuter(self)
-
-        keyfilter = KeyFilter([fife.Key.ESCAPE, fife.Key.CARET,
-                               fife.Key.PRINT_SCREEN])
-        keyfilter.__disown__()
-
-        self._eventmanager.setKeyFilter(keyfilter)
-
-        self.quit = False
-
-    def keyPressed(self, event):  # pylint: disable-msg=C0103,W0221
-        """Processes any non game related keyboard input.
-
-        Args:
-            event: The fife.KeyEvent that happened
-        """
-        if event.isConsumed():
-            return
-
-        keyval = event.getKey().getValue()
-
-        if keyval == fife.Key.ESCAPE:
-            self.quit = True
-            event.consume()
-        elif keyval == fife.Key.CARET:
-            get_manager().getConsole().toggleShowHide()
-            event.consume()
-        elif keyval == fife.Key.PRINT_SCREEN:
-            self._engine.getRenderBackend().captureScreen(
-                time.strftime("%Y%m%d_%H%M%S", time.localtime()) + ".png")
-            event.consume()
-
-    def keyReleased(self, event):  # pylint: disable-msg=C0103,W0221
-        """Gets called when a key is released
-
-        Args:
-            event: The fife.KeyEvent that happened
-        """
-        pass
-
-    def onCommand(self, command):  # pylint: disable-msg=C0103,W0221
-        """Process commands
-
-        Args:
-            command: The fife.Command that is being processed
-        """
-        self.quit = (command.getCommandType() == fife.CMD_QUIT_GAME)
-        if self.quit:
-            command.consume()
-
-    def onConsoleCommand(self, command):  # pylint: disable-msg=C0103,W0221
-        """Process console commands
-
-        Args:
-            command: A string containing the command
-
-        Returns:
-            A string representing the result of the command
-        """
-        result = ""
-
-        args = command.split(" ")
-        cmd = []
-        for arg in args:
-            arg = arg.strip()
-            if arg != "":
-                cmd.append(arg)
-
-        if cmd[0].lower() in ('quit', 'exit'):
-            self.quit = True
-            result = 'quitting'
-        elif cmd[0].lower() in ('help'):
-            helptextfile = self._application.settings.get(
-                "RPG", "HelpText", "misc/help.txt")
-            get_manager().getConsole().println(open(helptextfile, 'r').read())
-            result = "--OK--"
-        elif cmd[0] in get_commands():
-            result = get_commands()[cmd[0]](self._application, *cmd[1:])
-        else:
-            result = 'Command Not Found...'
-
-        return result
-
-    def onToolsClick(self):  # pylint: disable-msg=C0103,W0221
-        """Gets called when the the 'tool' button on the console is clicked"""
-        print "No tools set up yet"
-
-
 class RPGApplication(FifeManager, ApplicationBase):
+
     """The main application.  It inherits fife.extensions.ApplicationBase.
 
     Properties:
@@ -225,23 +105,24 @@ class RPGApplication(FifeManager, ApplicationBase):
         self.name = self.settings.get("fife-rpg", "ProjectName")
         if self.name is None:
             raise AttributeError("The application name is not specified in"
-            "the settings file")
+                                 "the settings file")
         self._listener = None
         self.world = None
-        self.__maps = {}
-        self.__current_map = None
-        self.__languages = {}
-        self.__current_language = ""
-        self.__components = {}
-        self.__actions = {}
-        self.__systems = {}
-        self.__behaviours = {}
-        self.__map_switched_callbacks = []
+        self._maps = {}
+        self._current_map = None
+        self._languages = {}
+        self._current_language = ""
+        self._components = {}
+        self._actions = {}
+        self._systems = {}
+        self._behaviours = {}
+        self._map_switched_callbacks = []
+        self._map_loaded_callbacks = []
         default_language = self.settings.get("i18n", "DefaultLanguage", "en")
         languages_dir = self.settings.get("i18n", "Directory", "__languages")
         for language in self.settings.get("i18n", "Languages", ("en",)):
             fallback = (language == default_language)
-            self.__languages[language] = gettext.translation(self.name,
+            self._languages[language] = gettext.translation(self.name,
                                                             languages_dir,
                                                             [language],
                                                             fallback=fallback)
@@ -251,7 +132,7 @@ class RPGApplication(FifeManager, ApplicationBase):
     @property
     def language(self):
         """Returns the current set language"""
-        return self.__current_language
+        return self._current_language
 
     @language.setter
     def language(self, language):
@@ -285,20 +166,40 @@ class RPGApplication(FifeManager, ApplicationBase):
     @property
     def current_map(self):
         """Returns the current active map"""
-        return self.__current_map
+        return self._current_map
 
     @property
     def maps(self):
         """Returns a copy of the maps dictionary"""
-        return copy(self.__maps)
+        return copy(self._maps)
+
+    @property
+    def components(self):
+        """Returns a copy of the available components"""
+        return copy(self._components)
+
+    @property
+    def actions(self):
+        """Returns a copy of the available actions"""
+        return copy(self._actions)
+
+    @property
+    def systems(self):
+        """Returns a copy of the available systems"""
+        return copy(self._systems)
+
+    @property
+    def behaviours(self):
+        """Returns a copy of the available behaviours"""
+        return copy(self._behaviours)
 
     def switch_language(self, language):
         """Switch to the given language"""
-        if not language in self.__languages:
+        if language not in self._languages:
             raise KeyError("The language '%s' is not available" % language)
-        if not language == self.__current_language:
-            self.__languages[language].install()
-            self.__current_language = language
+        if not language == self._current_language:
+            self._languages[language].install()
+            self._current_language = language
 
     def update_game_variables(self, variables):
         """Called by the game environment when it wants to update its globals
@@ -312,19 +213,18 @@ class RPGApplication(FifeManager, ApplicationBase):
         app_module.__dict__["maps"] = self.maps
         variables[_SCRIPTING_MODULE] = app_module
 
-    def add_map(self, name, filename_or_map):
+    def add_map(self, identifier, game_map):
         """Adds a map to the maps dictionary.
 
         Args:
-            name: The name of the map
+            identifier: The identifier of the map
 
-            filename_or_map: The file name map, without the extension,
-            or a Map instance.
+            game_map: A Map instance.
         """
-        if not name in self.__maps:
-            self.__maps[name] = filename_or_map
+        if identifier not in self._maps:
+            self._maps[identifier] = game_map
         else:
-            raise AlreadyRegisteredError(name, "Map")
+            raise AlreadyRegisteredError(identifier, "Map")
 
     def update_agents(self, game_map):
         """Updates the map to be in sync with the entities
@@ -339,25 +239,44 @@ class RPGApplication(FifeManager, ApplicationBase):
         object_namespace = self.settings.get("fife-rpg", "ObjectNamespace",
                                              "fife-rpg")
         fife_model = self.engine.getModel()
+        game_map.update_entities()
         for entity in game_map.entities:
             agent = getattr(entity, Agent.registered_as)
+            namespace = agent.namespace or object_namespace
             map_object = fife_model.getObject(agent.gfx,
-                object_namespace)
+                                              namespace.encode())
+            if not map_object:
+                raise RuntimeError("There is no object %s in the namespace %s"
+                                   % (agent.gfx, namespace))
             general = getattr(entity, General.registered_as)
             layer = game_map.get_layer(agent.layer)
             fife_instance = layer.getInstance(general.identifier)
+            if fife_instance:
+                fife_object = fife_instance.getObject()
+                if (fife_object.getId() != map_object.getId() or
+                        fife_object.getNamespace() !=
+                        map_object.getNamespace()):
+                    layer.deleteInstance(fife_instance)
+                    fife_instance = None
             if not fife_instance:
+                position = agent.position
                 fife_instance = layer.createInstance(
                     map_object,
-                    fife.ExactModelCoordinate(*agent.position),
+                    fife.ExactModelCoordinate(position.x,
+                                              position.y,
+                                              position.z),
                     general.identifier)
+                fife_instance.setRotation(agent.rotation)
                 visual = fife.InstanceVisual.create(fife_instance)
-                if (map_object.getAction('default')):
+                if map_object.getAction('default'):
                     target = fife.Location(game_map.actor_layer)
-                    fife_instance.act('default', target, True)
+                    fife_instance.actRepeat('default', target)
                 fifeagent = getattr(entity, FifeAgent.registered_as)
                 behaviour_class = BehaviourManager.get_behaviour(
-                                                        agent.behaviour_type)
+                    agent.behaviour_type)
+                if behaviour_class is None:
+                    raise RuntimeError("There is no registered behaviour %s"
+                                       % agent.behaviour_type)
                 behaviour = behaviour_class(**agent.behaviour_args)
                 behaviour.agent = fife_instance
                 fifeagent.behaviour = behaviour
@@ -367,67 +286,24 @@ class RPGApplication(FifeManager, ApplicationBase):
                 fifeagent.behaviour.idle()
             else:
                 visual = fife_instance.get2dGfxVisual()
-                location = fife_instance.getLocation()
-                location.setExactLayerCoordinates(fife.ExactModelCoordinate(
-                                                    *agent.position))
-                fife_instance.setLocation(location)
-            fife_instance.setRotation(agent.rotation)
             visual.setStackPosition(STACK_POSITION[agent.type])
 
-    def load_map(self, name):
-        """Load the map with the given name
+    def map_loded(self, identifier):
+        """Called from Map instances after the map was loaded
 
         Args:
-            name: The name of the map to load
+            identifier: The identifier of the loaded map
         """
-        if name in self.__maps:
-            game_map = self.__maps[name]
-            if not isinstance(game_map, Map):
-                maps_path = self.settings.get(
-                    "fife-rpg", "MapsPath", "maps")
-                grid_type = self.settings.get(
-                    "fife-rpg", "GridType", "square")
-                grid_type = (self.engine.getModel().
-                                getCellGrid(grid_type)
-                             )
-                camera = self.settings.get(
-                    "fife-rpg", "Camera", "main")
-
-                loader = fife.MapLoader(self.engine.getModel(),
-                                        self.engine.getVFS(),
-                                        self.engine.getImageManager(),
-                                        self.engine.getRenderBackend())
-
-                filename = os.path.join(maps_path, game_map + '.xml')
-                if loader.isLoadable(filename):
-                    fife_map = loader.load(filename)
-
-                regions_filename = ("%s_regions.yaml" %
-                                    os.path.splitext(filename)[0])
-                regions = {}
-                try:
-                    regions_file = self.engine.getVFS().open(regions_filename)
-                except RuntimeError:
-                    regions_file = None
-                if regions_file is not None:
-                    regions_data = yaml.load(regions_file)
-                    if regions_data is not None:
-                        for region_name, region_data in (
-                                                    regions_data.iteritems()):
-                            region = fife.DoubleRect(x=region_data[0],
-                                                     y=region_data[1],
-                                                     width=region_data[2],
-                                                     height=region_data[3])
-                            regions[region_name] = region
-                game_map = Map(fife_map, name, camera, regions, self)
-
-                game_map.update_entities()
-                self.__maps[name] = game_map
+        if identifier in self._maps:
+            game_map = self.maps[identifier]
+            for callback in self._map_loaded_callbacks:
+                callback(game_map)
             self.update_agents(game_map)
 
         else:
-            raise LookupError("The map with the name '%s' cannot be found"
-                              % (name))
+            raise LookupError("The map with the identifier '%s' cannot be "
+                              "found"
+                              % (identifier))
 
     def switch_map(self, name):
         """Switches to the given map.
@@ -436,21 +312,22 @@ class RPGApplication(FifeManager, ApplicationBase):
             name: The name of the map
         """
         old_map = None
-        if self.__current_map:
-            old_map = self.__current_map.name
-            self.__current_map.deactivate()
-            self.__current_map = None
+        if self._current_map:
+            old_map = self._current_map.name
+            self._current_map.deactivate()
+            self._current_map = None
         if name is None:
+            for callback in self._map_switched_callbacks:
+                callback(old_map, name)
             return
-        if name in self.__maps:
-            self.load_map(name)
-            self.__current_map = self.maps[name]
-            self.__current_map.activate()
-            for callback in self.__map_switched_callbacks:
+        if name in self._maps:
+            self._current_map = self.maps[name]
+            self._current_map.activate()
+            for callback in self._map_switched_callbacks:
                 callback(old_map, name)
         else:
             raise LookupError("The map with the name '%s' cannot be found"
-                        % (name))
+                              % (name))
 
     def add_map_switch_callback(self, callback):
         """Adds a callback function which gets called after
@@ -459,8 +336,8 @@ class RPGApplication(FifeManager, ApplicationBase):
         Args:
             callback: The function to add
         """
-        if callback not in self.__map_switched_callbacks:
-            self.__map_switched_callbacks.append(callback)
+        if callback not in self._map_switched_callbacks:
+            self._map_switched_callbacks.append(callback)
 
     def remove_map_switch_callback(self, callback):
         """Removes a callback function that got called after the map
@@ -469,25 +346,69 @@ class RPGApplication(FifeManager, ApplicationBase):
         Args:
             callback: The function to remove
         """
-        if callback in self.__map_switched_callbacks:
-            index = self.__map_switched_callbacks.index(callback)
-            del self.__map_switched_callbacks[index]
+        if callback in self._map_switched_callbacks:
+            index = self._map_switched_callbacks.index(callback)
+            del self._map_switched_callbacks[index]
+
+    def add_map_load_callback(self, callback):
+        """Adds a callback function which gets called after
+        a map was loaded
+
+        Args:
+            callback: The function to add
+        """
+        if callback not in self._map_loaded_callbacks:
+            self._map_loaded_callbacks.append(callback)
+
+    def remove_map_load_callback(self, callback):
+        """Removes a callback function that got called after a map
+        was loaded.
+
+        Args:
+            callback: The function to remove
+        """
+        if callback in self._map_loaded_callbacks:
+            index = self._map_loaded_callbacks.index(callback)
+            del self._map_loaded_callbacks[index]
 
     def load_maps(self):
         """Load the names of the available maps from a map file."""
-        self.__maps = {}
+        self._maps = {}
         maps_path = self.settings.get(
             "fife-rpg", "MapsPath", "maps")
         vfs = self.engine.getVFS()
-        maps_file = vfs.open(os.path.join(maps_path, "maps.yaml"))
+        filename = os.path.join(maps_path, "maps.yaml")
+        if not os.path.exists(filename):
+            return
+        maps_file = vfs.open(filename)
         maps_doc = yaml.load(maps_file)
-        for name, filename in maps_doc["Maps"].iteritems():
-            self.add_map(name, filename)
+        maps_path = self.settings.get(
+            "fife-rpg", "MapsPath", "maps")
+        camera = self.settings.get(
+            "fife-rpg", "Camera", "main")
 
-    def createListener(self):  # pylint: disable-msg=C0103
-        """Creates the listener for the application and returns it."""
-        self._listener = ApplicationListener(self.engine, self)
-        return self._listener
+        for name, filename in maps_doc["Maps"].iteritems():
+            filepath = os.path.join(maps_path, filename + '.xml')
+            identifier = etree.parse(filepath).getroot().attrib["id"]
+            regions_filename = ("%s_regions.yaml" %
+                                os.path.splitext(filepath)[0])
+            regions = {}
+            try:
+                regions_file = self.engine.getVFS().open(regions_filename)
+            except fife.NotFound:
+                regions_file = None
+            if regions_file is not None:
+                regions_data = yaml.load(regions_file)
+                if regions_data is not None:
+                    for region_name, region_data in (
+                            regions_data.iteritems()):
+                        region = fife.DoubleRect(x=region_data[0],
+                                                 y=region_data[1],
+                                                 width=region_data[2],
+                                                 height=region_data[3])
+                        regions[region_name] = region
+            game_map = Map(filepath, name, camera, regions, self)
+            self.add_map(identifier, game_map)
 
     def create_world(self):
         """Creates the world used by this application"""
@@ -500,11 +421,11 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          self.get_global_lighting,
                                          _SCRIPTING_MODULE)
         ScriptingSystem.register_command("is_location_in_region",
-                                           self.is_location_in_region,
-                                           _SCRIPTING_MODULE)
+                                         self.is_location_in_region,
+                                         _SCRIPTING_MODULE)
         ScriptingSystem.register_command("is_agent_in_region",
-                                           self.is_agent_in_region,
-                                           _SCRIPTING_MODULE)
+                                         self.is_agent_in_region,
+                                         _SCRIPTING_MODULE)
 
     def request_quit(self):
         """Sends the quit command to the application's listener.
@@ -529,6 +450,8 @@ class RPGApplication(FifeManager, ApplicationBase):
         Returns: Converted coordinates as fife.Location
         """
         active_map = self.current_map
+        if active_map is None:
+            return None
         if not isinstance(click, fife.ScreenPoint):
             click = fife.ScreenPoint(click[0], click[1])
         coord = active_map.camera.toMapCoordinates(click, False)
@@ -542,15 +465,29 @@ class RPGApplication(FifeManager, ApplicationBase):
 
         Args:
             filename: The path to the components file. If this is set to None
-            the ComponentsFile setting will be used.
+            the ComponentsFile or CombinedFile setting will be used.
         """
         if filename is None:
             filename = self.settings.get("fife-rpg", "ComponentsFile",
                                          "components.yaml")
-        self.__components = {}
+            filename = self.settings.get("fife-rpg", "CombinedFile",
+                                         filename)
+        self._components = {}
         components_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(components_file)["Components"].iteritems():
-            self.__components[name] = path
+            self._components[name] = path
+
+    def get_component_data(self, component_name):
+        """Returns the class and module of the given component
+
+        Args:
+
+            component_name: The name of the component
+        """
+        component_path = self._components[component_name]
+        module = __import__(component_path, fromlist=[component_path])
+        component = getattr(module, component_name)
+        return component, module
 
     def register_component(self, component_name, registered_name=None,
                            register_checkers=True,
@@ -569,10 +506,8 @@ class RPGApplication(FifeManager, ApplicationBase):
             register_script_commands: If True a "register_script_commands"
             functions will be searched in the module and called
         """
-        component_path = self.__components[component_name]
-        module = __import__(component_path, fromlist=[component_path])
-        component = getattr(module, component_name)
-        if not registered_name is None:
+        component, module = self.get_component_data(component_name)
+        if registered_name is not None:
             component.register(registered_name)
         else:
             component.register()
@@ -606,31 +541,46 @@ class RPGApplication(FifeManager, ApplicationBase):
                              " \"Components\" Setting found")
 
         for component in component_list:
-            if not isinstance(component, str):
+            if not isinstance(component, basestring):
                 self.register_component(
-                            *component,
-                            register_checkers=register_checkers,
-                            register_script_commands=register_script_commands)
+                    *component,
+                    register_checkers=register_checkers,
+                    register_script_commands=register_script_commands)
             else:
                 self.register_component(
-                            component,
-                            register_checkers=register_checkers,
-                            register_script_commands=register_script_commands)
+                    component,
+                    register_checkers=register_checkers,
+                    register_script_commands=register_script_commands)
 
     def load_actions(self, filename=None):
         """Load the action definitions from a file
 
         Args:
             filename: The path to the actions file. If this is set to None the
-            ActionsFile setting will be used.
+            ActionsFile or CombinedFile setting will be used.
         """
         if filename is None:
             filename = self.settings.get("fife-rpg", "ActionsFile",
                                          "actions.yaml")
-        self.__actions = {}
+            filename = self.settings.get("fife-rpg", "CombinedFile",
+                                         filename)
+        self._actions = {}
         actions_file = self.engine.getVFS().open(filename)
-        for name, path in yaml.load(actions_file)["Actions"].iteritems():
-            self.__actions[name] = path
+        file_data = yaml.load(actions_file)
+        for name, path in file_data["Actions"].iteritems():
+            self._actions[name] = path
+
+    def get_action_data(self, action_name):
+        """Returns the class and module of the givenaction
+
+        Args:
+
+            action_name: The name of the action
+        """
+        action_path = self._actions[action_name]
+        module = __import__(action_path, fromlist=[action_path])
+        action = getattr(module, action_name)
+        return action, module
 
     def register_action(self, action_name, registered_name=None):
         """Calls the actions register method.
@@ -640,10 +590,8 @@ class RPGApplication(FifeManager, ApplicationBase):
 
             registered_name: Name under which the action should be registered
         """
-        action_path = self.__actions[action_name]
-        module = __import__(action_path, fromlist=[action_path])
-        action = getattr(module, action_name)
-        if not registered_name is None:
+        action = self.get_action_data(action_name)[0]
+        if registered_name is not None:
             action.register(registered_name)
         else:
             action.register()
@@ -665,7 +613,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              "Setting found")
 
         for action in action_list:
-            if not isinstance(action, str):
+            if not isinstance(action, basestring):
                 self.register_action(*action)
             else:
                 self.register_action(action)
@@ -675,15 +623,29 @@ class RPGApplication(FifeManager, ApplicationBase):
 
         Args:
             filename: The path to the systems file. If this is set to None the
-            SystemsFile setting will be used.
+            SystemsFile or CombinedFile setting will be used.
         """
         if filename is None:
             filename = self.settings.get("fife-rpg", "SystemsFile",
                                          "systems.yaml")
-        self.__systems = {}
+            filename = self.settings.get("fife-rpg", "CombinedFile",
+                                         filename)
+        self._systems = {}
         systems_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(systems_file)["Systems"].iteritems():
-            self.__systems[name] = path
+            self._systems[name] = path
+
+    def get_system_data(self, system_name):
+        """Returns the class and module of the given system
+
+        Args:
+
+            system_name: The name of the system
+        """
+        system_path = self._systems[system_name]
+        module = __import__(system_path, fromlist=[system_path])
+        system = getattr(module, system_name)
+        return system, module
 
     def register_system(self, system_name, registered_name=None):
         """Calls the systems register method.
@@ -693,10 +655,8 @@ class RPGApplication(FifeManager, ApplicationBase):
 
             registered_name: Name under which the system should be registered
         """
-        system_path = self.__systems[system_name]
-        module = __import__(system_path, fromlist=[system_path])
-        system = getattr(module, system_name)
-        if not registered_name is None:
+        system = self.get_system_data(system_name)[0]
+        if registered_name is not None:
             system.register(registered_name)
         else:
             system.register()
@@ -718,7 +678,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                              "Setting found")
 
         for system in system_list:
-            if not isinstance(system, str):
+            if not isinstance(system, basestring):
                 self.register_system(*system)
             else:
                 self.register_system(system)
@@ -728,15 +688,29 @@ class RPGApplication(FifeManager, ApplicationBase):
 
         Args:
             filename: The path to the behaviours file. If this is set to None
-            the BehavioursFile setting will be used.
+            the BehavioursFile or CombinedFile setting will be used.
         """
         if filename is None:
             filename = self.settings.get("fife-rpg", "BehavioursFile",
                                          "behaviours.yaml")
-        self.__behaviours = {}
+            filename = self.settings.get("fife-rpg", "CombinedFile",
+                                         filename)
+        self._behaviours = {}
         behaviours_file = self.engine.getVFS().open(filename)
         for name, path in yaml.load(behaviours_file)["Behaviours"].iteritems():
-            self.__behaviours[name] = path
+            self._behaviours[name] = path
+
+    def get_behaviour_data(self, behaviour_name):
+        """Returns the class and module of the given behaviour
+
+        Args:
+
+            behaviour_name: The name of the behaviour
+        """
+        behaviour_path = self._behaviours[behaviour_name]
+        module = __import__(behaviour_path, fromlist=[behaviour_path])
+        behaviour = getattr(module, behaviour_name)
+        return behaviour, module
 
     def register_behaviour(self, behaviour_name, registered_name=None):
         """Calls the behaviours register method.
@@ -747,10 +721,8 @@ class RPGApplication(FifeManager, ApplicationBase):
             registered_name: Name under which the behaviour should be
             registered
         """
-        behaviour_path = self.__behaviours[behaviour_name]
-        module = __import__(behaviour_path, fromlist=[behaviour_path])
-        behaviour = getattr(module, behaviour_name)
-        if not registered_name is None:
+        behaviour = self.get_behaviour_data(behaviour_name)[0]
+        if registered_name is not None:
             behaviour.register(registered_name)
         else:
             behaviour.register()
@@ -772,10 +744,23 @@ class RPGApplication(FifeManager, ApplicationBase):
                              " \"Behaviours\" Setting found")
 
         for behaviour in behaviour_list:
-            if not isinstance(behaviour, str):
+            if not isinstance(behaviour, basestring):
                 self.register_behaviour(*behaviour)
             else:
                 self.register_behaviour(behaviour)
+
+    def load_combined(self, filepath=None):
+        """Loads components, actions, systems and behaviours.
+
+        Args:
+            filepath: The path to the file. If set to None either the
+            CominedFile Setting or the specific setting for the module will be
+            used.
+        """
+        self.load_actions(filepath)
+        self.load_behaviours(filepath)
+        self.load_components(filepath)
+        self.load_systems(filepath)
 
     def is_location_in_region(self, map_name, location, region_name):
         """Checks whether the location is in the region of the map
@@ -788,7 +773,7 @@ class RPGApplication(FifeManager, ApplicationBase):
             location: A list or tuple containing the location
         """
         game_map = (self.maps[map_name]
-                    if not map_name is None
+                    if map_name is not None
                     else self.current_map)
         return game_map.is_in_region(location, region_name)
 
@@ -819,9 +804,21 @@ class RPGApplication(FifeManager, ApplicationBase):
 
     def check_agent_changes(self):
         """Checks all agents for changes"""
-        for agent in self.world.components.join(Agent.registered_as):
-            agent = agent[0]
-            if agent.map == self.current_map.name:
+        extent = getattr(self.world[...], Agent.registered_as)
+        extent = extent.map == self.current_map.name
+        new_test = True
+        for entity in extent:
+            if not getattr(entity, FifeAgent.registered_as):
+                new_test = False
+        for agent, fifeagent in self.world.components.join(
+                Agent.registered_as,
+                FifeAgent.registered_as):
+            map_test = agent.map == self.current_map.name
+
+            fife_object = fifeagent.instance.getObject()
+            gfx_test = (fife_object.getNamespace() == agent.namespace and
+                        fife_object.getId() == agent.gfx)
+            if map_test and gfx_test and new_test:
                 continue
             agent.map = agent.new_map or agent.map
             agent.layer = agent.new_layer or agent.layer
@@ -831,15 +828,8 @@ class RPGApplication(FifeManager, ApplicationBase):
             agent.new_layer = None
             agent.new_position = None
             agent.new_rotation = None
-            if agent.map:
-                if agent.map in self.maps:
-                    game_map = self.maps[agent.map]
-                    if not isinstance(game_map, str):
-                        game_map.update_entities()
-                        self.update_agents(game_map)
-                else:
-                    raise KeyError("Tried to access map `%s`,"
-                                   " which does not exist" % (agent.map))
+
+        self.update_agents(self.current_map)
 
     def set_global_lighting(self, red, green, blue):
         """Sets the color of the current maps lighting
@@ -864,10 +854,8 @@ class RPGApplication(FifeManager, ApplicationBase):
         """Performs actions every frame.
 
         Args:
-            time_delta: Time elapsed since last call to step
+            time_delta: Time elapsed since last call to pump
         """
-        if self._listener.quit:
-            self.quit()
         if self.current_map:
             self.check_agent_changes()
             self.current_map.update_entities_fife()
@@ -876,3 +864,36 @@ class RPGApplication(FifeManager, ApplicationBase):
         if self.world:
             self.world.step(time_delta)
         FifeManager.step(self, time_delta)
+
+
+class BaseEventListener(fife.IKeyListener, fife.ICommandListener):
+
+    """
+    Default, rudimentary event listener.
+
+    Will cause the application to quit on pressing ESC, or when a
+    quit-game command was received.
+    """
+
+    def __init__(self, app):
+        self.app = app
+        self.engine = app.engine
+        eventmanager = self.engine.getEventManager()
+        # eventmanager.setNonConsumableKeys([fife.Key.ESCAPE])
+        fife.IKeyListener.__init__(self)
+        eventmanager.addKeyListener(self)
+        fife.ICommandListener.__init__(self)
+        eventmanager.addCommandListener(self)
+
+    def keyPressed(self, evt):  # pylint: disable=W0221, C0103
+        keyval = evt.getKey().getValue()
+        if keyval == fife.Key.ESCAPE:
+            self.app.quit()
+
+    def keyReleased(self, evt):  # pylint: disable=W0221, C0103
+        pass
+
+    def onCommand(self, command):  # pylint: disable=W0221, C0103
+        if command.getCommandType() == fife.CMD_QUIT_GAME:
+            self.app.quit()
+            command.consume()

@@ -26,6 +26,7 @@ from fife_rpg.exceptions import AlreadyRegisteredError
 
 
 class GameVariables(Base):
+
     """The game environment system manages what variables and functions are
     available to scripts.
     """
@@ -42,7 +43,7 @@ class GameVariables(Base):
         Returns:
             True if the system was registered, False if not.
         """
-        return (super(GameVariables, cls).register(name))
+        return super(GameVariables, cls).register(name)
 
     @classmethod
     def add_callback(cls, callback):
@@ -80,7 +81,7 @@ class GameVariables(Base):
             The (new) value of the variable or an error string.
         """
         if not allow_static_hide:
-            if not name in self.__dynamic and name in self.__static:
+            if name not in self.__dynamic and name in self.__static:
                 return "There is already a %s static variable" % (name)
         self.__dynamic[name] = value
         return self.__dynamic[name]
@@ -108,7 +109,7 @@ class GameVariables(Base):
             NameError: If there is no variable with that name
         """
         variables = self.get_variables()
-        if not name in variables:
+        if name not in variables:
             raise NameError("Name '%s' is not defined" % name)
         return variables[name]
 

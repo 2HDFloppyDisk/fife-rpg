@@ -59,4 +59,4 @@ class Moving(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(Moving, cls).register(name, auto_register))
+        return super(Moving, cls).register(name, auto_register)

@@ -20,6 +20,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 from fife_rpg.components.base import Base
+from fife_rpg.helpers import DoublePoint3DYaml
 
 
 class MoveAgent(Base):
@@ -35,7 +36,7 @@ class MoveAgent(Base):
     """
 
     def __init__(self):
-        Base.__init__(self, target_map=str, target_position=list,
+        Base.__init__(self, target_map=str, target_position=DoublePoint3DYaml,
                       target_layer=str)
 
     @classmethod
@@ -52,4 +53,4 @@ class MoveAgent(Base):
         Returns:
             True if the component was registered, False if not.
         """
-        return (super(MoveAgent, cls).register(name, auto_register))
+        return super(MoveAgent, cls).register(name, auto_register)
