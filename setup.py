@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='fife-rpg',
-      version='0.2',
+      version='0.3',
       description='RPG framework using the FIFEngine',
       author='Karsten Bock',
       author_email='KarstenBock@gmx.net',
