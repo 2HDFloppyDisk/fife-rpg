@@ -61,7 +61,7 @@ def unregister_component(component_name):
 
 def clear_components():
     """Removes all registered components"""
-    for component in get_components().itervalues():
+    for component in get_components().values():
         component.unregister()
 
 

@@ -21,6 +21,8 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from builtins import next
+from builtins import str
 from copy import copy
 import sys
 import imp
@@ -61,7 +63,7 @@ class RPGWorld(World):
         object_db: Stores the template data
     """
 
-    MAX_ID_NUMBER = sys.maxint
+    MAX_ID_NUMBER = sys.maxsize
 
     def __init__(self, application):
         self.application = application
@@ -147,10 +149,10 @@ class RPGWorld(World):
         """Configure the worlds components and systems"""
         World.configure(self)
         components = ComponentManager.get_components()
-        for name, component in components.iteritems():
+        for name, component in components.items():
             setattr(self.components, name, component)
         systems = SystemManager.get_systems()
-        for name, system in systems.iteritems():
+        for name, system in systems.items():
             setattr(self.systems, name, system)
         if not General.registered_as:
             General.register()
@@ -175,14 +177,14 @@ class RPGWorld(World):
         elif info is not None:
             extra = extra or {}
 
-            for key, val in extra.items():
+            for key, val in list(extra.items()):
                 info[key].update(val)
 
             new_ent = RPGEntity(self, identifier)
-            for component, data in info.items():
+            for component, data in list(info.items()):
                 setattr(new_ent, component, None)
                 comp_obj = getattr(new_ent, component)
-                for key, value in data.items():
+                for key, value in list(data.items()):
                     setattr(comp_obj, key, value)
             self.__entity_cache[identifier] = new_ent
             return new_ent
@@ -216,7 +218,7 @@ class RPGWorld(World):
                            self.engine.getVFS(),
                            self.engine.getImageManager(),
                            self.engine.getRenderBackend())
-        loader.loadImportDirectory(object_path.encode())
+        loader.loadImportDirectory(object_path)
 
     def read_object_db(self, db_filename=None):
         """Reads the Object Information Database from a file
@@ -247,7 +249,7 @@ class RPGWorld(World):
         """
         if template_name in self.object_db:
             template_data = copy(self.object_db[template_name])
-            for key in template_data.keys():
+            for key in list(template_data.keys()):
                 if key in entity_data:
                     tmp_attributes = template_data[key].copy()
                     tmp_attributes.update(entity_data[key])
@@ -270,8 +272,8 @@ class RPGWorld(World):
         entities_file = vfs.open(entities_file_name)
         entities = yaml.safe_load_all(entities_file)
         try:
-            while entities.next():
-                entities.next()
+            while next(entities):
+                next(entities)
         except StopIteration:
             pass
 
@@ -291,7 +293,7 @@ class RPGWorld(World):
         entity_dict = {}
         components_data = entity_dict["Components"] = {}
         components = ComponentManager.get_components()
-        for name, component in components.iteritems():
+        for name, component in components.items():
             component_values = getattr(entity, name)
             if component_values:
                 component_data = None

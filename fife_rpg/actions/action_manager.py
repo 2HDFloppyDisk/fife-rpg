@@ -54,7 +54,7 @@ def get_possible_actions(performer, target):
     from fife_rpg.actions.entity_action import EntityAction
     actions = get_actions()
     possible_actions = {}
-    for name, action in actions.iteritems():
+    for name, action in actions.items():
         if not issubclass(action, EntityAction):
             continue
         if action.check_performer(performer) and action.check_target(target):
@@ -94,7 +94,7 @@ def unregister_action(action_name):
 
 def clear_actions():
     """Removes all actions"""
-    for action in get_actions().itervalues():
+    for action in get_actions().values():
         action.unregister()
 
 

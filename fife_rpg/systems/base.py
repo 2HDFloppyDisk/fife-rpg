@@ -19,6 +19,7 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import print_function
 from bGrease import System
 
 from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
@@ -67,7 +68,7 @@ class Base(System):  # pylint: disable=abstract-method
             cls.__registered_as = name
             return True
         except AlreadyRegisteredError as error:
-            print error
+            print(error)
             return False
 
     @classmethod
@@ -81,5 +82,5 @@ class Base(System):  # pylint: disable=abstract-method
             SystemManager.unregister_system(cls.__registered_as)
             cls.__registered_as = None
         except NotRegisteredError as error:
-            print error
+            print(error)
             return False

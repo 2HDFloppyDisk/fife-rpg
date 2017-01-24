@@ -23,6 +23,7 @@
 """
 
 
+from builtins import object
 class SoundEngine(object):
 
     """Plays sounds and __music

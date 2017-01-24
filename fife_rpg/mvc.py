@@ -22,6 +22,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from builtins import object
 from bGrease.grease_fife.mode import Mode
 
 

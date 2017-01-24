@@ -19,6 +19,8 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from builtins import super
+
 from bGrease import Entity
 
 from fife_rpg.components.general import General
@@ -36,12 +38,13 @@ class RPGEntity(Entity):
             identifier: A unique identifier
     """
 
-    def __init__(self, world, identifier):
+    def __new__(cls, world, identifier):
 
-        Entity.__init__(self, world)
+        entity = super().__new__(cls, world)
         if not General.registered_as:
             General.register()
-        getattr(self, General.registered_as).identifier = identifier
+        getattr(entity, General.registered_as).identifier = identifier
+        return entity
 
     @property
     def identifier(self):

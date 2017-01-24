@@ -179,7 +179,7 @@ class RegionTool(plugin.Plugin):
             try:
                 filename = mapview.getMap().getFilename()
                 filename = "%s_regions.yaml" % os.path.splitext(filename)[0]
-                regions_file = file(filename, "r")
+                regions_file = open(filename, "r")
                 for name, region_data in yaml.load(regions_file).iteritems():
                     x_pos = region_data[0]
                     y_pos = region_data[1]
@@ -400,5 +400,5 @@ class RegionTool(plugin.Plugin):
         """Save the regions to a file"""
         filename = mapview.getMap().getFilename()
         filename = "%s_regions.yaml" % os.path.splitext(filename)[0]
-        regions_file = file(filename, "w")
+        regions_file = open(filename, "w")
         yaml.dump(self.regions, regions_file)

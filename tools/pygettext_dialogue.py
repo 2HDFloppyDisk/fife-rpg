@@ -40,7 +40,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        dialogue_file = file(args.input, "r")
+        dialogue_file = open(args.input, "r")
     except IOError as error:
         print "Cannot open input file '%s'" % args.input
         print error
@@ -51,7 +51,7 @@ def main():
             messages_filename = args.output
         else:
             messages_filename = "messages.pot"
-        messages_file = file(messages_filename, "w")
+        messages_file = open(messages_filename, "w")
         input_filename = os.path.basename(args.input)
         print "Writing dialogue strings from %s to %s" % (input_filename,
                                                           messages_filename)

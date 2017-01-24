@@ -20,7 +20,10 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from __future__ import division
 
+from builtins import range
+from past.utils import old_div
 from operator import attrgetter
 
 from fife_rpg.components.base import Base
@@ -46,7 +49,7 @@ class Container(Base):
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
 
-        fields = self.fields.keys()
+        fields = list(self.fields.keys())
         return fields
 
     @classmethod
@@ -230,7 +233,7 @@ def remove_item(container, slot_or_type):
                 for entity in entities:
                     items.append(getattr(entity, Containable.registered_as))
                 items = sorted(items, key=attrgetter("slot"))
-                for x in xrange(len(items)):
+                for x in range(len(items)):
                     item = items[x]
                     item.slot = x
 
@@ -279,7 +282,7 @@ def merge_stack(source, dest):
         if total_bulk > container_data.max_bulk:
             max_bulk = container_data.max_bulk
             exceed_bulk = total_bulk - max_bulk
-            exceed_item = (exceed_bulk / source_data.bulk +
+            exceed_item = (old_div(exceed_bulk, source_data.bulk) +
                            (exceed_bulk % source_data.bulk))
             to_add = to_add - exceed_item
     dest_data.current_stack += to_add

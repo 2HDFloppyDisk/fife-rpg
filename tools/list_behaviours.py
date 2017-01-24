@@ -86,7 +86,7 @@ def main():
     sub_package = args.sub_package if args.sub_package else ""
 
     output = args.output if args.output else "behaviours.yaml"
-    output_file = file(output, "w")
+    output_file = open(output, "w")
     behaviours = {"Behaviours": list_components(args.base_package,
                                                 sub_package)}
     yaml.dump(behaviours, output_file, default_flow_style=False)

@@ -85,7 +85,7 @@ def main():
     sub_package = args.sub_package if args.sub_package else ""
 
     output = args.output if args.output else "systems.yaml"
-    output_file = file(output, "w")
+    output_file = open(output, "w")
     systems = {"Systems": list_systems(args.base_package, sub_package)}
     yaml.dump(systems, output_file, default_flow_style=False)
 

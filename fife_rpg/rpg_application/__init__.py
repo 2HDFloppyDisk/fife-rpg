@@ -20,6 +20,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from builtins import object
 from fife_rpg.rpg_application.base import RPGApplication
 from fife_rpg.rpg_application.base import BaseEventListener
 from fife_rpg.rpg_application.base import KeyFilter

@@ -60,5 +60,5 @@ def unregister_system(system_name):
 
 def clear_systems():
     """Removes all registered systems"""
-    for system in get_systems().itervalues():
+    for system in get_systems().values():
         system.unregister()

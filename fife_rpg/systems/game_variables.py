@@ -18,6 +18,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from builtins import str
 from copy import copy
 
 from fife_rpg.systems import Base

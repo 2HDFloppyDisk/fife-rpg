@@ -20,6 +20,7 @@
 
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
+from builtins import object
 import yaml
 
 from fife_rpg.systems import GameVariables
@@ -184,7 +185,7 @@ class Dialogue(object):
         Args:
             sections_data: A dictionary containing the data of the sections
         """
-        for section_name, section_data in sections_data.iteritems():
+        for section_name, section_data in sections_data.items():
             section = self.create_section(section_data)
             self.sections[section_name] = section
 

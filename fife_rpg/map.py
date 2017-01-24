@@ -20,6 +20,8 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from builtins import str
+from builtins import object
 from fife import fife
 from fife.extensions.serializers import xmlanimation
 

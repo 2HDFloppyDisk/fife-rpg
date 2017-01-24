@@ -20,6 +20,7 @@
 .. moduleauthor:: Karsten Bock <KarstenBock@gmx.net>
 """
 
+from past.builtins import basestring
 from copy import copy
 import gettext
 import imp
@@ -243,8 +244,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         for entity in game_map.entities:
             agent = getattr(entity, Agent.registered_as)
             namespace = agent.namespace or object_namespace
-            map_object = fife_model.getObject(agent.gfx,
-                                              namespace.encode())
+            map_object = fife_model.getObject(agent.gfx, namespace)
             if not map_object:
                 raise RuntimeError("There is no object %s in the namespace %s"
                                    % (agent.gfx, namespace))
@@ -387,7 +387,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         camera = self.settings.get(
             "fife-rpg", "Camera", "main")
 
-        for name, filename in maps_doc["Maps"].iteritems():
+        for name, filename in maps_doc["Maps"].items():
             filepath = os.path.join(maps_path, filename + '.xml')
             identifier = etree.parse(filepath).getroot().attrib["id"]
             regions_filename = ("%s_regions.yaml" %
@@ -401,7 +401,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                 regions_data = yaml.load(regions_file)
                 if regions_data is not None:
                     for region_name, region_data in (
-                            regions_data.iteritems()):
+                            iter(regions_data.items())):
                         region = fife.DoubleRect(x=region_data[0],
                                                  y=region_data[1],
                                                  width=region_data[2],
@@ -474,7 +474,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          filename)
         self._components = {}
         components_file = self.engine.getVFS().open(filename)
-        for name, path in yaml.load(components_file)["Components"].iteritems():
+        for name, path in yaml.load(components_file)["Components"].items():
             self._components[name] = path
 
     def get_component_data(self, component_name):
@@ -567,7 +567,7 @@ class RPGApplication(FifeManager, ApplicationBase):
         self._actions = {}
         actions_file = self.engine.getVFS().open(filename)
         file_data = yaml.load(actions_file)
-        for name, path in file_data["Actions"].iteritems():
+        for name, path in file_data["Actions"].items():
             self._actions[name] = path
 
     def get_action_data(self, action_name):
@@ -632,7 +632,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          filename)
         self._systems = {}
         systems_file = self.engine.getVFS().open(filename)
-        for name, path in yaml.load(systems_file)["Systems"].iteritems():
+        for name, path in yaml.load(systems_file)["Systems"].items():
             self._systems[name] = path
 
     def get_system_data(self, system_name):
@@ -697,7 +697,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                          filename)
         self._behaviours = {}
         behaviours_file = self.engine.getVFS().open(filename)
-        for name, path in yaml.load(behaviours_file)["Behaviours"].iteritems():
+        for name, path in yaml.load(behaviours_file)["Behaviours"].items():
             self._behaviours[name] = path
 
     def get_behaviour_data(self, behaviour_name):

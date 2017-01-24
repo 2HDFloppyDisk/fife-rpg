@@ -53,7 +53,7 @@ class CharacterStatistics(Base):
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
-        fields = self.fields.keys()
+        fields = list(self.fields.keys())
         return fields
 
     @classmethod

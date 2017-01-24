@@ -71,5 +71,5 @@ def unregister_behaviour(behaviour_name):
 
 def clear_behaviours():
     """Removes all registered behaviours"""
-    for behaviour in get_behaviours().itervalues():
+    for behaviour in get_behaviours().values():
         behaviour.unregister()

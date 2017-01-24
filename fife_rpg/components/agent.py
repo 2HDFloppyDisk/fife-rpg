@@ -78,7 +78,7 @@ class Agent(Base):
     @property
     def saveable_fields(self):
         """Returns the fields of the component that can be saved."""
-        fields = self.fields.keys()
+        fields = list(self.fields.keys())
         fields.remove("new_map")
         fields.remove("new_layer")
         fields.remove("new_position")
