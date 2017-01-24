@@ -232,12 +232,12 @@ class GameSceneController(ControllerBase):
         self.listener = listener or GameSceneListener(application.engine,
                                                       self)
 
-    def on_activate(self):
+    def _on_activate(self):
         """Being called when the Mode is activated"""
         self.listener.gamecontroller = self
         self.listener.activate()
 
-    def on_deactivate(self):
+    def _on_deactivate(self):
         """Being called when the Mode is deactivated"""
         self.listener.deactivate()
 
