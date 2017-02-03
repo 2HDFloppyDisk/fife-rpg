@@ -231,7 +231,7 @@ class Map(object):
             if fifeagent:
                 agent = getattr(entity, Agent.registered_as)
                 if agent.new_map is not None and agent.new_map != self.name:
-                    self.remove_entity(entity.identifier)
+                    self.remove_entity(str(entity.identifier))
                     continue
                 location = fifeagent.instance.getLocation()
                 if agent.new_layer is not None:
