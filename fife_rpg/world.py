@@ -378,6 +378,29 @@ class RPGWorld(World):
         for callback in self._entity_delete_callbacks:
             callback(entity)
 
+    def rename_entity(self, old_identifier, new_identifier):
+        """Renames an entity. The new name will be ran through
+        create_unique_identifier before applying.
+
+        Args:
+            old_identifier: The pöd name of the entity
+
+            new_identifier: The new name of the entity.
+
+        Returns:
+            The actual new name of the entity.
+        """
+        if not self.is_identifier_used(old_identifier):
+            raise ValueError("There is no \"{}\" entity".format(old_identifier))
+        entity = self.get_entity(old_identifier)
+        new_identifier = self.create_unique_identifier(new_identifier)
+        del self.__entity_cache[old_identifier]
+        comp_data = getattr(entity, General.registered_as)
+        setattr(comp_data, "identifier", new_identifier)
+        self.__entity_cache[new_identifier] = entity
+        return new_identifier
+
+
     def step(self, time_delta):
         """Performs actions every frame
 
