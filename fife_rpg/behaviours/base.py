@@ -31,7 +31,7 @@ from fife_rpg.exceptions import AlreadyRegisteredError, NotRegisteredError
 from fife_rpg.components.fifeagent import FifeAgent
 from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.behaviours import AGENT_STATES
-
+from fife_rpg.helpers import ClassProperty
 
 class Base(fife.InstanceActionListener):
 
@@ -62,6 +62,12 @@ class Base(fife.InstanceActionListener):
         self.state = None
         self.action_queue = deque()
         self.callback = None
+
+    @ClassProperty
+    @classmethod
+    def registered_as(cls):
+        """Returns the value of registered_as"""
+        return cls.__registered_as
 
     @property
     def location(self):
