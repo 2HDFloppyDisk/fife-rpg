@@ -142,8 +142,6 @@ class Map(object):
 
             TypeError: If the key is not a string
         """
-        if not type(name) == str:
-            raise TypeError("Expected key to be a string")
         for entity in self.entities:
             general = getattr(entity, General.registered_as)
             if general.identifier == name:
@@ -282,8 +280,6 @@ class Map(object):
             self.update_entities()
         except KeyError as error:
             raise error
-        except TypeError as error:
-            raise TypeError("Expected identifier to be a string")
 
     def get_layer(self, layer):
         """Returns the layer with the given name
