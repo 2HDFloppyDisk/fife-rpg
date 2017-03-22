@@ -134,7 +134,9 @@ class RPGWorld(World):
         Returns:
             A unique unused identifier based in the given identifier
         """
-        id_number = 0
+        if not self.is_identifier_used(identifier):
+            return identifier
+        id_number = 1
         while self.is_identifier_used(identifier + "_" + str(id_number)):
             id_number += 1
             if id_number > self.MAX_ID_NUMBER:
