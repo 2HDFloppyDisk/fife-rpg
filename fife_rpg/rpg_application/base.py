@@ -265,7 +265,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                     fife.ExactModelCoordinate(position.x,
                                               position.y,
                                               position.z),
-                    general.identifier)
+                    "%s_inst" % general.identifier)
                 fife_instance.setRotation(agent.rotation)
                 visual = fife.InstanceVisual.create(fife_instance)
                 if map_object.getAction('default'):
