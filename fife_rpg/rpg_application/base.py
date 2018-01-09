@@ -29,7 +29,7 @@ import os
 from bGrease.grease_fife.mode import FifeManager
 from fife import fife
 from fife.extensions.basicapplication import ApplicationBase
-from fife_rpg import Map
+from fife_rpg import GameMap
 from fife_rpg.behaviours import BehaviourManager
 from fife_rpg.components.agent import Agent, STACK_POSITION
 from fife_rpg.components.fifeagent import FifeAgent, setup_behaviour
@@ -407,7 +407,7 @@ class RPGApplication(FifeManager, ApplicationBase):
                                                  width=region_data[2],
                                                  height=region_data[3])
                         regions[region_name] = region
-            game_map = Map(filepath, name, camera, regions, self)
+            game_map = GameMap(filepath, name, camera, regions, self)
             self.add_map(identifier, game_map)
 
     def create_world(self):

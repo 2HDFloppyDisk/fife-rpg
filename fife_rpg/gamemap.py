@@ -52,7 +52,7 @@ class NoSuchRegionError(Exception):
                 (self.map, self.region))
 
 
-class Map(object):
+class GameMap(object):
 
     """Contains the data of a map
 

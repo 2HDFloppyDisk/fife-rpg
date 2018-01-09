@@ -16,7 +16,7 @@ import unittest
 
 from fife.fife import DoubleRect, DoublePoint
 
-from fife_rpg.map import Map, NoSuchRegionError
+from fife_rpg.gamemap import GameMap, NoSuchRegionError
 
 TEST_LAYER = "TestLayer"
 # Dummy classes
@@ -75,8 +75,8 @@ class Test(unittest.TestCase):
 
 
     def test_map(self):
-        rpg_map = Map(self.fife_map, self.map_name, "Default", self.regions,
-                      None)
+        rpg_map = GameMap(self.fife_map, self.map_name, "Default", self.regions,
+                          None)
         self.assertEqual(self.map_name, rpg_map.name,
                          "Map.name does not return the correct value")
         self.assertEqual(self.fife_map, rpg_map.fife_map,
